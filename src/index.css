@@ -1,0 +1,384 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-fast: 180ms;
+  --motion-base: 420ms;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+a[href],
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled),
+a[href] {
+  transition:
+    color var(--motion-fast) ease,
+    background-color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    box-shadow var(--motion-base) var(--motion-ease),
+    transform var(--motion-fast) var(--motion-ease);
+}
+
+button:not(:disabled):active,
+a[href]:active {
+  transform: scale(0.98);
+}
+
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid rgba(105, 195, 59, 0.55);
+  outline-offset: 3px;
+}
+
+/*
+ * Scroll reveal system
+ *
+ * FadeInSection controls the `is-visible` state. For a sequence inside it,
+ * use `reveal-stagger` on the grid/list and `reveal-item` on its children.
+ * `motion-stagger` remains an alias for the same behaviour.
+ */
+.fade-in-section {
+  --reveal-x: 0px;
+  --reveal-y: 38px;
+  --reveal-scale: 0.985;
+  --reveal-blur: 8px;
+  --reveal-stagger: 88ms;
+  opacity: 0;
+  filter: blur(var(--reveal-blur));
+  transform: translate3d(var(--reveal-x), var(--reveal-y), 0) scale(var(--reveal-scale));
+  transform-origin: center;
+  will-change: opacity, transform, filter;
+  transition:
+    opacity 760ms var(--motion-ease-soft) var(--fade-delay, 0ms),
+    transform 820ms var(--motion-ease-soft) var(--fade-delay, 0ms),
+    filter 650ms ease-out var(--fade-delay, 0ms);
+}
+
+.fade-in-section--down {
+  --reveal-y: -34px;
+}
+
+.fade-in-section--left {
+  --reveal-x: -42px;
+  --reveal-y: 0px;
+}
+
+.fade-in-section--right {
+  --reveal-x: 42px;
+  --reveal-y: 0px;
+}
+
+.fade-in-section--scale {
+  --reveal-y: 0px;
+  --reveal-scale: 0.94;
+}
+
+.fade-in-section--none {
+  --reveal-y: 0px;
+  --reveal-scale: 1;
+  --reveal-blur: 0px;
+}
+
+.fade-in-section.is-visible {
+  --reveal-x: 0px;
+  --reveal-y: 0px;
+  --reveal-scale: 1;
+  --reveal-blur: 0px;
+  opacity: 1;
+  will-change: auto;
+}
+
+/* Content inside a revealed section can enter in a clearly visible sequence. */
+.fade-in-section :where(
+  .reveal-item,
+  [data-reveal-item],
+  .reveal-stagger > *,
+  .motion-stagger > *
+) {
+  --reveal-item-x: 0px;
+  --reveal-item-y: 20px;
+  --reveal-item-scale: 0.98;
+  --reveal-item-blur: 4px;
+  --reveal-item-delay: 0ms;
+  opacity: 0;
+  filter: blur(var(--reveal-item-blur));
+  transform: translate3d(var(--reveal-item-x), var(--reveal-item-y), 0) scale(var(--reveal-item-scale));
+  will-change: opacity, transform, filter;
+  transition:
+    opacity 620ms var(--motion-ease-soft) calc(var(--fade-delay, 0ms) + var(--reveal-item-delay)),
+    transform 680ms var(--motion-ease-soft) calc(var(--fade-delay, 0ms) + var(--reveal-item-delay)),
+    filter 540ms ease-out calc(var(--fade-delay, 0ms) + var(--reveal-item-delay));
+}
+
+.fade-in-section .reveal-item--left,
+.fade-in-section [data-reveal-direction='left'] {
+  --reveal-item-x: -28px;
+  --reveal-item-y: 0px;
+}
+
+.fade-in-section .reveal-item--right,
+.fade-in-section [data-reveal-direction='right'] {
+  --reveal-item-x: 28px;
+  --reveal-item-y: 0px;
+}
+
+.fade-in-section .reveal-item--scale,
+.fade-in-section [data-reveal-direction='scale'] {
+  --reveal-item-y: 0px;
+  --reveal-item-scale: 0.93;
+}
+
+.fade-in-section.is-visible :where(
+  .reveal-item,
+  [data-reveal-item],
+  .reveal-stagger > *,
+  .motion-stagger > *
+) {
+  --reveal-item-x: 0px;
+  --reveal-item-y: 0px;
+  --reveal-item-scale: 1;
+  --reveal-item-blur: 0px;
+  opacity: 1;
+  will-change: auto;
+}
+
+/* A grid can hold up to twelve sequenced children without inline delays. */
+.reveal-stagger > :nth-child(2),
+.motion-stagger > :nth-child(2) { --reveal-item-delay: var(--reveal-stagger); }
+
+.reveal-stagger > :nth-child(3),
+.motion-stagger > :nth-child(3) { --reveal-item-delay: calc(var(--reveal-stagger) + var(--reveal-stagger)); }
+
+.reveal-stagger > :nth-child(4),
+.motion-stagger > :nth-child(4) { --reveal-item-delay: calc(var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger)); }
+
+.reveal-stagger > :nth-child(5),
+.motion-stagger > :nth-child(5) { --reveal-item-delay: calc(var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger)); }
+
+.reveal-stagger > :nth-child(6),
+.motion-stagger > :nth-child(6) { --reveal-item-delay: calc(var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger)); }
+
+.reveal-stagger > :nth-child(7),
+.motion-stagger > :nth-child(7) { --reveal-item-delay: calc(var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger)); }
+
+.reveal-stagger > :nth-child(8),
+.motion-stagger > :nth-child(8) { --reveal-item-delay: calc(var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger)); }
+
+.reveal-stagger > :nth-child(9),
+.motion-stagger > :nth-child(9) { --reveal-item-delay: calc(var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger)); }
+
+.reveal-stagger > :nth-child(10),
+.motion-stagger > :nth-child(10) { --reveal-item-delay: calc(var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger)); }
+
+.reveal-stagger > :nth-child(11),
+.motion-stagger > :nth-child(11) { --reveal-item-delay: calc(var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger)); }
+
+.reveal-stagger > :nth-child(12),
+.motion-stagger > :nth-child(12) { --reveal-item-delay: calc(var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger) + var(--reveal-stagger)); }
+
+/* Media first settles into place, then reacts very lightly to hover. */
+.fade-in-section :is(img.reveal-media, img[data-reveal-media], .reveal-media > img) {
+  transform: scale(1.085);
+  transform-origin: center;
+  will-change: transform;
+  transition: transform 1100ms var(--motion-ease-soft) calc(var(--fade-delay, 0ms) + 70ms);
+}
+
+.fade-in-section.is-visible :is(img.reveal-media, img[data-reveal-media], .reveal-media > img) {
+  transform: scale(1);
+  will-change: auto;
+}
+
+/* Reusable motion helpers for grids, cards and visual accents. */
+
+.motion-float {
+  animation: softFloat 5.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+.motion-float-slow {
+  animation: softFloat 8s ease-in-out -2s infinite;
+  will-change: transform;
+}
+
+.motion-glow {
+  animation: glowPulse 4.5s ease-in-out infinite;
+}
+
+.motion-lift {
+  transition: transform var(--motion-base) var(--motion-ease), box-shadow var(--motion-base) var(--motion-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .motion-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 44px -18px rgba(20, 62, 34, 0.28);
+  }
+
+  .shimmer-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .service-card-hover:hover {
+    transform: translateY(-9px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* A short page entrance makes navigation feel deliberate without delaying content. */
+  #root > * {
+    animation: pageEnter 0.48s var(--motion-ease-soft) both;
+  }
+
+  /* Decorative blurred circles used throughout the pages get a subtle living motion. */
+  main > section > .absolute.blur-3xl,
+  main > section > .absolute[class*='blur-3xl'] {
+    animation: ambientDrift 12s ease-in-out infinite alternate;
+    will-change: opacity;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .fade-in-section {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.32s var(--motion-ease-soft) forwards;
+}
+
+@keyframes pageEnter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes revealItem {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes softFloat {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -9px, 0); }
+}
+
+@keyframes ambientDrift {
+  0% { opacity: 0.62; }
+  100% { opacity: 1; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(105, 195, 59, 0)); }
+  50% { filter: drop-shadow(0 0 18px rgba(105, 195, 59, 0.42)); }
+}
+
+/* Glassmorphism Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.08);
+}
+
+.glass-nav-muted {
+  background-color: rgba(249, 249, 249, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+}
+
+.glass-nav {
+  background-color: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F9F9F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #296c00;
+  border-radius: 4px;
+}
+
+/* Shimmer Button Effect */
+.shimmer-btn {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+  transform: skewX(-20deg);
+  transition: none;
+}
+.shimmer-btn:hover::after {
+  left: 200%;
+  transition: left 0.7s ease-in-out;
+}
+
+/* Service Card Hover Effect */
+.service-card-hover {
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.service-card-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px -10px rgba(41, 108, 0, 0.12);
+}
