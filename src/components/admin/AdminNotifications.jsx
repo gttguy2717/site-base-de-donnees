@@ -33,7 +33,7 @@ export default function AdminNotifications() {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/admin/notifications', {
+      const response = await fetch('/api/admin/notifications', {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
@@ -49,7 +49,7 @@ export default function AdminNotifications() {
 
   const markAsRead = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/admin/notifications/${id}/read`, {
+      await fetch(`/api/admin/notifications/${id}/read`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -64,7 +64,7 @@ export default function AdminNotifications() {
 
   const markAllAsRead = async () => {
     try {
-      await fetch('http://localhost:5000/api/admin/notifications/read-all', {
+      await fetch('/api/admin/notifications/read-all', {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
       });

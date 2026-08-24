@@ -60,7 +60,7 @@ export default function AdminSettings({ navigateTo }) {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/admin/settings', {
+        const response = await fetch('/api/admin/settings', {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.ok) {
@@ -106,7 +106,7 @@ export default function AdminSettings({ navigateTo }) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const response = await fetch('http://localhost:5000/api/admin/settings', {
+      const response = await fetch('/api/admin/settings', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

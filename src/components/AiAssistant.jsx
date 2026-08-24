@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const QUICK_ACTIONS = [
   { title: '🚗 Louer un véhicule', subtitle: 'Je cherche un SUV pour 5 personnes', message: 'Je cherche un véhicule pour transporter 6 personnes' },

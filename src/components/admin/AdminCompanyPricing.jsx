@@ -18,9 +18,9 @@ export default function AdminCompanyPricing() {
       setLoading(true);
       const headers = { Authorization: `Bearer ${token}` };
       const [companiesRes, vehiclesRes, productsRes] = await Promise.all([
-        fetch('http://localhost:5000/api/admin/company-pricing', { headers }),
-        fetch('http://localhost:5000/api/admin/vehicles', { headers }),
-        fetch('http://localhost:5000/api/admin/products', { headers }),
+        fetch('/api/admin/company-pricing', { headers }),
+        fetch('/api/admin/vehicles', { headers }),
+        fetch('/api/admin/products', { headers }),
       ]);
 
       const [companiesData, vehiclesData, productsData] = await Promise.all([
@@ -52,7 +52,7 @@ export default function AdminCompanyPricing() {
     setSaving(true);
     setNotice('');
     try {
-      const response = await fetch('http://localhost:5000/api/admin/company-pricing/vehicle', {
+      const response = await fetch('/api/admin/company-pricing/vehicle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ entreprise_id: entrepriseId, vehicule_id: vehiculeId, prix_journalier: prix }),
@@ -76,7 +76,7 @@ export default function AdminCompanyPricing() {
     setSaving(true);
     setNotice('');
     try {
-      const response = await fetch('http://localhost:5000/api/admin/company-pricing/product', {
+      const response = await fetch('/api/admin/company-pricing/product', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ entreprise_id: entrepriseId, produit_id: produitId, prix }),

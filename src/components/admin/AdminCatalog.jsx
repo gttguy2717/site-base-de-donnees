@@ -90,7 +90,7 @@ export default function AdminCatalog() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/admin/products', { headers: { Authorization: `Bearer ${token}` } });
+      const response = await fetch('/api/admin/products', { headers: { Authorization: `Bearer ${token}` } });
       if (response.ok) { const data = await response.json(); setProducts(data.products || []); }
     } catch (error) { console.error('Erreur chargement produits:', error); }
     finally { setLoading(false); }
@@ -98,14 +98,14 @@ export default function AdminCatalog() {
 
   const loadVehicles = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/admin/vehicles', { headers: { Authorization: `Bearer ${token}` } });
+      const response = await fetch('/api/admin/vehicles', { headers: { Authorization: `Bearer ${token}` } });
       if (response.ok) { const data = await response.json(); setVehicles(data.vehicles || []); }
     } catch (error) { console.error('Erreur chargement véhicules:', error); }
   };
 
   const handleExportPrices = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/admin/products/export-prices', { headers: { Authorization: `Bearer ${token}` } });
+      const response = await fetch('/api/admin/products/export-prices', { headers: { Authorization: `Bearer ${token}` } });
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -123,7 +123,7 @@ export default function AdminCatalog() {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const response = await fetch('http://localhost:5000/api/admin/products/import-prices', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
+      const response = await fetch('/api/admin/products/import-prices', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
       if (response.ok) { const data = await response.json(); alert(`✅ Import réussi ! ${data.updated} prix mis à jour.`); loadProducts(); }
       else { const error = await response.json(); alert(`❌ Erreur: ${error.message || 'Import échoué'}`); }
     } catch (error) { console.error('Erreur import:', error); alert('❌ Erreur lors de l\'import des prix'); }
@@ -132,7 +132,7 @@ export default function AdminCatalog() {
 
   const handleExportVehicles = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/admin/vehicles/export', { headers: { Authorization: `Bearer ${token}` } });
+      const response = await fetch('/api/admin/vehicles/export', { headers: { Authorization: `Bearer ${token}` } });
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -150,7 +150,7 @@ export default function AdminCatalog() {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const response = await fetch('http://localhost:5000/api/admin/vehicles/import', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
+      const response = await fetch('/api/admin/vehicles/import', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
       if (response.ok) { const data = await response.json(); alert(`✅ Import réussi ! ${data.updated} véhicule(s) mis à jour.`); loadVehicles(); }
       else { const error = await response.json(); alert(`❌ Erreur: ${error.message || 'Import échoué'}`); }
     } catch (error) { console.error('Erreur import:', error); alert('❌ Erreur lors de l\'import des véhicules'); }
@@ -159,14 +159,14 @@ export default function AdminCatalog() {
 
   const handleDeleteProduct = async (productId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/products/${productId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+      const response = await fetch(`/api/admin/products/${productId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
       if (response.ok) { alert('✅ Article supprimé du catalogue'); loadProducts(); } else { alert('❌ Erreur lors de la suppression'); }
     } catch (error) { console.error('Erreur suppression:', error); alert('❌ Erreur lors de la suppression'); }
   };
 
   const handleDeleteVehicle = async (vehicleId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/vehicles/${vehicleId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+      const response = await fetch(`/api/admin/vehicles/${vehicleId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
       if (response.ok) { alert('✅ Véhicule supprimé du catalogue'); loadVehicles(); } else { alert('❌ Erreur lors de la suppression'); }
     } catch (error) { console.error('Erreur suppression:', error); alert('❌ Erreur lors de la suppression'); }
   };
@@ -223,7 +223,7 @@ export default function AdminCatalog() {
     setSavingProduct(true);
     try {
       const payload = { nom: productForm.nom, reference: productForm.reference, description: productForm.description, categorie_id: productForm.categorie_id || null, unite: productForm.unite, image_url: productForm.image_preview || null, tarifs: productForm.tarifs };
-      const response = await fetch('http://localhost:5000/api/admin/products', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) });
+      const response = await fetch('/api/admin/products', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || data.error?.message || 'Erreur lors de l\'ajout du produit');
       alert('✅ Article ajouté avec succès !');
@@ -277,7 +277,7 @@ export default function AdminCatalog() {
         description: vehicleForm.description,
         image_url: vehicleForm.image_preview || null,
       };
-      const response = await fetch(`http://localhost:5000/api/admin/vehicles/${editingVehicle.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) });
+      const response = await fetch(`/api/admin/vehicles/${editingVehicle.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || data.error?.message || 'Erreur lors de la mise à jour du véhicule');
       alert('✅ Véhicule mis à jour avec succès !');
@@ -295,7 +295,7 @@ export default function AdminCatalog() {
     setSavingVehicle(true);
     try {
       const payload = { marque: vehicleForm.marque, modele: vehicleForm.modele, categorie: vehicleForm.categorie, places: vehicleForm.places, transmission: vehicleForm.transmission, prix_journalier_particulier: vehicleForm.prix_journalier_particulier, prix_journalier_entreprise: vehicleForm.prix_journalier_entreprise, prix_journalier_entreprise_client: vehicleForm.prix_journalier_entreprise_client, disponibilite: vehicleForm.disponibilite, description: vehicleForm.description, image_url: vehicleForm.image_preview || null };
-      const response = await fetch('http://localhost:5000/api/admin/vehicles', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) });
+      const response = await fetch('/api/admin/vehicles', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || data.error?.message || 'Erreur lors de l\'ajout du véhicule');
       alert('✅ Véhicule ajouté avec succès !');
@@ -311,7 +311,7 @@ export default function AdminCatalog() {
     try {
       setSavingPhoto(true);
       const isVehicle = editPhotoModal.product.marque !== undefined;
-      const endpoint = isVehicle ? `http://localhost:5000/api/admin/vehicles/${editPhotoModal.product.id}` : `http://localhost:5000/api/admin/products/${editPhotoModal.product.id}`;
+      const endpoint = isVehicle ? `/api/admin/vehicles/${editPhotoModal.product.id}` : `/api/admin/products/${editPhotoModal.product.id}`;
       const response = await fetch(endpoint, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ image_url: editPhotoModal.previewUrl }) });
       if (response.ok) { alert('✅ Photo mise à jour'); closeEditPhotoModal(); if (isVehicle) loadVehicles(); else loadProducts(); }
       else { alert('❌ Erreur lors de la mise à jour'); }

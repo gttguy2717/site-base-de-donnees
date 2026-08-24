@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 
-const AVATAR_BASE_URL = 'http://localhost:5000';
+const AVATAR_BASE_URL = '';
 
 export default function AvatarUploader({ size = 'lg', name = '', className = '' }) {
   const { user, uploadAvatar } = useAuth();

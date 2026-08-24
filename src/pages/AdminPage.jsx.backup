@@ -1,0 +1,297 @@
+import { useEffect, useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import AdminDashboard from '../components/admin/AdminDashboard';
+import AdminClients from '../components/admin/AdminClients';
+import AdminCatalog from '../components/admin/AdminCatalog';
+import AdminVehicles from '../components/admin/AdminVehicles';
+import AdminReservations from '../components/admin/AdminReservations';
+import AdminQuotes from '../components/admin/AdminQuotes';
+import AdminProductRequests from '../components/admin/AdminProductRequests';
+import AdminNotifications from '../components/admin/AdminNotifications';
+import AdminPromotions from '../components/admin/AdminPromotions';
+import AdminSettings from '../components/admin/AdminSettings';
+
+export default function AdminPage({ navigateTo }) {
+  const { user, token, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
+  useEffect(() => {
+    // Rediriger si pas admin
+    if (user && user.role !== 'ADMIN' && user.role !== 'MANAGER') {
+      navigateTo('home');
+    }
+  }, [user, navigateTo]);
+
+  // Charger le nombre de notifications non lues
+  useEffect(() => {
+    const fetchNotificationCount = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/admin/notifications', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const unread = data.notifications?.filter(n => !n.est_lu).length || 0;
+          setNotificationCount(unread);
+        }
+      } catch (error) {
+        console.error('Erreur chargement notifications:', error);
+      }
+    };
+
+    if (token) {
+      fetchNotificationCount();
+      // Actualiser toutes les 30 secondes
+      const interval = setInterval(fetchNotificationCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    // Fermer le menu utilisateur quand on clique ailleurs
+    const handleClickOutside = (event) => {
+      if (showUserMenu && !event.target.closest('.user-menu-container')) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showUserMenu]);
+
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'MANAGER')) {
+    return null;
+  }
+
+  const menuItems = [
+    { id: 'dashboard', icon: 'dashboard', label: 'Tableau de bord', badge: null },
+    { id: 'clients', icon: 'group', label: 'Clients', badge: null },
+    { id: 'catalog', icon: 'inventory_2', label: 'Catalogue', badge: null },
+    { id: 'reservations', icon: 'event', label: 'Réservations', badge: null },
+    { id: 'quotes', icon: 'description', label: 'Devis', badge: null },
+    { id: 'promotions', icon: 'local_offer', label: 'Promotions', badge: null },
+    { id: 'reports', icon: 'assessment', label: 'Rapports', badge: null },
+    { id: 'settings', icon: 'settings', label: 'Paramètres', badge: null },
+  ];
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return <AdminDashboard />;
+      case 'clients':
+        return <AdminClients />;
+      case 'catalog':
+        return <AdminCatalog />;
+      case 'reservations':
+        return <AdminReservations />;
+      case 'quotes':
+        return <AdminQuotes />;
+      case 'product-requests':
+        return <AdminProductRequests />;
+      case 'promotions':
+        return <AdminPromotions />;
+      case 'notifications':
+        return <AdminNotifications />;
+      case 'settings':
+        return <AdminSettings navigateTo={navigateTo} />;
+      case 'reports':
+        return <AdminSettings navigateTo={navigateTo} />;
+      default:
+        return <AdminDashboard />;
+    }
+  };
+
+  const userName = user?.email?.split('@')[0] || 'Admin';
+
+  return (
+    <div className="flex h-screen bg-[#f8f9fa] overflow-hidden font-sans">
+      {/* Sidebar - Avec logo en haut */}
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+        {/* Logo SOUTARAH aligné avec le header - DESCENDU de 1cm total */}
+        <div className="h-[72px] px-4 pt-4 border-b border-gray-100 flex items-center justify-center">
+          <img
+            src="/logo-soutarah.png"
+            alt="SOUTARAH GROUP"
+            className="w-full h-auto max-w-[200px] object-contain"
+          />
+        </div>
+
+        {/* Menu Navigation - DESCENDU de 2.5cm total */}
+        <nav className="flex-1 px-3 pt-10 pb-2 overflow-y-auto">
+          {menuItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`relative w-full flex items-center gap-3 px-4 py-2 mb-1 rounded-lg text-sm font-medium transition-all ${
+                activeTab === item.id
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+              <span className="flex-1 text-left">{item.label}</span>
+              {item.badge && item.badge > 0 && (
+                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-white">
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </nav>
+
+        {/* User Profile at bottom - TRÈS RAPPROCHÉ */}
+        <div className="p-2 border-t border-gray-100">
+          <div className="flex items-center gap-3">
+            <img
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=69c33b&color=fff&size=40`}
+              alt={userName}
+              className="h-10 w-10 rounded-full"
+            />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-900 truncate">Admin SOUTARAH</p>
+              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+            </div>
+            <button
+              onClick={() => setActiveTab('settings')}
+              className="text-gray-400 hover:text-primary transition-colors"
+              title="Paramètres"
+            >
+              <span className="material-symbols-outlined text-[20px]">settings</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Top Header - Avec barre de recherche */}
+        <header className="bg-white border-b border-gray-200">
+          <div className="flex items-center justify-between px-8 py-4">
+            {/* Gauche : Barre de recherche */}
+            <div className="flex-1 max-w-lg">
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[20px]">
+                  search
+                </span>
+                <input
+                  type="text"
+                  placeholder="Rechercher un client, un email, un téléphone..."
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Droite : Actions */}
+            <div className="flex items-center gap-3">
+              {/* Notifications */}
+              <button 
+                onClick={() => setActiveTab('notifications')}
+                className="relative p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <span className="material-symbols-outlined text-[22px]">notifications</span>
+                {notificationCount > 0 && (
+                  <>
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full animate-pulse"></span>
+                    <span className="absolute -top-1 -right-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
+                      {notificationCount > 99 ? '99+' : notificationCount}
+                    </span>
+                  </>
+                )}
+              </button>
+
+              {/* Dark Mode Toggle */}
+              <button 
+                className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                title="Mode sombre"
+              >
+                <span className="material-symbols-outlined text-[22px]">dark_mode</span>
+              </button>
+
+              {/* User Avatar avec dropdown */}
+              <div className="relative user-menu-container">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 hover:bg-gray-50 rounded-lg p-2 transition-colors"
+                >
+                  <div className="h-9 w-9 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold text-sm">
+                    AD
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-semibold text-gray-900">Admin SOUTARAH</p>
+                    <p className="text-xs text-gray-500">Administrateur</p>
+                  </div>
+                  <span className={`material-symbols-outlined text-gray-400 transition-transform ${showUserMenu ? 'rotate-180' : ''}`}>
+                    expand_more
+                  </span>
+                </button>
+
+                {/* Dropdown Menu - SIMPLIFIÉ */}
+                {showUserMenu && (
+                  <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
+                    {/* Profil */}
+                    <button
+                      onClick={() => {
+                        setActiveTab('settings');
+                        setShowUserMenu(false);
+                      }}
+                      className="w-full flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100">
+                        <span className="material-symbols-outlined text-[20px] text-gray-700">person</span>
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className="text-sm font-semibold text-gray-900">Profil</p>
+                        <p className="text-xs text-gray-500 mt-0.5">Informations personnelles</p>
+                      </div>
+                    </button>
+
+                    {/* Notifications */}
+                    <button
+                      onClick={() => {
+                        setActiveTab('notifications');
+                        setShowUserMenu(false);
+                      }}
+                      className="w-full flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100">
+                        <span className="material-symbols-outlined text-[20px] text-gray-700">notifications</span>
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className="text-sm font-semibold text-gray-900">Notifications</p>
+                        <p className="text-xs text-gray-500 mt-0.5">Préférences de notification</p>
+                      </div>
+                    </button>
+
+                    <div className="border-t border-gray-100 my-2"></div>
+
+                    {/* Déconnexion */}
+                    <button
+                      onClick={() => {
+                        if (window.confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                          logout();
+                          if (navigateTo) navigateTo('home');
+                          else window.location.href = '/';
+                        }
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-red-600"
+                    >
+                      <span className="material-symbols-outlined text-[20px]">logout</span>
+                      <span className="text-sm font-semibold">Se déconnecter</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto px-8 py-6 bg-[#f8f9fa]">
+          {renderContent()}
+        </main>
+      </div>
+    </div>
+  );
+}

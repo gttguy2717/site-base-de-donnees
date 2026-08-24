@@ -53,7 +53,7 @@ export default function AdminPage({ navigateTo }) {
   useEffect(() => {
     const fetchNotificationCount = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/admin/notifications', {
+        const response = await fetch('/api/admin/notifications', {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.ok) {
@@ -109,7 +109,7 @@ export default function AdminPage({ navigateTo }) {
   useEffect(() => {
     const fetchPendingQuotes = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/admin/quotes', {
+        const response = await fetch('/api/admin/quotes', {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.ok) {
@@ -148,11 +148,11 @@ export default function AdminPage({ navigateTo }) {
       try {
         const headers = { Authorization: `Bearer ${token}` };
         const [clientsRes, productsRes, vehiclesRes, quotesRes, reservationsRes] = await Promise.all([
-          fetch('http://localhost:5000/api/admin/clients', { headers }),
-          fetch('http://localhost:5000/api/admin/products', { headers }),
-          fetch('http://localhost:5000/api/admin/vehicles', { headers }),
-          fetch('http://localhost:5000/api/admin/quotes', { headers }),
-          fetch('http://localhost:5000/api/admin/reservations', { headers }),
+          fetch('/api/admin/clients', { headers }),
+          fetch('/api/admin/products', { headers }),
+          fetch('/api/admin/vehicles', { headers }),
+          fetch('/api/admin/quotes', { headers }),
+          fetch('/api/admin/reservations', { headers }),
         ]);
 
         const [clientsData, produitsData, vehiclesData, quotesData, reservationsData] = await Promise.all([
@@ -405,7 +405,7 @@ export default function AdminPage({ navigateTo }) {
           <div className="flex items-center gap-3">
             {user?.avatar_url ? (
               <img
-                src={`http://localhost:5000${user.avatar_url}`}
+                src={`${user.avatar_url}`}
                 alt={userName}
                 className="h-10 w-10 rounded-full object-cover"
                 onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
@@ -517,7 +517,7 @@ export default function AdminPage({ navigateTo }) {
                 >
                   {user?.avatar_url ? (
                     <img
-                      src={`http://localhost:5000${user.avatar_url}`}
+                      src={`${user.avatar_url}`}
                       alt="Avatar"
                       className="h-9 w-9 rounded-full object-cover"
                       onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}

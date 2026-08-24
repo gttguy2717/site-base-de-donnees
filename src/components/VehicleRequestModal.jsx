@@ -27,7 +27,7 @@ export default function VehicleRequestModal({ onClose, navigateTo }) {
 
     try {
       // Envoyer la demande de véhicule (avec ou sans token)
-      const response = await fetch('http://localhost:5000/api/vehicle-requests', {
+      const response = await fetch('/api/vehicle-requests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

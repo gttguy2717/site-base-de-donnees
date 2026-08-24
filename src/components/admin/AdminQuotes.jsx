@@ -19,7 +19,7 @@ export default function AdminQuotes() {
   const loadQuotes = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/admin/quotes', {
+      const response = await fetch('/api/admin/quotes', {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -36,7 +36,7 @@ export default function AdminQuotes() {
 
   const updateQuoteStatus = async (quoteId, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/quotes/${quoteId}/status`, {
+      const response = await fetch(`/api/admin/quotes/${quoteId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ export default function AdminQuotes() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch(`http://localhost:5000/api/admin/quotes/${selectedQuote.id}/upload-signed`, {
+      const response = await fetch(`/api/admin/quotes/${selectedQuote.id}/upload-signed`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -505,7 +505,7 @@ export default function AdminQuotes() {
 
                   {selectedQuote.fichier_devis_url && (
                     <a
-                      href={`http://localhost:5000${selectedQuote.fichier_devis_url}`}
+                      href={`${selectedQuote.fichier_devis_url}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[11px] font-bold hover:bg-blue-700 transition-colors shadow-xs"

@@ -21,7 +21,7 @@ export default function AdminDashboard({ onNavigate }) {
       setLoading(true);
       
       // Charger les vraies stats depuis l'API
-      const statsResponse = await fetch('http://localhost:5000/api/admin/dashboard/stats', {
+      const statsResponse = await fetch('/api/admin/dashboard/stats', {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -36,7 +36,7 @@ export default function AdminDashboard({ onNavigate }) {
       }
 
       // Charger l'activité récente depuis les notifications
-      const activityResponse = await fetch('http://localhost:5000/api/admin/notifications?limit=5', {
+      const activityResponse = await fetch('/api/admin/notifications?limit=5', {
         headers: { Authorization: `Bearer ${token}` },
       });
       

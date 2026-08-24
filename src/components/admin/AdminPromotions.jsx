@@ -68,7 +68,7 @@ export default function AdminPromotions() {
 
   const loadAnnouncements = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/admin/announcements', {
+      const response = await fetch('/api/admin/announcements', {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
@@ -91,7 +91,7 @@ export default function AdminPromotions() {
   const saveAnnouncements = async () => {
     setSaving(true);
     try {
-      const response = await fetch('http://localhost:5000/api/admin/announcements', {
+      const response = await fetch('/api/admin/announcements', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

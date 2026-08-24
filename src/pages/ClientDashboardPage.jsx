@@ -164,7 +164,7 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
   const handleDownloadQuotePdf = async (quote) => {
     // Si un devis signé existe, télécharger le fichier signé (nouvelle version)
     if (quote.fichier_devis_url) {
-      window.open(`http://localhost:5000${quote.fichier_devis_url}`, '_blank', 'noopener,noreferrer');
+      window.open(`${quote.fichier_devis_url}`, '_blank', 'noopener,noreferrer');
       return;
     }
 
@@ -427,7 +427,7 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
                                 Devis signé disponible
                               </span>
                               <a
-                                href={`http://localhost:5000${quote.fichier_devis_url}`}
+                                href={`${quote.fichier_devis_url}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-3 py-1 text-[10px] font-extrabold text-white transition hover:bg-emerald-700"
@@ -658,7 +658,7 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
                   /* Devis approuvé/validé — uniquement le devis signé */
                   selectedQuote.fichier_devis_url ? (
                     <a
-                      href={`http://localhost:5000${selectedQuote.fichier_devis_url}`}
+                      href={`${selectedQuote.fichier_devis_url}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-emerald-700"

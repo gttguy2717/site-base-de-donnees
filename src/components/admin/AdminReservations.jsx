@@ -22,7 +22,7 @@ export default function AdminReservations() {
   const loadReservations = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/admin/reservations', {
+      const response = await fetch('/api/admin/reservations', {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
@@ -55,7 +55,7 @@ export default function AdminReservations() {
 
   const updateReservationStatus = async (id, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/reservations/${id}/status`, {
+      const response = await fetch(`/api/admin/reservations/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -424,7 +424,7 @@ export default function AdminReservations() {
                     <div className="flex items-center gap-2 px-4 py-3 border-r border-gray-100 bg-white">
                       {row.image_url ? (
                         <img
-                          src={`http://localhost:5000${row.image_url}`}
+                          src={`${row.image_url}`}
                           alt={row.name}
                           className="h-9 w-9 rounded-lg object-cover border border-gray-100"
                           onError={(e) => { e.target.style.display = 'none'; }}

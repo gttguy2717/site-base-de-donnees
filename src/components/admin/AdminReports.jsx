@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import * as XLSX from 'xlsx';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = '';
 
 function useFetch(path, token) {
   const [data, setData] = useState(null);

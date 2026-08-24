@@ -161,7 +161,7 @@ export default function Navbar({ onOpenDevis, activeTab = 'home', setActiveTab, 
   useEffect(() => {
     const loadAnnouncements = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/announcements');
+        const response = await fetch('/api/announcements');
         if (response.ok) {
           const data = await response.json();
           setAnnouncements((data.announcements || []).filter(a => a.enabled && a.text));
@@ -406,7 +406,7 @@ export default function Navbar({ onOpenDevis, activeTab = 'home', setActiveTab, 
               >
                 {user?.avatar_url ? (
                   <img
-                    src={`http://localhost:5000${user.avatar_url}`}
+                    src={`${user.avatar_url}`}
                     alt={accountName}
                     className="h-8 w-8 rounded-full object-cover border-2 border-primary/20"
                   />

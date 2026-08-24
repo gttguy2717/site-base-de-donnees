@@ -51,7 +51,7 @@ export function AuthProvider({ children }) {
     async uploadAvatar(file) {
       const formData = new FormData();
       formData.append('avatar', file);
-      const result = await fetch('http://localhost:5000/api/auth/me/avatar', {
+      const result = await fetch('/api/auth/me/avatar', {
         method: 'POST',
         headers: { Authorization: `Bearer ${state.token}` },
         body: formData,

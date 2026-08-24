@@ -29,7 +29,7 @@ export default function AdminClients() {
   const loadClients = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/admin/clients', {
+      const response = await fetch('/api/admin/clients', {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -50,7 +50,7 @@ export default function AdminClients() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/clients/${clientId}/status`, {
+      const response = await fetch(`/api/admin/clients/${clientId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ export default function AdminClients() {
     setSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/admin/clients', {
+      const response = await fetch('/api/admin/clients', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
