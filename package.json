@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build:frontend": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
     "server": "node --watch server/src/server.cjs",
