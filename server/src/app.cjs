@@ -44,8 +44,8 @@ app.use('/api', apiRouter);
 if (environment.nodeEnv === 'production') {
   const distPath = path.join(__dirname, '../../dist');
   app.use(express.static(distPath));
-  // Catch-all : toutes les routes non-API renvoient index.html (React Router)
-  app.get('*', (req, res) => {
+  // Catch-all Express 5 compatible : toutes les routes non-API renvoient index.html
+  app.use((req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 } else {
