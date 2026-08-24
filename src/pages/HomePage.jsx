@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import CounterSection from '../components/CounterSection';
 import AboutPreviewSection from '../components/AboutPreviewSection';
-import VideoSection from '../components/VideoSection';
 import ServicesSection from '../components/ServicesSection';
 import PartnersSection from '../components/PartnersSection';
 import CtaBanner from '../components/CtaBanner';
@@ -63,13 +62,12 @@ const heroSlides = [
   },
 ];
 
-export default function HomePage({ navigateTo }) {
+export default function HomePage({ navigateTo, onRequestQuote }) {
   const [isDevisOpen, setIsDevisOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [activeHeroSlide, setActiveHeroSlide] = useState(0);
-  const [hoverSide, setHoverSide] = useState(null);
 
-  const handleOpenDevis = () => setIsDevisOpen(true);
+  const handleOpenDevis = () => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true));
   const handleCloseDevis = () => setIsDevisOpen(false);
 
   useEffect(() => {
@@ -111,23 +109,34 @@ export default function HomePage({ navigateTo }) {
         <section className="relative flex items-start min-h-[720px] lg:min-h-[770px] overflow-hidden" id="home">
           <div className="absolute inset-0 z-0">
             {heroSlides.map((slide, index) => (
-              <img
+              <div
                 key={slide.id}
-                src={slide.image}
-                alt={slide.alt}
-                className={`home-hero-media absolute inset-0 h-full w-full object-cover object-[68%_center] transition-opacity duration-700 ${
+                className={`absolute inset-0 transition-opacity duration-700 ${
                   index === activeHeroSlide ? 'opacity-100' : 'opacity-0'
                 }`}
-                onError={(event) => handleHeroImageError(event, slide.fallbackImage)}
-              />
+              >
+                <img
+                  src={slide.image}
+                  alt={slide.alt}
+                  className="home-hero-media absolute inset-0 h-full w-full object-cover object-[68%_center]"
+                  onError={(event) => handleHeroImageError(event, slide.fallbackImage)}
+                />
+              </div>
             ))}
+            
+            {/* Panneau blanc opaque sur le côté gauche pour la lisibilité des textes */}
+            <div className="absolute inset-y-0 left-0 z-10 w-full md:w-[65%] lg:w-[58%] bg-gradient-to-r from-white via-white to-transparent" />
+            
+            {/* Dégradé supplémentaire pour transition douce */}
             <div
-              className={`absolute inset-0 z-10 bg-gradient-to-r ${
+              className={`absolute inset-0 z-[12] bg-gradient-to-r ${
                 isHomeHero
-                  ? 'from-[#f8fcf6]/98 via-[#f8fcf6]/82 via-[52%] to-[#f8fcf6]/8'
-                  : 'from-[#f8fcf6]/98 via-white/92 via-[58%] to-[#f8fcf6]/18'
+                  ? 'from-[#f8fcf6]/95 via-[#f8fcf6]/60 via-[50%] to-transparent'
+                  : 'from-white/85 via-white/45 via-[48%] to-transparent'
               }`}
             />
+            
+            {/* Dégradé du bas */}
             <div className="absolute inset-0 z-[15] bg-gradient-to-t from-[#f9f9f9] via-transparent to-transparent" />
           </div>
 
@@ -168,7 +177,7 @@ export default function HomePage({ navigateTo }) {
                 </>
               ) : (
                 <>
-                  <div className="max-w-[560px] bg-gradient-to-r from-white/92 via-white/86 to-white/0 px-4 py-5 sm:px-5 sm:py-6">
+                  <div className="max-w-[560px] px-0 py-0">
                     <div className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-primary font-semibold text-xs sm:text-sm mb-5">
                       {activeHero.eyebrow}
                     </div>
@@ -223,44 +232,26 @@ export default function HomePage({ navigateTo }) {
             </div>
           </FadeInSection>
 
-          <div
-            className="absolute left-0 top-0 z-30 h-full w-12"
-            onMouseEnter={() => setHoverSide('left')}
-            onMouseLeave={() => setHoverSide(null)}
+          <button
+            type="button"
+            onClick={previousSlide}
+            aria-label="Slide précédente"
+            className="absolute left-3 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-primary opacity-0 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white hover:opacity-100 focus:opacity-100"
           >
-            <button
-              type="button"
-              onClick={previousSlide}
-              aria-label="Slide précédente"
-              className={`absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-[#1a1c1c] shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white/75 hover:text-primary ${
-                hoverSide === 'left' ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[34px] drop-shadow-md">chevron_left</span>
-            </button>
-          </div>
+            <span className="material-symbols-outlined text-[30px]">chevron_left</span>
+          </button>
 
-          <div
-            className="absolute right-0 top-0 z-30 h-full w-12"
-            onMouseEnter={() => setHoverSide('right')}
-            onMouseLeave={() => setHoverSide(null)}
+          <button
+            type="button"
+            onClick={nextSlide}
+            aria-label="Slide suivante"
+            className="absolute right-3 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-primary opacity-0 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white hover:opacity-100 focus:opacity-100"
           >
-            <button
-              type="button"
-              onClick={nextSlide}
-              aria-label="Slide suivante"
-              className={`absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-[#1a1c1c] shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white/75 hover:text-primary ${
-                hoverSide === 'right' ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[34px] drop-shadow-md">chevron_right</span>
-            </button>
-          </div>
+            <span className="material-symbols-outlined text-[30px]">chevron_right</span>
+          </button>
         </section>
 
         <CounterSection />
-        <AboutPreviewSection onLearnMore={() => navigateTo('about')} />
-        <VideoSection />
         <ServicesSection onSelectService={handleSelectService} />
         <PartnersSection />
         <CtaBanner onOpenDevis={handleOpenDevis} />

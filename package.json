@@ -7,12 +7,36 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "node --watch server/src/server.cjs",
+    "server:start": "node server/src/server.cjs",
+    "db:migrate": "sequelize-cli db:migrate --config server/src/config/database.cjs --migrations-path server/src/database/migrations",
+    "db:migrate:undo": "sequelize-cli db:migrate:undo --config server/src/config/database.cjs --migrations-path server/src/database/migrations",
+    "db:verify": "node server/scripts/verify-schema.cjs",
+    "db:seed:accounts": "node server/scripts/seed-demo-accounts.cjs",
+    "db:seed:catalog": "node server/scripts/seed-initial-catalog.cjs",
+    "db:seed:announcements": "node server/scripts/seed-announcements.cjs"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.3.1",
+    "expo": "^57.0.15",
+    "express": "^5.2.1",
+    "express-validator": "^7.3.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "jspdf": "^4.2.1",
     "lucide-react": "^1.28.0",
+    "morgan": "^1.10.1",
+    "multer": "^2.2.0",
+    "nodemailer": "^9.0.5",
+    "openai": "^7.4.0",
+    "mysql2": "^3.9.7",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "sequelize": "^6.37.8",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",
@@ -21,7 +45,9 @@
     "autoprefixer": "^10.5.4",
     "oxlint": "^1.75.0",
     "postcss": "^8.5.25",
+    "sequelize-cli": "^6.6.3",
     "tailwindcss": "^3.4.17",
+    "typescript": "~6.0.3",
     "vite": "^8.2.0"
   }
 }

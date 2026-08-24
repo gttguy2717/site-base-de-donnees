@@ -6,7 +6,7 @@ import DevisModal from '../components/DevisModal';
 import FadeInSection from '../components/FadeInSection';
 import { SERVICES_DATA } from '../data/servicesData';
 
-export default function ServicesPage({ navigateTo }) {
+export default function ServicesPage({ navigateTo, onRequestQuote }) {
   const [isDevisOpen, setIsDevisOpen] = useState(false);
 
   useEffect(() => {
@@ -35,12 +35,12 @@ export default function ServicesPage({ navigateTo }) {
   return (
     <div className="min-h-screen bg-[#f9f9f9] text-[#1a1c1c] flex flex-col font-sans selection:bg-primary selection:text-white">
       <Navbar
-        onOpenDevis={() => setIsDevisOpen(true)}
+        onOpenDevis={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))}
         activeTab="services"
         navigateTo={navigateTo}
       />
 
-      <main className="flex-grow pt-20">
+      <main className="flex-grow pt-28">
         <section className="relative overflow-hidden bg-[#f4f8f4] pt-16 pb-16 sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-24">
           <div className="absolute -top-28 right-[8%] h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
           <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-[#69c33b]/15 blur-3xl" />
@@ -75,7 +75,7 @@ export default function ServicesPage({ navigateTo }) {
                     <span className="material-symbols-outlined text-base">arrow_downward</span>
                   </button>
                   <button
-                    onClick={() => setIsDevisOpen(true)}
+                    onClick={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))}
                     className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[#1b4d2e]/25 bg-white/70 px-6 py-3 text-sm font-bold text-[#1b4d2e] transition-colors hover:bg-white"
                   >
                     Parler de mon projet
@@ -207,7 +207,7 @@ export default function ServicesPage({ navigateTo }) {
           </div>
         </FadeInSection>
 
-        <CtaBanner onOpenDevis={() => setIsDevisOpen(true)} />
+        <CtaBanner onOpenDevis={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))} />
       </main>
 
       <Footer onNavClick={handleFooterNavigation} />

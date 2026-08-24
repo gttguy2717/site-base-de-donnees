@@ -68,7 +68,7 @@ const PROJECT_REALIZATIONS = [
   },
 ];
 
-export default function ProjectsPage({ navigateTo }) {
+export default function ProjectsPage({ navigateTo, onRequestQuote }) {
   const [isDevisOpen, setIsDevisOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('Tous');
   const [selectedRealizedProject, setSelectedRealizedProject] = useState(null);
@@ -94,9 +94,9 @@ export default function ProjectsPage({ navigateTo }) {
 
   return (
     <div className="min-h-screen bg-[#eef3ec] text-[#1a1c1c] flex flex-col font-sans selection:bg-primary selection:text-white">
-      <Navbar onOpenDevis={() => setIsDevisOpen(true)} activeTab="projects" navigateTo={navigateTo} />
+      <Navbar onOpenDevis={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))} activeTab="projects" navigateTo={navigateTo} />
 
-      <main className="flex-grow pt-20">
+      <main className="flex-grow pt-28">
         <section className="relative isolate flex min-h-[calc(100svh-5rem)] flex-col justify-center overflow-hidden bg-[#143e22] pb-14 pt-10 text-white sm:pb-16 sm:pt-12 lg:pb-20 lg:pt-14">
           <img src={PROJECT_HERO_IMAGE} alt="Galerie projets Soutarah Group" className="absolute inset-0 -z-20 h-full w-full object-cover opacity-25" />
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#102f1a] via-[#143e22]/95 to-[#143e22]/65" />
@@ -122,7 +122,7 @@ export default function ProjectsPage({ navigateTo }) {
                     Explorer les réalisations
                     <span className="material-symbols-outlined text-base">south</span>
                   </button>
-                  <button onClick={() => setIsDevisOpen(true)} className="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/30 bg-white/5 px-6 py-3 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/15">
+                  <button onClick={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))} className="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/30 bg-white/5 px-6 py-3 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/15">
                     Proposer un projet
                     <span className="material-symbols-outlined text-base">arrow_forward</span>
                   </button>
@@ -323,7 +323,7 @@ export default function ProjectsPage({ navigateTo }) {
                   type="button"
                   onClick={() => {
                     setSelectedRealizedProject(null);
-                    setIsDevisOpen(true);
+                    (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true));
                   }}
                   className="rounded-full bg-primary px-6 py-2.5 text-xs font-bold text-white shadow-md hover:bg-[#1b4c00]"
                 >
@@ -366,7 +366,7 @@ export default function ProjectsPage({ navigateTo }) {
                     </li>
                   ))}
                 </ol>
-                <button onClick={() => setIsDevisOpen(true)} className="mt-7 inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-primary/15 transition-colors hover:bg-[#1b4c00]">Échanger sur un projet <span className="material-symbols-outlined text-base">arrow_forward</span></button>
+                <button onClick={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))} className="mt-7 inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-primary/15 transition-colors hover:bg-[#1b4c00]">Échanger sur un projet <span className="material-symbols-outlined text-base">arrow_forward</span></button>
               </div>
             </div>
           </div>
@@ -401,7 +401,7 @@ export default function ProjectsPage({ navigateTo }) {
           </div>
         </FadeInSection>
 
-        <CtaBanner onOpenDevis={() => setIsDevisOpen(true)} />
+        <CtaBanner onOpenDevis={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))} />
       </main>
 
       <Footer onNavClick={handleFooterNavigation} />

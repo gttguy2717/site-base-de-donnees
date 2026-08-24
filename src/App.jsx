@@ -6,7 +6,13 @@ import ServiceDetailPage from './pages/ServiceDetailPage';
 import ProjectsPage from './pages/ProjectsPage';
 import CareersPage from './pages/CareersPage';
 import ContactPage from './pages/ContactPage';
+import AuthPage from './pages/AuthPage';
+import AdminPage from './pages/AdminPage';
+import ClientDashboardPage from './pages/ClientDashboardPage';
+import CartPage from './pages/CartPage';
 import { getServiceById } from './data/servicesData';
+import { useAuth } from './hooks/useAuth';
+import AiAssistant from './components/AiAssistant';
 
 function getRouteFromPath() {
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
@@ -16,6 +22,11 @@ function getRouteFromPath() {
   if (path === '/projects') return { page: 'projects' };
   if (path === '/careers') return { page: 'careers' };
   if (path === '/contact') return { page: 'contact' };
+  if (path === '/login') return { page: 'login' };
+  if (path === '/register') return { page: 'register' };
+  if (path === '/admin') return { page: 'admin' };
+  if (path === '/client') return { page: 'client' };
+  if (path === '/cart') return { page: 'cart' };
 
   const serviceMatch = path.match(/^\/services\/([^/]+)$/);
   if (serviceMatch && getServiceById(serviceMatch[1])) {
@@ -25,8 +36,29 @@ function getRouteFromPath() {
   return { page: 'home' };
 }
 
+function routeUrl(page, options = {}) {
+  const { slug } = options;
+  switch (page) {
+    case 'about': return '/about';
+    case 'services': return '/services';
+    case 'projects': return '/projects';
+    case 'careers': return '/careers';
+    case 'contact': return '/contact';
+    case 'login': return '/login';
+    case 'register': return '/register';
+    case 'admin': return '/admin';
+    case 'client': return '/client';
+    case 'cart': return '/cart';
+    case 'service':
+      return getServiceById(slug) ? `/services/${slug}` : '/services';
+    default:
+      return '/';
+  }
+}
+
 export default function App() {
   const [route, setRoute] = useState(getRouteFromPath);
+  const { user, ready } = useAuth();
 
   useEffect(() => {
     const onPopState = () => setRoute(getRouteFromPath());
@@ -37,25 +69,14 @@ export default function App() {
   const navigateTo = (page, options = {}) => {
     const { slug, section } = options;
     let nextRoute = { page };
-    let url = '/';
 
-    if (page === 'about') {
-      url = '/about';
-    } else if (page === 'services') {
-      url = '/services';
-    } else if (page === 'projects') {
-      url = '/projects';
-    } else if (page === 'careers') {
-      url = '/careers';
-    } else if (page === 'contact') {
-      url = '/contact';
-    } else if (page === 'service' && getServiceById(slug)) {
+    if (page === 'service' && getServiceById(slug)) {
       nextRoute = { page: 'service', slug };
-      url = `/services/${slug}`;
-    } else {
-      nextRoute = { page: 'home' };
+    } else if (page === 'client') {
+      nextRoute = { page: 'client', tab: options.tab || 'account' };
     }
 
+    const url = routeUrl(page, options);
     window.history.pushState(nextRoute, '', url);
     setRoute(nextRoute);
 
@@ -69,30 +90,57 @@ export default function App() {
     }, 0);
   };
 
+  // Attendre que le contexte d'authentification soit prêt avant de rendre
+  if (!ready) return null;
+
+  let pageContent;
+
+  // ── Routes publiques ──
   if (route.page === 'about') {
-    return <AboutPage navigateTo={navigateTo} />;
-  }
-
-  if (route.page === 'services') {
-    return <ServicesPage navigateTo={navigateTo} />;
-  }
-
-  if (route.page === 'projects') {
-    return <ProjectsPage navigateTo={navigateTo} />;
-  }
-
-  if (route.page === 'careers') {
-    return <CareersPage navigateTo={navigateTo} />;
-  }
-
-  if (route.page === 'contact') {
-    return <ContactPage navigateTo={navigateTo} />;
-  }
-
-  if (route.page === 'service') {
+    pageContent = <AboutPage navigateTo={navigateTo} />;
+  } else if (route.page === 'services') {
+    pageContent = <ServicesPage navigateTo={navigateTo} />;
+  } else if (route.page === 'projects') {
+    pageContent = <ProjectsPage navigateTo={navigateTo} />;
+  } else if (route.page === 'careers') {
+    pageContent = <CareersPage navigateTo={navigateTo} />;
+  } else if (route.page === 'contact') {
+    pageContent = <ContactPage navigateTo={navigateTo} />;
+  } else if (route.page === 'login') {
+    pageContent = <AuthPage mode="login" navigateTo={navigateTo} />;
+  } else if (route.page === 'register') {
+    pageContent = <AuthPage mode="register" navigateTo={navigateTo} />;
+  } else if (route.page === 'service') {
     const service = getServiceById(route.slug);
-    return <ServiceDetailPage service={service} navigateTo={navigateTo} />;
+    pageContent = service ? <ServiceDetailPage service={service} navigateTo={navigateTo} /> : <ServicesPage navigateTo={navigateTo} />;
+  } else if (!user) {
+    // ── Routes protégées : non connecté ──
+    if (route.page === 'admin' || route.page === 'client' || route.page === 'cart') {
+      pageContent = <AuthPage mode="login" navigateTo={navigateTo} />;
+    }
+  } else {
+    // ── Routes protégées : connecté ──
+    if (route.page === 'cart') {
+      pageContent = <CartPage navigateTo={navigateTo} />;
+    } else if (route.page === 'client') {
+      pageContent = user.role === 'CLIENT'
+        ? <ClientDashboardPage navigateTo={navigateTo} initialTab={route.tab || 'account'} />
+        : <HomePage navigateTo={navigateTo} />;
+    } else if (route.page === 'admin') {
+      pageContent = (user.role === 'ADMIN' || user.role === 'MANAGER')
+        ? <AdminPage navigateTo={navigateTo} />
+        : <HomePage navigateTo={navigateTo} />;
+    }
   }
 
-  return <HomePage navigateTo={navigateTo} />;
+  if (!pageContent) {
+    pageContent = <HomePage navigateTo={navigateTo} />;
+  }
+
+  return (
+    <>
+      {pageContent}
+      <AiAssistant navigateTo={navigateTo} />
+    </>
+  );
 }

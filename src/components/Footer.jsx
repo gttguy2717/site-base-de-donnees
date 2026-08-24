@@ -55,11 +55,11 @@ export default function Footer({ onNavClick }) {
             </div>
           </div>
 
-          {/* 2. Right White Block containing SERVICES, SECTEURS, ENGAGEMENT & Rectangular Restez connectés Banner */}
+          {/* 2. Right White Block containing SERVICES, SECTEURS, ENGAGEMENT, LOCALISATION & Rectangular Restez connectés Banner */}
           <div className="lg:w-3/4 bg-white sm:bg-[#fafcf9] border border-gray-200/90 rounded-[32px] p-6 sm:p-8 shadow-xs flex-grow flex flex-col justify-between gap-6">
 
-            {/* Top row: 3 Columns (SERVICES, SECTEURS, ENGAGEMENT) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8 items-start">
+            {/* Top row: 4 Columns (SERVICES, SECTEURS, ENGAGEMENT, LOCALISATION) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 items-start">
 
               {/* Col 1: SERVICES */}
               <div>
@@ -137,6 +137,27 @@ export default function Footer({ onNavClick }) {
                   <li><a href="#" className="hover:text-[#1b4d2e] transition-colors whitespace-nowrap block">Conditions d'Utilisation</a></li>
                   <li><a href="#" className="hover:text-[#1b4d2e] transition-colors whitespace-nowrap block">Politique de Cookies</a></li>
                   <li><a href="#" className="hover:text-[#1b4d2e] transition-colors whitespace-nowrap block">Mentions Légales</a></li>
+                </ul>
+              </div>
+
+              {/* Col 4: LOCALISATION */}
+              <div>
+                <h4 className="font-extrabold text-xs text-gray-900 mb-4 uppercase tracking-wider">
+                  LOCALISATION
+                </h4>
+                <ul className="space-y-3 text-xs sm:text-sm text-gray-700 font-medium">
+                  <li className="flex items-center gap-2 whitespace-nowrap">
+                    <span className="material-symbols-outlined text-[18px] text-[#265322] shrink-0">location_on</span>
+                    <span>Abidjan, Côte d'Ivoire</span>
+                  </li>
+                  <li className="flex items-center gap-2 whitespace-nowrap">
+                    <span className="material-symbols-outlined text-[18px] text-[#265322] shrink-0">call</span>
+                    <span>+225 07 18 38 38 38</span>
+                  </li>
+                  <li className="flex items-center gap-2 whitespace-nowrap">
+                    <span className="material-symbols-outlined text-[18px] text-[#265322] shrink-0">mail</span>
+                    <span>contact@soutarah.ci</span>
+                  </li>
                 </ul>
               </div>
 
@@ -239,6 +260,11 @@ export default function Footer({ onNavClick }) {
               <span className="material-symbols-outlined text-sm">call</span>
               <span>+225 07 18 38 38 38</span>
             </a>
+            <span>•</span>
+            <span className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-sm">location_on</span>
+              <span>Abidjan, Côte d'Ivoire</span>
+            </span>
           </div>
         </div>
       </div>

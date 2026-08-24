@@ -14,9 +14,11 @@ const initialApplication = {
   phone: '',
   field: '',
   message: '',
+  cv: null,
+  coverLetter: null,
 };
 
-export default function CareersPage({ navigateTo }) {
+export default function CareersPage({ navigateTo, onRequestQuote }) {
   const [isDevisOpen, setIsDevisOpen] = useState(false);
   const [application, setApplication] = useState(initialApplication);
   const [isPrepared, setIsPrepared] = useState(false);
@@ -35,22 +37,34 @@ export default function CareersPage({ navigateTo }) {
   };
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
-    setApplication((current) => ({ ...current, [name]: value }));
+    const { name, value, type, files } = event.target;
+    setApplication((current) => ({
+      ...current,
+      [name]: type === 'file' ? (files && files[0] ? files[0] : null) : value,
+    }));
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (!application.cv) {
+      return;
+    }
+
     const subject = `Candidature spontanée — ${application.name}`;
     const body = [
       `Nom : ${application.name}`,
       `E-mail : ${application.email}`,
       `Téléphone : ${application.phone}`,
       `Domaine d’intérêt : ${application.field || 'Non précisé'}`,
+      `CV : ${application.cv.name}`,
+      ...(application.coverLetter ? [`Lettre de motivation : ${application.coverLetter.name}`] : []),
       '',
       application.message,
       '',
-      'CV à joindre à cet e-mail.',
+      application.coverLetter
+        ? 'Veuillez joindre le CV et la lettre de motivation à cet e-mail.'
+        : 'Veuillez joindre le CV à cet e-mail.',
     ].join('\n');
 
     setIsPrepared(true);
@@ -59,9 +73,9 @@ export default function CareersPage({ navigateTo }) {
 
   return (
     <div className="min-h-screen bg-[#f3f7f1] text-[#1a1c1c] flex flex-col font-sans selection:bg-primary selection:text-white">
-      <Navbar onOpenDevis={() => setIsDevisOpen(true)} activeTab="careers" navigateTo={navigateTo} />
+      <Navbar onOpenDevis={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))} activeTab="careers" navigateTo={navigateTo} />
 
-      <main className="flex-grow pt-20">
+      <main className="flex-grow pt-28">
         <section className="relative flex min-h-[calc(100svh-5rem)] flex-col justify-center overflow-hidden bg-[#253f22] py-12 text-white sm:py-14 lg:py-16">
           <div className="absolute inset-0 opacity-25 [background-image:radial-gradient(#9de873_1px,transparent_1px)] [background-size:24px_24px]" />
           <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-[#69c33b]/25 blur-3xl" />
@@ -78,13 +92,21 @@ export default function CareersPage({ navigateTo }) {
                   Faites grandir vos talents
                   <span className="block text-[#9de873]">avec des projets qui comptent.</span>
                 </h1>
-                <p className="mt-5 max-w-2xl text-base leading-relaxed text-emerald-50/85 sm:text-lg">SOUTARAH GROUP rassemble des expertises complémentaires, de la mobilité à l’énergie, du technique à l’immobilier. Nous accueillons les profils motivés qui souhaitent contribuer à des projets utiles et durables.</p>
+                <p className="mt-5 max-w-2xl text-base leading-relaxed text-emerald-50/85 sm:text-lg">
+                  SOUTARAH GROUP rassemble des expertises complémentaires, de la mobilité à l’énergie, du technique à l’immobilier. Nous accueillons les profils motivés qui souhaitent contribuer à des projets utiles et durables.
+                </p>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <button onClick={() => document.getElementById('candidature')?.scrollIntoView({ behavior: 'smooth' })} className="shimmer-btn inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-[#253f22] shadow-lg transition-colors hover:bg-emerald-50">
+                  <button
+                    onClick={() => document.getElementById('candidature')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="shimmer-btn inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-[#253f22] shadow-lg transition-colors hover:bg-emerald-50"
+                  >
                     Envoyer ma candidature
                     <span className="material-symbols-outlined text-base">arrow_forward</span>
                   </button>
-                  <button onClick={() => navigateTo('services')} className="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/25 bg-white/5 px-6 py-3 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/15">
+                  <button
+                    onClick={() => navigateTo('services')}
+                    className="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/25 bg-white/5 px-6 py-3 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/15"
+                  >
                     Découvrir les expertises
                     <span className="material-symbols-outlined text-base">arrow_forward</span>
                   </button>
@@ -103,7 +125,9 @@ export default function CareersPage({ navigateTo }) {
                     </div>
                     <div className="absolute bottom-5 left-5 right-5 rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-md sm:bottom-6 sm:left-6 sm:right-6">
                       <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-200">Une culture de l’action</p>
-                      <p className="mt-1 font-display text-lg font-extrabold text-white">Mettre la précision et l’énergie au service de chaque mission.</p>
+                      <p className="mt-1 font-display text-lg font-extrabold text-white">
+                        Mettre la précision et l’énergie au service de chaque mission.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -113,12 +137,17 @@ export default function CareersPage({ navigateTo }) {
         </section>
 
         <FadeInSection as="section" className="bg-[#dbead7] py-14 sm:py-16">
-          <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
+          <div className="mx-auto max-w-[1280px] px-4 sm:px-8">
             <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
               {PROJECT_PRINCIPLES.map((item) => (
                 <div key={item.title} className="flex gap-4 rounded-[24px] border border-white/70 bg-white/75 p-5 shadow-sm sm:p-6">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary"><span className="material-symbols-outlined text-[22px]">{item.icon}</span></span>
-                  <div><h2 className="font-display text-base font-bold text-[#111827]">{item.title}</h2><p className="mt-1.5 text-sm leading-relaxed text-gray-600">{item.text}</p></div>
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <span className="material-symbols-outlined text-[22px]">{item.icon}</span>
+                  </span>
+                  <div>
+                    <h2 className="font-display text-base font-bold text-[#111827]">{item.title}</h2>
+                    <p className="mt-1.5 text-sm leading-relaxed text-gray-600">{item.text}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -126,31 +155,156 @@ export default function CareersPage({ navigateTo }) {
         </FadeInSection>
 
         <FadeInSection as="section" id="candidature" className="scroll-mt-24 bg-[#eef4eb] py-16 sm:py-20 lg:py-24">
-          <div className="max-w-[1040px] mx-auto px-4 sm:px-8">
+          <div className="mx-auto max-w-[1040px] px-4 sm:px-8">
             <div className="overflow-hidden rounded-[32px] border border-[#cadcc6] bg-white shadow-2xl shadow-[#1b4d2e]/10">
               <div className="grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr]">
                 <div className="bg-[#143e22] p-7 text-white sm:p-9">
-                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#69c33b] text-[#143e22]"><span className="material-symbols-outlined text-2xl">send</span></span>
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#69c33b] text-[#143e22]">
+                    <span className="material-symbols-outlined text-2xl">send</span>
+                  </span>
                   <span className="mt-6 block text-xs font-bold uppercase tracking-[0.16em] text-emerald-200">Candidature spontanée</span>
                   <h2 className="mt-3 font-display text-3xl font-extrabold leading-tight">Votre prochain défi peut commencer ici.</h2>
-                  <p className="mt-4 text-sm leading-relaxed text-emerald-50/85">Le site officiel ne publie pas d’offre ouverte dans une rubrique dédiée. Vous pouvez toutefois présenter votre profil et votre domaine d’intérêt à l’équipe.</p>
-                  <div className="mt-8 border-t border-white/10 pt-6"><p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-200">Adresse de candidature</p><a href={CONTACT_DETAILS.emailHref} className="mt-2 block break-all font-display text-lg font-bold text-white hover:text-[#9de873]">{CONTACT_DETAILS.email}</a><p className="mt-3 text-xs leading-relaxed text-emerald-50/70">Pensez à joindre votre CV lorsque votre messagerie s’ouvrira.</p></div>
+                  <p className="mt-4 text-sm leading-relaxed text-emerald-50/85">
+                    Le site officiel ne publie pas d’offre ouverte dans une rubrique dédiée. Vous pouvez toutefois présenter votre profil et votre domaine d’intérêt à l’équipe.
+                  </p>
+                  <div className="mt-8 border-t border-white/10 pt-6">
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-200">Adresse de candidature</p>
+                    <a href={CONTACT_DETAILS.emailHref} className="mt-2 block break-all font-display text-lg font-bold text-white hover:text-[#9de873]">
+                      {CONTACT_DETAILS.email}
+                    </a>
+                    <p className="mt-3 text-xs leading-relaxed text-emerald-50/70">
+                      Pensez à joindre votre CV et votre lettre de motivation lorsque votre messagerie s’ouvrira.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="p-6 sm:p-8">
                   {!isPrepared ? (
                     <form onSubmit={handleSubmit}>
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <label className="sm:col-span-2"><span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Nom complet *</span><input name="name" required value={application.name} onChange={handleChange} placeholder="Votre nom et prénom" className="min-h-12 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10" /></label>
-                        <label><span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">E-mail *</span><input name="email" type="email" required value={application.email} onChange={handleChange} placeholder="email@exemple.com" className="min-h-12 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10" /></label>
-                        <label><span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Téléphone *</span><input name="phone" type="tel" required value={application.phone} onChange={handleChange} placeholder="00225…" className="min-h-12 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10" /></label>
+                        <label className="sm:col-span-2">
+                          <span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Nom complet *</span>
+                          <input
+                            name="name"
+                            required
+                            value={application.name}
+                            onChange={handleChange}
+                            placeholder="Votre nom et prénom"
+                            className="min-h-12 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
+                          />
+                        </label>
+                        <label>
+                          <span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">E-mail *</span>
+                          <input
+                            name="email"
+                            type="email"
+                            required
+                            value={application.email}
+                            onChange={handleChange}
+                            placeholder="email@exemple.com"
+                            className="min-h-12 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
+                          />
+                        </label>
+                        <label>
+                          <span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Téléphone *</span>
+                          <input
+                            name="phone"
+                            type="tel"
+                            required
+                            value={application.phone}
+                            onChange={handleChange}
+                            placeholder="00225…"
+                            className="min-h-12 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
+                          />
+                        </label>
                       </div>
-                      <label className="mt-4 block"><span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Domaine qui vous intéresse</span><select name="field" value={application.field} onChange={handleChange} className="min-h-12 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"><option value="">Sélectionner un domaine</option>{SERVICES_DATA.map((service) => <option key={service.id} value={service.title}>{service.title}</option>)}</select></label>
-                      <label className="mt-4 block"><span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Présentez-vous *</span><textarea name="message" rows="6" required value={application.message} onChange={handleChange} placeholder="Votre expérience, vos compétences et ce que vous souhaitez apporter…" className="w-full resize-none rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10" /></label>
-                      <button type="submit" className="shimmer-btn mt-6 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-colors hover:bg-[#1b4c00]">Préparer ma candidature <span className="material-symbols-outlined text-base">send</span></button>
+
+                      <label className="mt-4 block">
+                        <span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Domaine qui vous intéresse</span>
+                        <select
+                          name="field"
+                          value={application.field}
+                          onChange={handleChange}
+                          className="min-h-12 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        >
+                          <option value="">Sélectionner un domaine</option>
+                          {SERVICES_DATA.map((service) => (
+                            <option key={service.id} value={service.title}>
+                              {service.title}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <label className="mt-4 block">
+                        <span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Présentez-vous *</span>
+                        <textarea
+                          name="message"
+                          rows="6"
+                          required
+                          value={application.message}
+                          onChange={handleChange}
+                          placeholder="Votre expérience, vos compétences et ce que vous souhaitez apporter…"
+                          className="w-full resize-none rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        />
+                      </label>
+
+                      <label className="mt-4 block">
+                        <span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">CV *</span>
+                        <input
+                          name="cv"
+                          type="file"
+                          required
+                          accept=".pdf,.doc,.docx"
+                          onChange={handleChange}
+                          className="w-full cursor-pointer rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 py-3 text-sm outline-none transition file:mr-4 file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-[#1b4c00] focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        />
+                      </label>
+
+                      <label className="mt-4 block">
+                        <span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Lettre de motivation <span className="font-normal text-gray-400">(optionnelle)</span></span>
+                        <input
+                          name="coverLetter"
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={handleChange}
+                          className="w-full cursor-pointer rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 py-3 text-sm outline-none transition file:mr-4 file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-[#1b4c00] focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        />
+                      </label>
+
+                      <button
+                        type="submit"
+                        className="shimmer-btn mt-6 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-colors hover:bg-[#1b4c00]"
+                      >
+                        Préparer ma candidature
+                        <span className="material-symbols-outlined text-base">send</span>
+                      </button>
                     </form>
                   ) : (
-                    <div className="flex min-h-[430px] flex-col items-center justify-center text-center"><span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600"><span className="material-symbols-outlined text-4xl">mark_email_read</span></span><span className="mt-6 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-primary">Candidature préparée</span><h3 className="mt-3 font-display text-2xl font-extrabold text-[#111827]">Merci, {application.name}.</h3><p className="mt-3 max-w-sm text-sm leading-relaxed text-gray-600">Votre messagerie s’ouvre pour envoyer votre candidature à l’adresse officielle. N’oubliez pas de joindre votre CV.</p><a href={CONTACT_DETAILS.emailHref} className="mt-5 text-sm font-bold text-primary hover:underline">{CONTACT_DETAILS.email}</a><button onClick={() => { setIsPrepared(false); setApplication(initialApplication); }} className="mt-7 rounded-full border border-primary/20 px-5 py-2.5 text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-white">Nouvelle candidature</button></div>
+                    <div className="flex min-h-[430px] flex-col items-center justify-center text-center">
+                      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                        <span className="material-symbols-outlined text-4xl">mark_email_read</span>
+                      </span>
+                      <span className="mt-6 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-primary">
+                        Candidature préparée
+                      </span>
+                      <h3 className="mt-3 font-display text-2xl font-extrabold text-[#111827]">Merci, {application.name}.</h3>
+                      <p className="mt-3 max-w-sm text-sm leading-relaxed text-gray-600">
+                        Votre messagerie s’ouvre pour envoyer votre candidature à l’adresse officielle. N’oubliez pas de joindre votre CV{application.coverLetter ? ' et votre lettre de motivation' : ''}.
+                      </p>
+                      <a href={CONTACT_DETAILS.emailHref} className="mt-5 text-sm font-bold text-primary hover:underline">
+                        {CONTACT_DETAILS.email}
+                      </a>
+                      <button
+                        onClick={() => {
+                          setIsPrepared(false);
+                          setApplication(initialApplication);
+                        }}
+                        className="mt-7 rounded-full border border-primary/20 px-5 py-2.5 text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-white"
+                      >
+                        Nouvelle candidature
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>

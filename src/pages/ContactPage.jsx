@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import DevisModal from '../components/DevisModal';
@@ -7,19 +7,8 @@ import { CONTACT_DETAILS } from '../data/companyData';
 
 const CONTACT_HERO_IMAGE = 'https://soutarahgroup.ci/img/callme.jpeg';
 
-const initialForm = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  phone: '',
-  subject: '',
-  message: '',
-};
-
-export default function ContactPage({ navigateTo }) {
+export default function ContactPage({ navigateTo, onRequestQuote }) {
   const [isDevisOpen, setIsDevisOpen] = useState(false);
-  const [formData, setFormData] = useState(initialForm);
-  const [isSent, setIsSent] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -34,35 +23,15 @@ export default function ContactPage({ navigateTo }) {
     navigateTo(target);
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((current) => ({ ...current, [name]: value }));
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const subject = formData.subject || `Demande de contact — ${formData.firstName} ${formData.lastName}`;
-    const body = [
-      `Nom : ${formData.firstName} ${formData.lastName}`,
-      `Téléphone : ${formData.phone}`,
-      `E-mail : ${formData.email}`,
-      '',
-      formData.message,
-    ].join('\n');
-
-    setIsSent(true);
-    window.location.href = `${CONTACT_DETAILS.emailHref}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
-
   return (
     <div className="min-h-screen bg-[#eef3ec] text-[#1a1c1c] flex flex-col font-sans selection:bg-primary selection:text-white">
-      <Navbar onOpenDevis={() => setIsDevisOpen(true)} activeTab="contact" navigateTo={navigateTo} />
+      <Navbar onOpenDevis={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))} activeTab="contact" navigateTo={navigateTo} />
 
-      <main className="flex-grow pt-20">
+      <main className="flex-grow pt-28">
         <section className="relative overflow-hidden bg-[#f6faf4] py-16 sm:py-20 lg:py-24">
           <div className="absolute -left-20 top-10 h-60 w-60 rounded-full bg-primary/10 blur-3xl" />
           <div className="absolute right-0 top-0 h-full w-[42%] bg-[#dcebd8]" />
-          <div className="relative max-w-[1280px] mx-auto px-4 sm:px-8">
+          <div className="relative mx-auto max-w-[1280px] px-4 sm:px-8">
             <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
               <FadeInSection immediate>
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.15em] text-primary">
@@ -73,7 +42,9 @@ export default function ContactPage({ navigateTo }) {
                   Parlons de ce qui
                   <span className="block text-primary">compte pour vous.</span>
                 </h1>
-                <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-600 sm:text-lg">Notre équipe est disponible pour comprendre votre besoin, répondre à vos questions et vous orienter vers la bonne expertise.</p>
+                <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-600 sm:text-lg">
+                  Notre équipe est disponible pour comprendre votre besoin, répondre à vos questions et vous orienter vers la bonne expertise.
+                </p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <a href={CONTACT_DETAILS.generalPhone.href} className="inline-flex min-h-12 items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-colors hover:bg-[#1b4c00]">
                     <span className="material-symbols-outlined text-base">call</span>
@@ -109,7 +80,7 @@ export default function ContactPage({ navigateTo }) {
         </section>
 
         <FadeInSection as="section" className="bg-[#143e22] py-14 text-white sm:py-16">
-          <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
+          <div className="mx-auto max-w-[1280px] px-4 sm:px-8">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <a href={CONTACT_DETAILS.generalPhone.href} className="group rounded-[24px] border border-white/10 bg-white/[0.07] p-5 transition-colors hover:bg-white/[0.12] sm:p-6">
                 <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#69c33b] text-[#143e22]"><span className="material-symbols-outlined text-[22px]">phone_in_talk</span></span>
@@ -134,61 +105,41 @@ export default function ContactPage({ navigateTo }) {
         </FadeInSection>
 
         <FadeInSection as="section" className="bg-[#dcebd8] py-16 sm:py-20 lg:py-24">
-          <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Envoyez-nous un message</span>
-                <h2 className="mt-3 font-display text-3xl font-extrabold leading-tight tracking-tight text-[#111827] sm:text-4xl">Une réponse commence par une bonne conversation.</h2>
-                <p className="mt-4 max-w-md text-base leading-relaxed text-gray-600">Décrivez votre besoin ou votre projet. Le formulaire prépare directement votre message vers notre adresse officielle.</p>
+          <div className="mx-auto max-w-[1280px] px-4 sm:px-8">
+            <div className="mx-auto max-w-3xl text-center">
+              <span className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Notre emplacement</span>
+              <h2 className="mt-3 font-display text-3xl font-extrabold leading-tight tracking-tight text-[#111827] sm:text-4xl">Une réponse commence par une bonne conversation.</h2>
+              <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-gray-600">
+                Retrouvez-nous sur la carte ci-dessous et utilisez nos coordonnées pour nous joindre directement.
+              </p>
 
-                <div className="mt-8 overflow-hidden rounded-[28px] border border-white/80 bg-white shadow-xl shadow-[#143e22]/15">
-                  <div className="relative aspect-[4/3] min-h-[230px] overflow-hidden bg-[#dcebd8]">
-                    <iframe
-                      title="Localisation de SOUTARAH GROUP à Abidjan"
-                      src="https://www.google.com/maps?q=Riviera-Palmeraie%20SIPIM%204%2C%20Abidjan%2C%20C%C3%B4te%20d%27Ivoire&z=15&output=embed"
-                      className="absolute inset-0 h-full w-full border-0"
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      allowFullScreen
-                    />
-                    <div className="pointer-events-none absolute bottom-4 left-4 rounded-2xl border border-white/50 bg-white/85 px-3.5 py-2.5 shadow-lg backdrop-blur-md">
-                      <span className="flex items-center gap-2 text-xs font-bold text-[#143e22]"><span className="material-symbols-outlined text-[18px] text-primary">location_on</span>Riviera-Palmeraie, SIPIM 4</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between gap-3 p-4 sm:p-5">
-                    <span><span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-primary">Nous trouver</span><span className="mt-1 block text-sm font-bold text-[#111827]">Abidjan, Côte d’Ivoire</span></span>
-                    <a href={CONTACT_DETAILS.mapUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-primary px-3.5 py-2 text-xs font-bold text-white transition-colors hover:bg-[#1b4c00]">Ouvrir Maps <span className="material-symbols-outlined text-sm">north_east</span></a>
+              <div className="mx-auto mt-8 max-w-2xl overflow-hidden rounded-[28px] border border-white/80 bg-white shadow-xl shadow-[#143e22]/15">
+                <div className="relative aspect-[16/10] min-h-[180px] overflow-hidden bg-[#dcebd8]">
+                  <iframe
+                    title="Localisation de SOUTARAH GROUP à Abidjan"
+                    src="https://www.google.com/maps?q=93J2%2BMPW%20SOUTARAH%20GROUP%2C%20Abidjan%2C%20C%C3%B4te%20d%27Ivoire&z=16&output=embed"
+                    className="absolute inset-0 h-full w-full border-0"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                  />
+                  <div className="pointer-events-none absolute bottom-4 left-4 rounded-2xl border border-white/50 bg-white/85 px-3.5 py-2.5 shadow-lg backdrop-blur-md">
+                    <span className="flex items-center gap-2 text-xs font-bold text-[#143e22]">
+                      <span className="material-symbols-outlined text-[18px] text-primary">location_on</span>
+                      Riviera Palmeraie Saint Viateur, Cité Kimi
+                    </span>
                   </div>
                 </div>
-              </div>
-
-              <div className="rounded-[30px] border border-white/80 bg-white p-6 shadow-xl shadow-[#1b4d2e]/10 sm:p-8">
-                {!isSent ? (
-                  <form onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <label><span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Prénom *</span><input name="firstName" required value={formData.firstName} onChange={handleChange} placeholder="Votre prénom" className="min-h-12 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10" /></label>
-                      <label><span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Nom *</span><input name="lastName" required value={formData.lastName} onChange={handleChange} placeholder="Votre nom" className="min-h-12 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10" /></label>
-                      <label><span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">E-mail *</span><input name="email" type="email" required value={formData.email} onChange={handleChange} placeholder="email@exemple.com" className="min-h-12 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10" /></label>
-                      <label><span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Téléphone *</span><input name="phone" type="tel" required value={formData.phone} onChange={handleChange} placeholder="00225…" className="min-h-12 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10" /></label>
-                    </div>
-                    <label className="mt-4 block"><span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Objet</span><input name="subject" value={formData.subject} onChange={handleChange} placeholder="Ex. Demande d’information sur un service" className="min-h-12 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10" /></label>
-                    <label className="mt-4 block"><span className="mb-1.5 block text-xs font-bold text-[#1a1c1c]">Votre message *</span><textarea name="message" required rows="6" value={formData.message} onChange={handleChange} placeholder="Parlez-nous de votre besoin…" className="w-full resize-none rounded-xl border border-gray-200 bg-[#fafcf9] px-3.5 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10" /></label>
-                    <button type="submit" className="shimmer-btn mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-colors hover:bg-[#1b4c00]">
-                      Préparer mon e-mail
-                      <span className="material-symbols-outlined text-base">send</span>
-                    </button>
-                    <p className="mt-3 text-center text-xs leading-relaxed text-gray-500">Votre application de messagerie s’ouvrira avec les informations saisies.</p>
-                  </form>
-                ) : (
-                  <div className="flex min-h-[470px] flex-col items-center justify-center text-center">
-                    <span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600"><span className="material-symbols-outlined text-4xl">mark_email_read</span></span>
-                    <span className="mt-6 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-primary">Message préparé</span>
-                    <h3 className="mt-3 font-display text-2xl font-extrabold text-[#111827]">Merci, {formData.firstName}.</h3>
-                    <p className="mt-3 max-w-sm text-sm leading-relaxed text-gray-600">Votre messagerie s’ouvre pour envoyer votre message à l’équipe SOUTARAH GROUP. Si elle ne s’ouvre pas, utilisez directement l’adresse ci-dessous.</p>
-                    <a href={CONTACT_DETAILS.emailHref} className="mt-5 text-sm font-bold text-primary hover:underline">{CONTACT_DETAILS.email}</a>
-                    <button onClick={() => { setIsSent(false); setFormData(initialForm); }} className="mt-7 rounded-full border border-primary/20 px-5 py-2.5 text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-white">Nouveau message</button>
-                  </div>
-                )}
+                <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+                  <span>
+                    <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-primary">Nous trouver</span>
+                    <span className="mt-1 block text-sm font-bold text-[#111827]">Abidjan, Côte d'Ivoire</span>
+                  </span>
+                  <a href={CONTACT_DETAILS.mapUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-primary px-3.5 py-2 text-xs font-bold text-white transition-colors hover:bg-[#1b4c00]">
+                    Ouvrir Maps
+                    <span className="material-symbols-outlined text-sm">north_east</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -200,3 +151,4 @@ export default function ContactPage({ navigateTo }) {
     </div>
   );
 }
+

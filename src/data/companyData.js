@@ -1,8 +1,8 @@
-const IMAGE_BASE_URL = 'https://soutarahgroup.ci/img';
+﻿const IMAGE_BASE_URL = 'https://soutarahgroup.ci/img';
 
 export const CONTACT_DETAILS = {
-  address: 'Riviera-Palmeraie, SIPIM 4',
-  city: 'Abidjan, Côte d’Ivoire',
+  address: 'Riviera Palmeraie Saint Viateur, Cité Kimi',
+  city: 'Abidjan, Côte d\'Ivoire',
   generalPhone: {
     label: 'Informations générales',
     display: '00225 0718383838',
@@ -16,7 +16,7 @@ export const CONTACT_DETAILS = {
   email: 'infos@soutarahgroup.ci',
   emailHref: 'mailto:infos@soutarahgroup.ci',
   hours: 'Lun. – Sam. · 08h00 – 18h00',
-  mapUrl: 'https://www.google.com/maps/search/?api=1&query=Riviera-Palmeraie+SIPIM+4+Abidjan+C%C3%B4te+d%27Ivoire',
+  mapUrl: 'https://www.google.com/maps/search/?api=1&query=93J2%2BMPW+SOUTARAH+GROUP+Abidjan+C%C3%B4te+d%27Ivoire',
 };
 
 export const TEAM_MEMBERS = [
@@ -25,7 +25,7 @@ export const TEAM_MEMBERS = [
     name: 'Kologo Zeïnab',
     role: 'Gérante & Fondatrice',
     department: 'Direction',
-    bio: 'Visionnaire et stratège, Zeïnab pilote le développement global de SOUTARAH GROUP avec une exigence constante d’excellence et d’innovation.',
+    bio: "Visionnaire et stratège, Zeïnab pilote le développement global de SOUTARAH GROUP avec une exigence constante d'excellence et d'innovation.",
     image: `${IMAGE_BASE_URL}/team/team-1.jpg`,
     socials: {
       linkedin: 'https://ci.linkedin.com/in/zeinab-kologo',
@@ -34,14 +34,14 @@ export const TEAM_MEMBERS = [
       phone: 'tel:+2250718383838',
       whatsapp: 'https://wa.me/2250718383838',
     },
-    specialities: ['Stratégie d’entreprise', 'Management multi-services', 'Développement commercial'],
+    specialities: ["Stratégie d'entreprise", 'Management multi-services', 'Développement commercial'],
   },
   {
     id: 'fatim-diomande',
     name: 'Diomandé Fatim',
     role: 'Assistante de Direction',
     department: 'Direction',
-    bio: 'Véritable pilier de l’organisation administrative, Fatim coordonne les opérations quotidiennes et la relation partenaire avec efficacité et bienveillance.',
+    bio: "Véritable pilier de l'organisation administrative, Fatim coordonne les opérations quotidiennes et la relation partenaire avec efficacité et bienveillance.",
     image: `${IMAGE_BASE_URL}/team/team-2.jpg`,
     socials: {
       linkedin: 'https://ci.linkedin.com/in/fatim-diomande',
@@ -80,7 +80,7 @@ export const TEAM_MEMBERS = [
       phone: 'tel:+2250706898989',
       whatsapp: 'https://wa.me/2250706898989',
     },
-    specialities: ['Ingénierie électrique', 'Projets solaires photovoltaïques', 'Maintenance d’équipements'],
+    specialities: ['Ingénierie électrique', 'Projets solaires photovoltaïques', "Maintenance d'équipements"],
   },
 ];
 
@@ -94,14 +94,14 @@ export const REALIZED_PROJECTS = [
     year: '2024',
     client: 'Complexe Agro-Industriel Ivoirien',
     image: `${IMAGE_BASE_URL}/installation.jpg`,
-    summary: 'Étude, fourniture et installation d’un système solaire photovoltaïque hybride en autoconsommation avec batteries de stockage haute capacité.',
+    summary: "Étude, fourniture et installation d'un système solaire photovoltaïque hybride en autoconsommation avec batteries de stockage haute capacité.",
     metrics: [
       { label: 'Puissance installée', value: '500 kWp' },
       { label: 'Réduction CO2 / an', value: '-320 Tonnes' },
-      { label: 'Économie d’énergie', value: '45%' },
+      { label: "Économie d'énergie", value: '45%' },
     ],
     tags: ['Solaire PV', 'Stockage Lithium', 'Autoconsommation'],
-    details: 'Conception complète de la structure en toiture et au sol, intégration d’onduleurs intelligents avec supervision à distance 24/7. Le système alimente 60% des besoins énergétiques du site industriel durant les heures de pointe.',
+    details: "Conception complète de la structure en toiture et au sol, intégration d'onduleurs intelligents avec supervision à distance 24/7. Le système alimente 60% des besoins énergétiques du site industriel durant les heures de pointe.",
   },
   {
     id: 'projet-flotte-1',
@@ -112,14 +112,14 @@ export const REALIZED_PROJECTS = [
     year: '2024',
     client: 'Délégation Internationale & Entreprises Partenaires',
     image: `${IMAGE_BASE_URL}/carPlay.jpg`,
-    summary: 'Mise à disposition d’une flotte d’entreprise de 25 véhicules récents (SUV, 4x4 et berlines d’affaires) avec chauffeurs bilingues formés à la conduite défensive.',
+    summary: "Mise à disposition d'une flotte d'entreprise de 25 véhicules récents (SUV, 4x4 et berlines d'affaires) avec chauffeurs bilingues formés à la conduite défensive.",
     metrics: [
       { label: 'Véhicules mobilisés', value: '25 Unités' },
       { label: 'Disponibilité', value: '24/7' },
       { label: 'Taux de satisfaction', value: '99.4%' },
     ],
     tags: ['Location Longue Durée', 'Chauffeurs Dédiés', 'Suivi GPS'],
-    details: 'Prise en charge intégrale du parc roulant incluant l’entretien préventif, l’assurance tous risques, le remplacement immédiat en cas de révision et le suivi télématique en temps réel.',
+    details: "Prise en charge intégrale du parc roulant incluant l'entretien préventif, l'assurance tous risques, le remplacement immédiat en cas de révision et le suivi télématique en temps réel.",
   },
   {
     id: 'projet-immobilier-1',
@@ -137,7 +137,7 @@ export const REALIZED_PROJECTS = [
       { label: 'Sécurité juridique', value: '100% ACD' },
     ],
     tags: ['Lotissement', 'Viabilisation', 'Conseil Foncier'],
-    details: 'Accompagnement de A à Z : démarches administratives, obtention de l’ACD, travaux de terrassement, voirie et raccordement aux réseaux d’eau et d’électricité.',
+    details: "Accompagnement de A à Z : démarches administratives, obtention de l'ACD, travaux de terrassement, voirie et raccordement aux réseaux d'eau et d'électricité.",
   },
   {
     id: 'projet-technique-1',
@@ -151,7 +151,7 @@ export const REALIZED_PROJECTS = [
     summary: 'Remise aux normes thermographiques, installation de groupes électrogènes de secours et contrat de maintenance préventive pour bâtiments tertiaires.',
     metrics: [
       { label: 'Sites maintenus', value: '12 Bâtiments' },
-      { label: 'Temps d’intervention', value: '< 30 min' },
+      { label: "Temps d'intervention", value: '< 30 min' },
       { label: 'Pannes évitées', value: '98%' },
     ],
     tags: ['Génie Électrique', 'Groupes Électrogènes', 'Maintenance H24'],
@@ -162,36 +162,36 @@ export const REALIZED_PROJECTS = [
     title: 'Approvisionnement & Négoce Équipements',
     category: 'Négoce',
     categoryLabel: 'Négoce & Import-Export',
-    location: 'Port Autonome d’Abidjan',
+    location: "Port Autonome d'Abidjan",
     year: '2023',
     client: 'Entreprises de BTP & Énergie',
     image: `${IMAGE_BASE_URL}/Negoce-ie.jpg`,
-    summary: 'Sourcing international, dédouanement et fourniture de matériel spécialisé pour le secteur de la construction et de la distribution d’électricité.',
+    summary: "Sourcing international, dédouanement et fourniture de matériel spécialisé pour le secteur de la construction et de la distribution d'électricité.",
     metrics: [
       { label: 'Containers acheminés', value: '45 TEU' },
       { label: 'Conformité douanière', value: '100%' },
-      { label: 'Délai d’expéd.', value: 'Respecté' },
+      { label: "Délai d'expéd.", value: 'Respecté' },
     ],
     tags: ['Sourcing International', 'Logistique Maritime', 'Transit'],
-    details: 'Négociation auprès de fabricants certifiés ISO, contrôle qualité avant embarquement et prise en charge des procédures douanières jusqu’à la livraison sur chantier.',
+    details: "Négociation auprès de fabricants certifiés ISO, contrôle qualité avant embarquement et prise en charge des procédures douanières jusqu'à la livraison sur chantier.",
   },
   {
     id: 'projet-ferme-1',
-    title: 'Modernisation d’Exploitation Agropastorale',
+    title: "Modernisation d'Exploitation Agropastorale",
     category: 'Agropastoral',
     categoryLabel: 'Agropastorale & Élevage',
     location: 'Région de la Mé',
     year: '2023 - 2024',
     client: 'Ferme Pilote Soutarah',
     image: `${IMAGE_BASE_URL}/fermi.jpeg`,
-    summary: 'Implantation d’un système d’irrigation goutte-à-goutte alimenté par pompage solaire et aménagement de structures d’élevage modernes.',
+    summary: "Implantation d'un système d'irrigation goutte-à-goutte alimenté par pompage solaire et aménagement de structures d'élevage modernes.",
     metrics: [
       { label: 'Surface cultivée', value: '25 Hectares' },
       { label: 'Pompage solaire', value: '100 m³/jour' },
       { label: 'Rendement accru', value: '+35%' },
     ],
     tags: ['Irrigation Solaire', 'Élevage Raisonné', 'Agriculture Bio'],
-    details: 'Association de cultures maraîchères durables et d’élevage avec gestion automatisée des ressources en eau pour une empreinte écologique minimale.',
+    details: "Association de cultures maraîchères durables et d'élevage avec gestion automatisée des ressources en eau pour une empreinte écologique minimale.",
   },
 ];
 
@@ -209,6 +209,6 @@ export const PROJECT_PRINCIPLES = [
   {
     icon: 'eco',
     title: 'Durabilité',
-    text: 'Rechercher un impact positif et des solutions qui s’inscrivent dans le temps.',
+    text: "Rechercher un impact positif et des solutions qui s'inscrivent dans le temps.",
   },
 ];

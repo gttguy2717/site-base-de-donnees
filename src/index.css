@@ -316,6 +316,42 @@ a[href]:active {
   50% { filter: drop-shadow(0 0 18px rgba(105, 195, 59, 0.42)); }
 }
 
+@keyframes soutarahAnnouncementScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.soutarah-announcement-track {
+  width: max-content;
+  animation: soutarahAnnouncementScroll 28s linear infinite;
+}
+
+.soutarah-announcement-track:hover {
+  animation-play-state: paused;
+}
+
+.soutarah-input {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid #dfe6dc;
+  background: rgba(249, 251, 248, 0.85);
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #1a1c1c;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.soutarah-input:focus {
+  border-color: #296c00;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(41, 108, 0, 0.1);
+}
+
+.soutarah-input::placeholder {
+  color: #8b9489;
+}
+
 /* Glassmorphism Card */
 .glass-card {
   background: rgba(255, 255, 255, 0.75);
@@ -341,6 +377,60 @@ a[href]:active {
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
+/* ── Announcement Ticker ── */
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes ticker-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
+.ticker-bar {
+  position: relative;
+  background: linear-gradient(92deg, #12361f, #296c00, #4f9a18, #f0b429, #4f9a18, #296c00, #12361f);
+  background-size: 320% 100%;
+  animation: ticker-gradient-shift 6s ease-in-out infinite;
+  border-bottom: 2px solid rgba(105, 195, 59, 0.72);
+  box-shadow: 0 4px 22px rgba(20, 62, 34, 0.34), inset 0 -1px 0 rgba(240, 180, 41, 0.28);
+  overflow: hidden;
+}
+
+@keyframes ticker-gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.ticker-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.26) 50%,
+    transparent 80%
+  );
+  width: 50%;
+  animation: ticker-shimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.ticker-track {
+  display: inline-flex;
+  width: max-content;
+  animation: ticker-scroll 45s linear infinite;
+  will-change: transform;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -349,8 +439,11 @@ a[href]:active {
   background: #F9F9F9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #296c00;
+  background: #d1d5db;
   border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }
 
 /* Shimmer Button Effect */
@@ -381,4 +474,51 @@ a[href]:active {
 .service-card-hover:hover {
   transform: translateY(-8px);
   box-shadow: 0 20px 40px -10px rgba(41, 108, 0, 0.12);
+}
+
+/* ══════════════════════════════════════════
+   RÉDUCTION LÉGÈRE ET HARMONIEUSE DES ESPACES SECTIONS
+   (Réduction douce ~15% pour conserver une bonne aération)
+   ══════════════════════════════════════════ */
+section.py-12  { padding-top: 2.5rem  !important; padding-bottom: 2.5rem  !important; }
+section.py-14  { padding-top: 3rem    !important; padding-bottom: 3rem    !important; }
+section.py-16  { padding-top: 3.5rem  !important; padding-bottom: 3.5rem  !important; }
+section.py-20  { padding-top: 4.25rem !important; padding-bottom: 4.25rem !important; }
+section.py-24  { padding-top: 5rem    !important; padding-bottom: 5rem    !important; }
+
+section.pb-12  { padding-bottom: 2.5rem  !important; }
+section.pb-14  { padding-bottom: 3rem    !important; }
+section.pb-16  { padding-bottom: 3.5rem  !important; }
+section.pb-20  { padding-bottom: 4.25rem !important; }
+section.pb-24  { padding-bottom: 5rem    !important; }
+
+section.pt-12  { padding-top: 2.5rem  !important; }
+section.pt-16  { padding-top: 3.5rem  !important; }
+section.pt-20  { padding-top: 4.25rem !important; }
+section.pt-24  { padding-top: 5rem    !important; }
+
+@media (min-width: 640px) {
+  section.sm\:py-12 { padding-top: 2.5rem  !important; padding-bottom: 2.5rem  !important; }
+  section.sm\:py-14 { padding-top: 3rem    !important; padding-bottom: 3rem    !important; }
+  section.sm\:py-16 { padding-top: 3.5rem  !important; padding-bottom: 3.5rem  !important; }
+  section.sm\:py-18 { padding-top: 4rem    !important; padding-bottom: 4rem    !important; }
+  section.sm\:py-20 { padding-top: 4.25rem !important; padding-bottom: 4.25rem !important; }
+  section.sm\:py-24 { padding-top: 5rem    !important; padding-bottom: 5rem    !important; }
+  section.sm\:pb-14 { padding-bottom: 3rem    !important; }
+  section.sm\:pb-16 { padding-bottom: 3.5rem  !important; }
+  section.sm\:pb-20 { padding-bottom: 4.25rem !important; }
+  section.sm\:pt-12 { padding-top: 2.5rem  !important; }
+  section.sm\:pt-14 { padding-top: 3rem    !important; }
+  section.sm\:pt-16 { padding-top: 3.5rem  !important; }
+}
+
+@media (min-width: 1024px) {
+  section.lg\:py-16 { padding-top: 3.5rem  !important; padding-bottom: 3.5rem  !important; }
+  section.lg\:py-20 { padding-top: 4.25rem !important; padding-bottom: 4.25rem !important; }
+  section.lg\:py-24 { padding-top: 5rem    !important; padding-bottom: 5rem    !important; }
+  section.lg\:pb-20 { padding-bottom: 4.25rem !important; }
+  section.lg\:pb-24 { padding-bottom: 5rem    !important; }
+  section.lg\:pt-14 { padding-top: 3rem    !important; }
+  section.lg\:pt-16 { padding-top: 3.5rem  !important; }
+  section.lg\:pt-24 { padding-top: 5rem    !important; }
 }

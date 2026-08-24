@@ -44,7 +44,33 @@ export default {
       borderRadius: {
         '2xl': '1rem',
         '3xl': '1.5rem',
-      }
+      },
+      boxShadow: {
+        'soft': '0 2px 20px -4px rgba(0, 0, 0, 0.08)',
+        'card': '0 4px 24px -6px rgba(20, 62, 34, 0.12)',
+        'card-hover': '0 12px 40px -8px rgba(20, 62, 34, 0.2)',
+        'glow': '0 0 24px rgba(105, 195, 59, 0.25)',
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'slide-up': 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'scale-in': 'scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'pulse-soft': 'pulseSoft 3s ease-in-out infinite',
+      },
+      keyframes: {
+        slideUp: {
+          '0%': { opacity: '0', transform: 'translateY(24px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        pulseSoft: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.7' },
+        },
+      },
     },
   },
   plugins: [],

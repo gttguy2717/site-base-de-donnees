@@ -1,315 +1,325 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { apiRequest } from '../lib/api';
+import { useAuth } from '../hooks/useAuth';
 
-export default function DevisModal({ isOpen, onClose }) {
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
+const services = [
+  { id: 'energies', title: 'Energies renouvelables', icon: 'solar_power', desc: 'Solaire, audits, equipements et installation.' },
+  { id: 'vehicules', title: 'Location de vehicules', icon: 'directions_car', desc: 'Vehicules particuliers, utilitaires et avec chauffeur.' },
+  { id: 'btp', title: 'Services techniques / BTP', icon: 'engineering', desc: 'Maintenance, travaux, amenagements et support terrain.' },
+  { id: 'negoce', title: 'Negoce / Import-export', icon: 'inventory_2', desc: 'Produits, materiaux, equipements et demandes specifiques.' },
+];
+
+const budgets = [
+  ['', 'Selectionner'],
+  ['under_5m', 'Moins de 5 000 000 FCFA'],
+  ['5m_25m', '5M FCFA - 25M FCFA'],
+  ['over_25m', 'Plus de 25M FCFA'],
+];
+
+const timelines = [
+  ['', 'Selectionner'],
+  ['urgent', 'Urgent, moins de 1 mois'],
+  ['1_3m', '1 a 3 mois'],
+  ['flexible', 'Flexible'],
+];
+
+function contactDefaults(user, client) {
+  return {
+    company: client?.company?.name || '',
+    name: client?.company?.responsibleName || [client?.firstName, client?.lastName].filter(Boolean).join(' ') || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    location: client?.address || '',
+  };
+}
+
+function initialFormData(user, client) {
+  return {
     service: 'energies',
     title: '',
     budget: '',
     timeline: '',
     description: '',
-    company: '',
-    name: '',
-    email: '',
-    phone: '',
-  });
+    ...contactDefaults(user, client),
+  };
+}
+
+export default function DevisModal({ isOpen, onClose }) {
+  const { user, client, token } = useAuth();
+  const [step, setStep] = useState(1);
+  const [isGuestRequest, setIsGuestRequest] = useState(false);
+  const [formData, setFormData] = useState(() => initialFormData(user, client));
   const [submittedRef, setSubmittedRef] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const selectedService = useMemo(
+    () => services.find((service) => service.id === formData.service) || services[0],
+    [formData.service],
+  );
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setStep(1);
+    setSubmittedRef(null);
+    setError('');
+    setSubmitting(false);
+    setIsGuestRequest(window.sessionStorage.getItem('soutarah_quote_guest_mode') === '1');
+    setFormData(initialFormData(user, client));
+  }, [isOpen, user, client]);
 
   if (!isOpen) return null;
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const updateField = (event) => {
+    const { name, value } = event.target;
+    setFormData((current) => ({ ...current, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const randomRef = 'DEV-2026-' + Math.floor(1000 + Math.random() * 9000);
-    setSubmittedRef(randomRef);
-  };
-
-  const resetAndClose = () => {
+  const closeModal = () => {
+    window.sessionStorage.removeItem('soutarah_quote_guest_mode');
     setStep(1);
     setSubmittedRef(null);
+    setError('');
+    setSubmitting(false);
     onClose();
   };
 
+  const submitQuoteRequest = async (event) => {
+    event.preventDefault();
+    setError('');
+    setSubmitting(true);
+    try {
+      const result = await apiRequest('/quote-requests', {
+        token,
+        method: 'POST',
+        body: JSON.stringify(formData),
+      });
+      setSubmittedRef(result.quoteRequest.reference);
+      window.sessionStorage.removeItem('soutarah_quote_guest_mode');
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const canGoToContact = formData.title.trim().length >= 3;
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
-      <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-10 shadow-2xl border border-gray-100 relative my-8">
-        {/* Close Button */}
+    <div className="fixed inset-0 z-[95] flex items-center justify-center overflow-y-auto bg-[#081207]/75 p-2 backdrop-blur-md animate-fadeIn sm:p-4" role="dialog" aria-modal="true" aria-labelledby="quote-title">
+      <div className="relative grid max-h-[calc(100vh-1rem)] w-full max-w-4xl overflow-hidden rounded-[24px] bg-white shadow-2xl lg:grid-cols-[280px_1fr]">
         <button
-          onClick={resetAndClose}
-          className="absolute top-5 right-5 text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+          type="button"
+          onClick={closeModal}
+          aria-label="Fermer"
+          className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/90 text-gray-500 shadow-sm transition hover:bg-gray-100 hover:text-gray-900"
         >
           <span className="material-symbols-outlined text-xl">close</span>
         </button>
 
-        {!submittedRef ? (
-          <div>
-            {/* Modal Header */}
-            <div className="mb-8">
-              <span className="text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full">
-                Formulaire en Ligne
-              </span>
-              <h2 className="font-display font-bold text-2xl sm:text-3xl text-on-surface mt-2">
-                Demande de Devis Personnalisé
-              </h2>
-              <p className="text-sm text-on-surface-variant mt-1">
-                Recevez une estimation détaillée sous 48h par notre équipe dédiée.
-              </p>
+        <aside className="hidden bg-[#173d23] px-5 py-6 text-white lg:block">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-200">SOUTARAH GROUP</p>
+          <h2 id="quote-title" className="mt-2 font-display text-2xl font-extrabold leading-tight">
+            Demande de devis
+          </h2>
+          <p className="mt-2 text-xs leading-5 text-white/75">
+            Transmettez votre besoin. L'equipe commerciale recoit la demande et vous recontacte avec les informations utiles.
+          </p>
 
-              {/* Progress Bar */}
-              <div className="flex items-center gap-2 mt-6">
-                {[1, 2, 3].map((s) => (
-                  <div
-                    key={s}
-                    className={`h-2 flex-1 rounded-full transition-all duration-300 ${
-                      step >= s ? 'bg-primary' : 'bg-gray-200'
-                    }`}
-                  />
-                ))}
+          <div className="mt-5 rounded-2xl border border-white/15 bg-white/10 p-3">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-100">Service choisi</p>
+            <div className="mt-3 flex items-start gap-3">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-primary">
+                <span className="material-symbols-outlined text-[22px]">{selectedService.icon}</span>
+              </span>
+              <div>
+                <p className="font-display text-sm font-extrabold">{selectedService.title}</p>
+                <p className="mt-1 text-xs leading-4 text-white/70">{selectedService.desc}</p>
               </div>
             </div>
-
-            <form onSubmit={handleSubmit}>
-              {/* Step 1: Select Service */}
-              {step === 1 && (
-                <div className="space-y-4">
-                  <h3 className="font-display font-bold text-lg text-on-surface flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-full bg-primary text-white text-xs flex items-center justify-center font-bold">1</span>
-                    Choisissez le secteur d'activité
-                  </h3>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                    {[
-                      { id: 'energies', title: 'Énergies Renouvelables', icon: 'solar_power', desc: 'Solaire, audits, durabilité' },
-                      { id: 'vehicules', title: 'Location de Véhicules', icon: 'directions_car', desc: 'Flotte VIP & utilitaires' },
-                      { id: 'btp', title: 'Services Techniques / BTP', icon: 'build', desc: 'Maintenance & infrastructure' },
-                      { id: 'autre', title: 'Autre Service / Négoce', icon: 'more_horiz', desc: 'Import-export, agropastorale' },
-                    ].map((item) => (
-                      <label
-                        key={item.id}
-                        onClick={() => setFormData({ ...formData, service: item.id })}
-                        className={`cursor-pointer p-4 rounded-2xl border-2 transition-all flex items-start gap-3 ${
-                          formData.service === item.id
-                            ? 'border-primary bg-primary/5 shadow-sm'
-                            : 'border-gray-200 hover:border-gray-300 bg-white'
-                        }`}
-                      >
-                        <span className={`material-symbols-outlined text-2xl ${formData.service === item.id ? 'text-primary' : 'text-gray-400'}`}>
-                          {item.icon}
-                        </span>
-                        <div>
-                          <div className="font-bold text-sm text-on-surface">{item.title}</div>
-                          <div className="text-xs text-on-surface-variant mt-0.5">{item.desc}</div>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-
-                  <div className="pt-6 flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setStep(2)}
-                      className="bg-primary hover:bg-[#1b4c00] text-white px-6 py-3 rounded-full text-sm font-semibold flex items-center gap-2 shadow-md shimmer-btn"
-                    >
-                      <span>Suivant</span>
-                      <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 2: Project Details */}
-              {step === 2 && (
-                <div className="space-y-4">
-                  <h3 className="font-display font-bold text-lg text-on-surface flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-full bg-primary text-white text-xs flex items-center justify-center font-bold">2</span>
-                    Détails de votre projet
-                  </h3>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-on-surface mb-1">Titre / Nature du projet</label>
-                    <input
-                      type="text"
-                      name="title"
-                      required
-                      value={formData.title}
-                      onChange={handleChange}
-                      placeholder="Ex: Équipement solaire site industriel"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary text-sm bg-gray-50/50"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-on-surface mb-1">Budget Estimatif</label>
-                      <select
-                        name="budget"
-                        value={formData.budget}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary text-sm bg-gray-50/50"
-                      >
-                        <option value="">Sélectionner</option>
-                        <option value="under_5m">Moins de 5 000 000 FCFA</option>
-                        <option value="5m_25m">5M FCFA - 25M FCFA</option>
-                        <option value="over_25m">Plus de 25M FCFA</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-on-surface mb-1">Délai Souhaité</label>
-                      <select
-                        name="timeline"
-                        value={formData.timeline}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary text-sm bg-gray-50/50"
-                      >
-                        <option value="">Sélectionner</option>
-                        <option value="urgent">Urgent (&lt; 1 mois)</option>
-                        <option value="1_3m">1 à 3 mois</option>
-                        <option value="flexible">Flexible</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-on-surface mb-1">Description des besoins</label>
-                    <textarea
-                      name="description"
-                      rows="3"
-                      value={formData.description}
-                      onChange={handleChange}
-                      placeholder="Décrivez brièvement vos attentes..."
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary text-sm bg-gray-50/50 resize-none"
-                    ></textarea>
-                  </div>
-
-                  <div className="pt-4 flex justify-between">
-                    <button
-                      type="button"
-                      onClick={() => setStep(1)}
-                      className="px-5 py-2.5 rounded-full text-sm font-semibold text-gray-600 hover:bg-gray-100"
-                    >
-                      Retour
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setStep(3)}
-                      className="bg-primary hover:bg-[#1b4c00] text-white px-6 py-3 rounded-full text-sm font-semibold flex items-center gap-2 shadow-md shimmer-btn"
-                    >
-                      <span>Suivant</span>
-                      <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 3: Contact Info */}
-              {step === 3 && (
-                <div className="space-y-4">
-                  <h3 className="font-display font-bold text-lg text-on-surface flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-full bg-primary text-white text-xs flex items-center justify-center font-bold">3</span>
-                    Vos coordonnées
-                  </h3>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-on-surface mb-1">Nom de l'Entreprise</label>
-                      <input
-                        type="text"
-                        name="company"
-                        value={formData.company}
-                        onChange={handleChange}
-                        placeholder="Société / Organisation"
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary text-sm bg-gray-50/50"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-on-surface mb-1">Nom Complet *</label>
-                      <input
-                        type="text"
-                        name="name"
-                        required
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="Votre nom"
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary text-sm bg-gray-50/50"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-on-surface mb-1">Email *</label>
-                      <input
-                        type="email"
-                        name="email"
-                        required
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="email@exemple.com"
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary text-sm bg-gray-50/50"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-on-surface mb-1">Téléphone *</label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        required
-                        value={formData.phone}
-                        onChange={handleChange}
-                        placeholder="00225..."
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary text-sm bg-gray-50/50"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-4 flex justify-between items-center">
-                    <button
-                      type="button"
-                      onClick={() => setStep(2)}
-                      className="px-5 py-2.5 rounded-full text-sm font-semibold text-gray-600 hover:bg-gray-100"
-                    >
-                      Retour
-                    </button>
-                    <button
-                      type="submit"
-                      className="bg-primary hover:bg-[#1b4c00] text-white px-8 py-3 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg shimmer-btn"
-                    >
-                      <span>Envoyer la Demande</span>
-                      <span className="material-symbols-outlined text-sm">send</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </form>
           </div>
-        ) : (
-          /* Confirmation state */
-          <div className="text-center py-6">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center mb-4">
-              <span className="material-symbols-outlined text-4xl">check_circle</span>
-            </div>
-            <h3 className="font-display font-bold text-2xl text-on-surface mb-2">
-              Demande transmise avec succès !
-            </h3>
-            <p className="text-sm text-on-surface-variant max-w-md mx-auto mb-6">
-              Merci <span className="font-semibold text-on-surface">{formData.name}</span>. Notre équipe commerciale étudie votre dossier et vous recontactera très rapidement.
-            </p>
-            <div className="bg-gray-50 p-4 rounded-2xl inline-block text-left mb-6 border border-gray-200">
-              <div className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Référence de dossier :</div>
-              <div className="font-mono text-lg font-bold text-primary">{submittedRef}</div>
-            </div>
-            <div>
-              <button
-                onClick={resetAndClose}
-                className="bg-primary text-white px-8 py-3 rounded-full text-sm font-semibold shadow-md"
-              >
-                Fermer
-              </button>
-            </div>
+
+          <div className="mt-5 space-y-2">
+            <StepPill number="1" label="Secteur" active={step >= 1} />
+            <StepPill number="2" label="Projet" active={step >= 2} />
+            <StepPill number="3" label="Coordonnees" active={step >= 3} />
           </div>
-        )}
+        </aside>
+
+        <main className="overflow-y-auto px-4 py-5 sm:px-6">
+          {!submittedRef ? (
+            <>
+              <div className="pr-12">
+                <span className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-primary">
+                  Formulaire commercial
+                </span>
+                <h3 className="mt-2 font-display text-xl font-extrabold text-[#172217] sm:text-2xl">
+                  Comment pouvons-nous vous aider ?
+                </h3>
+                {isGuestRequest && (
+                  <div className="mt-3 rounded-2xl border border-primary/15 bg-[#f2f7ef] p-3 text-xs leading-5 text-[#2f3b2f]">
+                    <p className="font-bold text-primary">Continuer sans compte</p>
+                    <p className="mt-1">
+                      Votre demande sera traitee par SOUTARAH, mais elle ne sera pas associee a un espace client et vous ne pourrez pas retrouver automatiquement son historique sur le site.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {error && (
+                <div className="mt-5 rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+                  <p className="font-bold">La demande n'a pas pu etre envoyee</p>
+                  <p className="mt-1">{error}</p>
+                </div>
+              )}
+
+              <form onSubmit={submitQuoteRequest} className="mt-4">
+                {step === 1 && (
+                  <section className="space-y-4">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {services.map((service) => (
+                        <button
+                          type="button"
+                          key={service.id}
+                          onClick={() => setFormData((current) => ({ ...current, service: service.id }))}
+                          className={`group rounded-2xl border p-3 text-left transition hover:-translate-y-0.5 hover:shadow-lg ${
+                            formData.service === service.id
+                              ? 'border-primary bg-primary/5 shadow-sm shadow-primary/10'
+                              : 'border-gray-200 bg-white hover:border-primary/30'
+                          }`}
+                        >
+                          <span className={`grid h-9 w-9 place-items-center rounded-xl ${
+                            formData.service === service.id ? 'bg-primary text-white' : 'bg-[#f1f6ef] text-primary group-hover:bg-primary group-hover:text-white'
+                          }`}>
+                            <span className="material-symbols-outlined text-[20px]">{service.icon}</span>
+                          </span>
+                          <span className="mt-3 block font-display text-sm font-extrabold text-[#1f2b1f]">{service.title}</span>
+                          <span className="mt-1 block text-xs leading-4 text-gray-600">{service.desc}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex justify-end">
+                      <PrimaryButton type="button" onClick={() => setStep(2)} label="Continuer" icon="arrow_forward" />
+                    </div>
+                  </section>
+                )}
+
+                {step === 2 && (
+                  <section className="space-y-4">
+                    <Field label="Titre / nature du projet *">
+                      <input name="title" value={formData.title} onChange={updateField} required placeholder="Ex: Equipement solaire pour un site industriel" className="soutarah-input" />
+                    </Field>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <Field label="Budget estimatif">
+                        <select name="budget" value={formData.budget} onChange={updateField} className="soutarah-input">
+                          {budgets.map(([value, label]) => <option key={value || 'empty'} value={value}>{label}</option>)}
+                        </select>
+                      </Field>
+                      <Field label="Delai souhaite">
+                        <select name="timeline" value={formData.timeline} onChange={updateField} className="soutarah-input">
+                          {timelines.map(([value, label]) => <option key={value || 'empty'} value={value}>{label}</option>)}
+                        </select>
+                      </Field>
+                    </div>
+                    <Field label="Description des besoins">
+                      <textarea name="description" value={formData.description} onChange={updateField} rows="3" placeholder="Details, quantites, lieux, contraintes, dates importantes..." className="soutarah-input resize-none" />
+                    </Field>
+                    <div className="flex items-center justify-between gap-3">
+                      <SecondaryButton type="button" onClick={() => setStep(1)} label="Retour" />
+                      <PrimaryButton type="button" onClick={() => setStep(3)} disabled={!canGoToContact} label="Coordonnees" icon="arrow_forward" />
+                    </div>
+                  </section>
+                )}
+
+                {step === 3 && (
+                  <section className="space-y-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <Field label="Nom / prenom *">
+                        <input name="name" value={formData.name} onChange={updateField} required placeholder="Votre nom complet" className="soutarah-input" />
+                      </Field>
+                      <Field label="Telephone *">
+                        <input name="phone" value={formData.phone} onChange={updateField} required type="tel" placeholder="00225..." className="soutarah-input" />
+                      </Field>
+                      <Field label="Email *">
+                        <input name="email" value={formData.email} onChange={updateField} required type="email" placeholder="email@exemple.com" className="soutarah-input" />
+                      </Field>
+                      <Field label="Entreprise">
+                        <input name="company" value={formData.company} onChange={updateField} placeholder="Facultatif" className="soutarah-input" />
+                      </Field>
+                      <Field label="Ville / localisation *" wide>
+                        <input name="location" value={formData.location} onChange={updateField} required placeholder="Ex: Abidjan, Cocody" className="soutarah-input" />
+                      </Field>
+                    </div>
+                    <div className="rounded-2xl bg-gray-50 p-3 text-xs leading-5 text-gray-600">
+                      Ces informations permettent a SOUTARAH de traiter et suivre la demande. Sans compte, l'historique ne sera pas disponible automatiquement dans un espace client.
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <SecondaryButton type="button" onClick={() => setStep(2)} label="Retour" />
+                      <PrimaryButton type="submit" disabled={submitting} label={submitting ? 'Envoi en cours...' : 'Envoyer la demande'} icon="send" />
+                    </div>
+                  </section>
+                )}
+              </form>
+            </>
+          ) : (
+            <section className="grid min-h-[360px] place-items-center text-center">
+              <div>
+                <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-emerald-100 text-emerald-600">
+                  <span className="material-symbols-outlined text-5xl">check_circle</span>
+                </div>
+                <h3 className="mt-6 font-display text-3xl font-extrabold text-[#173d23]">Demande transmise</h3>
+                <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-gray-600">
+                  Merci {formData.name}. Votre demande est enregistree et l'equipe SOUTARAH va vous recontacter.
+                </p>
+                <div className="mx-auto mt-6 inline-block rounded-2xl border border-primary/15 bg-[#f2f7ef] px-5 py-4 text-left">
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-gray-500">Reference</p>
+                  <p className="mt-1 font-mono text-xl font-extrabold text-primary">{submittedRef}</p>
+                </div>
+                <div className="mt-7">
+                  <button onClick={closeModal} className="rounded-full bg-primary px-8 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-[#1b4c00]">
+                    Fermer
+                  </button>
+                </div>
+              </div>
+            </section>
+          )}
+        </main>
       </div>
     </div>
+  );
+}
+
+function StepPill({ number, label, active }) {
+  return (
+    <div className={`flex items-center gap-3 rounded-2xl px-3 py-1.5 text-sm font-bold ${active ? 'bg-white/12 text-white' : 'text-white/45'}`}>
+      <span className={`grid h-7 w-7 place-items-center rounded-full text-xs ${active ? 'bg-white text-primary' : 'bg-white/10 text-white/60'}`}>{number}</span>
+      {label}
+    </div>
+  );
+}
+
+function Field({ label, children, wide = false }) {
+  return (
+    <label className={wide ? 'sm:col-span-2' : ''}>
+      <span className="mb-1.5 block text-xs font-extrabold uppercase tracking-[0.08em] text-gray-600">{label}</span>
+      {children}
+    </label>
+  );
+}
+
+function PrimaryButton({ label, icon, ...props }) {
+  return (
+    <button {...props} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-extrabold text-white shadow-lg shadow-primary/20 transition hover:bg-[#1b4c00] disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none">
+      <span>{label}</span>
+      {icon && <span className="material-symbols-outlined text-[18px]">{icon}</span>}
+    </button>
+  );
+}
+
+function SecondaryButton({ label, ...props }) {
+  return (
+    <button {...props} className="min-h-10 rounded-full px-4 py-2.5 text-sm font-bold text-gray-600 transition hover:bg-gray-100">
+      {label}
+    </button>
   );
 }
