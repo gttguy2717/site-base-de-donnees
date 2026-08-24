@@ -39,7 +39,19 @@ app.use('/img', express.static(path.join(__dirname, '../../public/img')));
 app.use('/img', express.static(path.join(__dirname, '../../public')));
 
 app.use('/api', apiRouter);
-app.use(notFound);
+
+// Servir le frontend React en production (dossier dist/)
+if (environment.nodeEnv === 'production') {
+  const distPath = path.join(__dirname, '../../dist');
+  app.use(express.static(distPath));
+  // Catch-all : toutes les routes non-API renvoient index.html (React Router)
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+} else {
+  app.use(notFound);
+}
+
 app.use(errorHandler);
 
 module.exports = app;
