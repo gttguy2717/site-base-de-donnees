@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "build": "echo 'Build skipped'",
+    "build:frontend": "echo 'Build skipped'",
     "lint": "oxlint",
     "preview": "vite preview",
     "server": "node --watch server/src/server.cjs",
