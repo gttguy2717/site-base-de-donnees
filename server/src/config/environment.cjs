@@ -1,7 +1,9 @@
 const path = require('node:path');
 const dotenv = require('dotenv');
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+// override: true force dotenvx (dotenv@17+) à remplacer les variables existantes
+dotenv.config({ path: path.resolve(process.cwd(), '.env'), override: true });
+
 
 const requiredInProduction = ['DB_NAME', 'DB_USER', 'DB_PASSWORD'];
 
