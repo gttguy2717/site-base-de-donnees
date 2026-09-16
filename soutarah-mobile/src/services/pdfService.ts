@@ -3,6 +3,7 @@ import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Alert } from 'react-native';
 import { API_URL } from '../theme';
+import { getToken } from '../api/client';
 
 const formatMoney = (value: number | string | undefined | null): string => {
   const n = Number(value || 0);
@@ -85,8 +86,58 @@ export interface QuotePdfData {
   notes?: string;
 }
 
+/**
+ * Télécharge le PDF officiel du devis généré par le serveur (mêmes calculs et
+ * le même rendu que le site), puis l'ouvre via la feuille de partage.
+ * Le jeton d'accès est passé en paramètre (?token=) car expo-file-system ne
+ * permet pas de définir des en-têtes HTTP personnalisés.
+ */
+async function downloadQuotePdfFromServer(data: QuotePdfData): Promise<string | null> {
+  try {
+    if (!data.reference) return null;
+    const token = await getToken();
+    const baseUrl = API_URL.replace(/\/api\/?$/, '');
+    const url = `${baseUrl}/api/quote-requests/pdf/${encodeURIComponent(data.reference)}${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+
+    const cleanName = `Devis-${data.reference}.pdf`;
+    const localUri = `${FileSystem.documentDirectory}${cleanName}`;
+    const downloadRes = await FileSystem.downloadAsync(url, localUri);
+
+    if (!downloadRes || downloadRes.status !== 200) {
+      console.error('Téléchargement devis serveur échoué:', downloadRes?.status);
+      return null;
+    }
+
+    if (await Sharing.isAvailableAsync()) {
+      try {
+        await Sharing.shareAsync(downloadRes.uri, {
+          mimeType: 'application/pdf',
+          dialogTitle: `Télécharger le devis ${data.reference}`,
+          UTI: 'com.adobe.pdf',
+        });
+      } catch (shareError: any) {
+        // Fermeture de la feuille de partage : pas une erreur.
+        const msg = String(shareError?.message || shareError || '');
+        if (!/cancel|dismiss|abandon/i.test(msg)) return null;
+      }
+      return downloadRes.uri;
+    }
+
+    Alert.alert('Téléchargé', `Le devis ${data.reference} a été enregistré dans vos documents.`);
+    return downloadRes.uri;
+  } catch (error) {
+    console.error('Erreur téléchargement devis serveur:', error);
+    return null;
+  }
+}
+
 export async function generateAndDownloadQuotePdf(data: QuotePdfData): Promise<string | null> {
   try {
+    // Voie principale : PDF généré par le serveur (fiable partout).
+    const serverPdfUri = await downloadQuotePdfFromServer(data);
+    if (serverPdfUri) return serverPdfUri;
+
+    // Secours : génération locale (expo-print) si le serveur est indisponible.
     const now = new Date();
     const dateFormatted = data.dateStr || now.toLocaleDateString('fr-FR', {
       weekday: 'long',
@@ -461,11 +512,21 @@ export async function generateAndDownloadQuotePdf(data: QuotePdfData): Promise<s
     const { uri } = await Print.printToFileAsync({ html });
 
     if (await Sharing.isAvailableAsync()) {
-      await Sharing.shareAsync(uri, {
-        mimeType: 'application/pdf',
-        dialogTitle: `Télécharger le devis ${data.reference}`,
-        UTI: 'com.adobe.pdf',
-      });
+      try {
+        await Sharing.shareAsync(uri, {
+          mimeType: 'application/pdf',
+          dialogTitle: `Télécharger le devis ${data.reference}`,
+          UTI: 'com.adobe.pdf',
+        });
+      } catch (shareError: any) {
+        // L'utilisateur a fermé la feuille de partage : ce n'est pas une
+        // erreur — le PDF est déjà généré et le devis déjà créé.
+        const msg = String(shareError?.message || shareError || '');
+        if (!/cancel|dismiss|abandon/i.test(msg)) {
+          throw shareError;
+        }
+        console.log('Partage du devis annulé par l\'utilisateur.');
+      }
     }
 
     return uri;

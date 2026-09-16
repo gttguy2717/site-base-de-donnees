@@ -45,6 +45,10 @@ const Company = define('Company', {
   nom: { type: DataTypes.STRING(180), allowNull: false, field: 'nom' },
   nom_responsable: { type: DataTypes.STRING(180), allowNull: true, field: 'nom_responsable' },
   numero_identification: { type: DataTypes.STRING(100), field: 'numero_identification' },
+  verification_status: { type: DataTypes.ENUM('PENDING', 'APPROVED', 'REJECTED'), allowNull: false, defaultValue: 'APPROVED', field: 'verification_status' },
+  documents: { type: DataTypes.JSON, allowNull: true, field: 'documents' },
+  note_verification: { type: DataTypes.STRING(255), allowNull: true, field: 'note_verification' },
+  verifie_le: { type: DataTypes.DATE, allowNull: true, field: 'verifie_le' },
 }, timestamps);
 
 const Category = define('Category', {
@@ -157,6 +161,9 @@ const QuoteRequest = define('QuoteRequest', {
   lieu: { type: DataTypes.STRING(180), allowNull: false, field: 'lieu' },
   fichier_devis_url: { type: DataTypes.STRING, field: 'fichier_devis_url' },
   statut: { type: DataTypes.STRING(30), allowNull: false, defaultValue: 'PENDING', field: 'statut' },
+  mode_paiement: { type: DataTypes.STRING(60), field: 'mode_paiement' },
+  lu_le: { type: DataTypes.DATE, field: 'lu_le' },
+  snapshot: { type: DataTypes.TEXT, field: 'snapshot' },
 }, timestamps);
 
 const Reservation = define('Reservation', {

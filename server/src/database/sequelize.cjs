@@ -1,11 +1,16 @@
 const { Sequelize } = require('sequelize');
 const environment = require('../config/environment.cjs');
 
+const sequelizeOptions = { charset: 'utf8mb4' };
+if (environment.database.ssl) {
+  sequelizeOptions.ssl = { require: true, rejectUnauthorized: false };
+}
+
 const options = {
   dialect: 'mysql',
   logging: false,
   define: { freezeTableName: true, timestamps: true },
-  dialectOptions: environment.database.ssl ? { ssl: { require: true, rejectUnauthorized: false } } : {},
+  dialectOptions: sequelizeOptions,
 };
 
 const sequelize = environment.databaseUrl

@@ -109,3 +109,90 @@ export interface CreateReservationPayload {
   destination?: string;
   notes?: string;
 }
+export type QuoteStatus =
+  | 'PENDING'
+  | 'SENT'
+  | 'CONVERTED'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'CANCELLED'
+  | 'COMPLETED';
+
+export interface QuoteRequestItem {
+  id?: string;
+  type?: 'product' | 'vehicle';
+  name?: string;
+  productName?: string;
+  vehicleName?: string;
+  quantity?: number;
+  unitPrice?: number;
+  totalPrice?: number;
+  startDate?: string;
+  endDate?: string;
+  days?: number;
+  withDriver?: boolean;
+  imageUrl?: string | null;
+  image_url?: string | null;
+}
+
+export interface QuoteRequest {
+  id: string;
+  reference: string;
+  client_id?: string | null;
+  utilisateur_id?: string | null;
+  source?: string;
+  service?: string | null;
+  titre?: string | null;
+  budget?: string | number | null;
+  delai?: string | null;
+  description?: string | null;
+  entreprise?: string | null;
+  nom: string;
+  email: string;
+  telephone: string;
+  lieu?: string | null;
+  snapshot?: string | QuoteRequestItem[] | null;
+  statut: QuoteStatus;
+  mode_paiement?: string | null;
+  lu_le?: string | null;
+  fichier_devis_url?: string | null;
+  cree_le: string;
+  mis_a_jour_le?: string | null;
+  client?: Client | null;
+}
+
+export interface LastOrder {
+  reference: string;
+  name?: string;
+  phone?: string;
+  service?: string;
+  ht: number;
+  tva: number;
+  tdt: number;
+  carburant: number;
+  peage: number;
+  ttc: number;
+  itemCount: number;
+  summaryTitle: string;
+  items?: QuoteRequestItem[];
+  createdAt: string;
+}
+
+export interface BuildQuotePayload {
+  service: string;
+  title: string;
+  name: string;
+  email: string;
+  phone: string;
+  location: string;
+  description: string;
+  budget?: string;
+  items: QuoteRequestItem[];
+}
+
+export interface ValidateQuoteResult {
+  success: boolean;
+  message: string;
+  reference?: string;
+  quoteRequest?: QuoteRequest | null;
+}

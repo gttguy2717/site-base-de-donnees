@@ -10,6 +10,7 @@ import AuthPage from './pages/AuthPage';
 import AdminPage from './pages/AdminPage';
 import ClientDashboardPage from './pages/ClientDashboardPage';
 import CartPage from './pages/CartPage';
+import PasserCommandePage from './pages/PasserCommandePage';
 import { getServiceById } from './data/servicesData';
 import { useAuth } from './hooks/useAuth';
 import AiAssistant from './components/AiAssistant';
@@ -27,6 +28,7 @@ function getRouteFromPath() {
   if (path === '/admin') return { page: 'admin' };
   if (path === '/client') return { page: 'client' };
   if (path === '/cart') return { page: 'cart' };
+  if (path === '/commande') return { page: 'commande' };
 
   const serviceMatch = path.match(/^\/services\/([^/]+)$/);
   if (serviceMatch && getServiceById(serviceMatch[1])) {
@@ -49,6 +51,7 @@ function routeUrl(page, options = {}) {
     case 'admin': return '/admin';
     case 'client': return '/client';
     case 'cart': return '/cart';
+    case 'commande': return '/commande';
     case 'service':
       return getServiceById(slug) ? `/services/${slug}` : '/services';
     default:
@@ -65,6 +68,15 @@ export default function App() {
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
+
+  // ── Google Analytics : page_view à chaque navigation (SPA) ──
+  useEffect(() => {
+    if (typeof window.gtag !== 'function') return;
+    window.gtag('event', 'page_view', {
+      page_title: document.title,
+      page_path: window.location.pathname,
+    });
+  }, [route]);
 
   const navigateTo = (page, options = {}) => {
     const { slug, section } = options;
@@ -113,15 +125,19 @@ export default function App() {
   } else if (route.page === 'service') {
     const service = getServiceById(route.slug);
     pageContent = service ? <ServiceDetailPage service={service} navigateTo={navigateTo} /> : <ServicesPage navigateTo={navigateTo} />;
+  } else if (route.page === 'cart') {
+    // Panier accessible aux invités (localStorage « guest ») :
+    // la connexion n'est exigée qu'à la validation du devis (dans CartPage).
+    pageContent = <CartPage navigateTo={navigateTo} />;
   } else if (!user) {
     // ── Routes protégées : non connecté ──
-    if (route.page === 'admin' || route.page === 'client' || route.page === 'cart') {
+    if (route.page === 'admin' || route.page === 'client' || route.page === 'commande') {
       pageContent = <AuthPage mode="login" navigateTo={navigateTo} />;
     }
   } else {
     // ── Routes protégées : connecté ──
-    if (route.page === 'cart') {
-      pageContent = <CartPage navigateTo={navigateTo} />;
+    if (route.page === 'commande') {
+      pageContent = <PasserCommandePage navigateTo={navigateTo} />;
     } else if (route.page === 'client') {
       pageContent = user.role === 'CLIENT'
         ? <ClientDashboardPage navigateTo={navigateTo} initialTab={route.tab || 'account'} />

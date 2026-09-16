@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../../hooks/useAuth';
-import QuoteDocument from '../QuoteDocument';
 import { generateQuotePdf } from '../../lib/quotePdf';
+import { computeQuoteTotals } from '../../lib/quoteTotals';
 
 export default function AdminQuotes() {
   const { token } = useAuth();
   const [quotes, setQuotes] = useState([]);
   const [filteredQuotes, setFilteredQuotes] = useState([]);
   const [search, setSearch] = useState('');
-  const [filterStatus, setFilterStatus] = useState('ALL');
+  const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'unread' | 'read'
   const [loading, setLoading] = useState(true);
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [uploadingFile, setUploadingFile] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [markingRead, setMarkingRead] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   const loadQuotes = async () => {
     try {
@@ -22,7 +22,6 @@ export default function AdminQuotes() {
       const response = await fetch('/api/admin/quotes', {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       if (response.ok) {
         const data = await response.json();
         setQuotes(data.quotes || []);
@@ -34,92 +33,53 @@ export default function AdminQuotes() {
     }
   };
 
-  const updateQuoteStatus = async (quoteId, newStatus) => {
+  // Marquer un devis comme lu (indicateur WhatsApp : disparaît une fois lu)
+  const markAsRead = async (quoteId) => {
     try {
-      const response = await fetch(`/api/admin/quotes/${quoteId}/status`, {
+      setMarkingRead(true);
+      const response = await fetch(`/api/admin/quotes/${quoteId}/read`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ statut: newStatus }),
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       if (response.ok) {
-        // Mise à jour immédiate dans l'état local pour refléter le changement sans attendre le rechargement
-        setQuotes((prev) =>
-          prev.map((q) => (q.id === quoteId ? { ...q, statut: newStatus } : q))
-        );
-        // Réinitialiser le filtre à ALL pour que le devis soit visible avec son nouveau statut
-        setFilterStatus('ALL');
-        setShowModal(false);
-        setSelectedQuote(null);
-        setUploadSuccess(false);
-        // Recharger la liste complète en arrière-plan
-        loadQuotes();
+        const now = new Date().toISOString();
+        setQuotes((prev) => prev.map((q) => (q.id === quoteId ? { ...q, lu_le: now } : q)));
+        setSelectedQuote((prev) => (prev && prev.id === quoteId ? { ...prev, lu_le: now } : prev));
       } else {
         const data = await response.json().catch(() => ({}));
-        alert(`❌ ${data.message || 'Erreur lors de la mise à jour du statut'}`);
+        alert(`❌ ${data.message || 'Erreur lors du marquage du devis'}`);
       }
     } catch (error) {
-      console.error('Erreur mise à jour statut:', error);
-      alert('Erreur lors de la mise à jour du statut');
+      console.error('Erreur marquage devis lu:', error);
+      alert('Erreur lors du marquage du devis');
+    } finally {
+      setMarkingRead(false);
     }
   };
 
+  // Télécharge le même devis PDF officiel que celui du client
   const handleDownloadPdf = async () => {
     try {
-      await generateQuotePdf({ quote: selectedQuote });
+      setDownloadingPdf(true);
+      let items = [];
+      if (selectedQuote?.snapshot) {
+        try {
+          items = typeof selectedQuote.snapshot === 'string'
+            ? JSON.parse(selectedQuote.snapshot)
+            : selectedQuote.snapshot;
+        } catch (e) {
+          items = [];
+        }
+      }
+      await generateQuotePdf({
+        quote: selectedQuote || {},
+        items: Array.isArray(items) ? items : [],
+      });
     } catch (error) {
       console.error('Erreur génération PDF:', error);
-      alert('❌ Erreur lors de la génération du PDF');
-    }
-  };
-
-  const handleUploadSignedQuote = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    if (file.type !== 'application/pdf') {
-      alert('❌ Seuls les fichiers PDF sont acceptés');
-      event.target.value = '';
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      alert('❌ Le fichier est trop volumineux (max 10MB)');
-      event.target.value = '';
-      return;
-    }
-
-    try {
-      setUploadingFile(true);
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch(`/api/admin/quotes/${selectedQuote.id}/upload-signed`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSelectedQuote((prev) => ({ ...prev, fichier_devis_url: data.file_url, statut: 'SENT' }));
-        setUploadSuccess(true);
-        // Mise à jour locale et rechargement
-        setQuotes((prev) => prev.map((q) => q.id === selectedQuote.id ? { ...q, fichier_devis_url: data.file_url, statut: 'SENT' } : q));
-        loadQuotes();
-      } else {
-        const error = await response.json();
-        alert(`❌ Erreur: ${error.message || 'Upload échoué'}`);
-      }
-    } catch (error) {
-      console.error('Erreur upload:', error);
-      alert('❌ Erreur lors de l\'upload du devis signé');
+      alert(`❌ Erreur lors de la génération du PDF : ${error?.message || 'erreur inconnue'}`);
     } finally {
-      setUploadingFile(false);
-      event.target.value = '';
+      setDownloadingPdf(false);
     }
   };
 
@@ -133,7 +93,6 @@ export default function AdminQuotes() {
     const handleAdminSearch = (event) => {
       if (event.detail) {
         setSearch(event.detail);
-        setFilterStatus('ALL');
       }
     };
     window.addEventListener('soutarah-admin-search', handleAdminSearch);
@@ -142,15 +101,6 @@ export default function AdminQuotes() {
 
   useEffect(() => {
     let filtered = quotes;
-    if (filterStatus === 'ISSUED') {
-      // "En attente" = PENDING, ISSUED et CONTACTED
-      filtered = filtered.filter((q) => q.statut === 'ISSUED' || q.statut === 'PENDING' || q.statut === 'CONTACTED');
-    } else if (filterStatus === 'SENT') {
-      // "Envoyés" = uniquement SENT
-      filtered = filtered.filter((q) => q.statut === 'SENT');
-    } else if (filterStatus !== 'ALL') {
-      filtered = filtered.filter((q) => q.statut === filterStatus);
-    }
     if (search) {
       const searchLower = search.toLowerCase();
       filtered = filtered.filter(
@@ -158,29 +108,27 @@ export default function AdminQuotes() {
           q.nom?.toLowerCase().includes(searchLower) ||
           q.client?.nom?.toLowerCase().includes(searchLower) ||
           q.client?.prenom?.toLowerCase().includes(searchLower) ||
-          q.reference?.toLowerCase().includes(searchLower)
+          q.reference?.toLowerCase().includes(searchLower) ||
+          (q.titre || '').toLowerCase().includes(searchLower) ||
+          (q.description || '').toLowerCase().includes(searchLower)
       );
     }
-    setFilteredQuotes([...filtered].sort((a, b) => new Date(b.cree_le) - new Date(a.cree_le)));
-  }, [search, filterStatus, quotes]);
+    // Filtre lu / non lu
+    if (statusFilter === 'unread') filtered = filtered.filter((q) => !Boolean(q.lu_le));
+    else if (statusFilter === 'read') filtered = filtered.filter((q) => Boolean(q.lu_le));
+    // Tri : non lus en premier, puis par date décroissante
+    setFilteredQuotes(
+      [...filtered].sort((a, b) => {
+        const aRead = a.lu_le ? 1 : 0;
+        const bRead = b.lu_le ? 1 : 0;
+        if (aRead !== bRead) return aRead - bRead;
+        return new Date(b.cree_le || b.createdAt || 0) - new Date(a.cree_le || a.createdAt || 0);
+      })
+    );
+  }, [search, statusFilter, quotes]);
 
-  const getStatusBadge = (status) => {
-    const badges = {
-      ISSUED: { bg: 'bg-blue-50 text-blue-700 border-blue-200', label: 'En attente', icon: 'schedule' },
-      APPROVED: { bg: 'bg-purple-50 text-purple-700 border-purple-200', label: 'Envoyé', icon: 'send' },
-      SENT: { bg: 'bg-purple-50 text-purple-700 border-purple-200', label: 'Envoyé', icon: 'send' },
-      PENDING: { bg: 'bg-blue-50 text-blue-700 border-blue-200', label: 'En attente', icon: 'schedule' },
-      CONTACTED: { bg: 'bg-amber-50 text-amber-700 border-amber-200', label: 'En cours d\'étude', icon: 'engineering' },
-      CONVERTED: { bg: 'bg-green-50 text-green-700 border-green-200', label: 'Devis traité', icon: 'check_circle' },
-      REJECTED: { bg: 'bg-red-50 text-red-700 border-red-200', label: 'Rejeté', icon: 'cancel' },
-      CANCELLED: { bg: 'bg-gray-50 text-gray-600 border-gray-200', label: 'Annulé', icon: 'block' },
-    };
-    return badges[status] || badges.ISSUED;
-  };
-
-  const getStatusCount = (status) => {
-    return quotes.filter((q) => q.statut === status).length;
-  };
+  const isRead = (q) => Boolean(q && q.lu_le);
+  const unreadCount = quotes.filter((q) => !isRead(q)).length;
 
   const getClientName = (quote) => {
     return quote.nom || quote.client?.entreprise?.nom || `${quote.client?.prenom || ''} ${quote.client?.nom || ''}`.trim() || 'Client';
@@ -198,6 +146,75 @@ export default function AdminQuotes() {
     return quote.lieu || quote.client?.adresse || '-';
   };
 
+  // Formater un montant en FCFA
+  const formatMoney = (value) => {
+    if (value == null || value === '') return null;
+    const num = Number(String(value).replace(/\D/g, '')) || 0;
+    return `${new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(num)} FCFA`;
+  };
+
+  // Articles commandés depuis la description (séparés par '|')
+  const getQuoteItems = (quote) => {
+    if (!quote?.description) return [];
+    const text = String(quote.description);
+    if (!text.includes('|')) return [text.trim()].filter(Boolean);
+    return text.split('|').map((s) => s.trim()).filter(Boolean);
+  };
+
+  const getPaymentMode = (quote) => {
+    if (quote?.mode_paiement) return quote.mode_paiement;
+    return '—';
+  };
+
+  // Récupère les articles depuis le snapshot (même source que le devis client)
+  const getSnapshotItems = (quote) => {
+    if (!quote?.snapshot) return [];
+    let items = [];
+    try {
+      items = typeof quote.snapshot === 'string' ? JSON.parse(quote.snapshot) : quote.snapshot;
+    } catch (e) {
+      items = [];
+    }
+    return Array.isArray(items) ? items : [];
+  };
+
+  // Calcule les montants réels à partir des articles (HT/TVA/TDT/TTC)
+  const getQuoteTotals = (quote) => {
+    const items = getSnapshotItems(quote);
+    const hasItems = items.length > 0;
+    let montantHT = 0;
+    let vehicleBase = 0;
+    for (const it of items) {
+      const isVeh = String(it?.type || '').startsWith('vehicle') || it?.type === 'location'
+        || !!(it?.vehicle || it?.vehicleName || it?.vehicleType || it?.dailyPrice != null);
+      const unit = Number(it.prix_unitaire ?? it.unitPrice ?? it.price ?? it.dailyPrice ?? 0);
+      const qty = Number(it.quantite ?? it.quantity) || 1;
+      const total = Number(it.total ?? it.prix_total ?? it.totalPrice ?? (unit * qty)) || 0;
+      montantHT += total;
+      if (isVeh) vehicleBase += total;
+    }
+    if (montantHT > 0) {
+      const totals = computeQuoteTotals(montantHT, vehicleBase);
+      return { ...totals, ht: totals.ht ?? montantHT, hasItems };
+    }
+    // Aucun article détaillé : on retombe sur le budget fourni
+    const budget = Number(String(quote?.budget ?? '').replace(/\D/g, '')) || 0;
+    return { ht: budget, tva: 0, tdt: 0, ttc: budget, hasItems };
+  };
+
+  const getSnippet = (quote) => {
+    if (quote?.description) {
+      return String(quote.description).split('|')[0].trim();
+    }
+    return quote.titre || 'Demande de devis';
+  };
+
+  const formatDate = (val) => {
+    const d = new Date(val);
+    if (Number.isNaN(d.getTime())) return '';
+    return `${d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })} à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -209,64 +226,40 @@ export default function AdminQuotes() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="space-y-3">
         <div>
           <h1 className="text-2xl font-black text-gray-900">Devis</h1>
-          <p className="text-sm text-gray-500 mt-1">Gérez les demandes de devis des clients</p>
+          <p className="text-sm text-gray-500 mt-1">Cliquez sur un devis pour voir tous les détails et le télécharger</p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-gray-500">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 font-bold text-emerald-700">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            {quotes.length} demande{quotes.length > 1 ? 's' : ''}
-          </span>
-        </div>
-      </div>
-
-      {/* Filtres */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-bold text-gray-700 mr-1">Filtres</span>
-
-            <button
-              onClick={() => setFilterStatus('ALL')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                filterStatus === 'ALL' ? 'bg-primary text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              <span>Tous</span>
-              <span className={`px-1.5 py-0.5 rounded text-xs ${filterStatus === 'ALL' ? 'bg-white/20' : 'bg-white'}`}>
-                {quotes.length}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setFilterStatus('ISSUED')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                filterStatus === 'ISSUED' ? 'bg-blue-600 text-white shadow-sm' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'
-              }`}
-            >
-              <span className="material-symbols-outlined text-sm">schedule</span>
-              <span>En attente</span>
-              <span className={`px-1.5 py-0.5 rounded text-xs ${filterStatus === 'ISSUED' ? 'bg-white/20' : 'bg-white'}`}>
-                {getStatusCount('ISSUED') + getStatusCount('PENDING')}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setFilterStatus('SENT')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                filterStatus === 'SENT' ? 'bg-purple-600 text-white shadow-sm' : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200'
-              }`}
-            >
-              <span className="material-symbols-outlined text-sm">send</span>
-              <span>Envoyés</span>
-              <span className={`px-1.5 py-0.5 rounded text-xs ${filterStatus === 'SENT' ? 'bg-white/20' : 'bg-white'}`}>
-                {getStatusCount('SENT')}
-              </span>
-            </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Filtres : Tous / Non lus / Lus */}
+          <div className="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-full p-1">
+            {[
+              { id: 'all', label: 'Tous', count: quotes.length },
+              { id: 'unread', label: 'Non lus', count: unreadCount },
+              { id: 'read', label: 'Lus', count: quotes.length - unreadCount },
+            ].map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setStatusFilter(f.id)}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition ${
+                  statusFilter === f.id
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-white hover:text-gray-900'
+                }`}
+              >
+                {f.label}
+                <span
+                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-extrabold ${
+                    statusFilter === f.id ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  {f.count}
+                </span>
+              </button>
+            ))}
           </div>
-
           <div className="relative">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
               search
@@ -282,89 +275,90 @@ export default function AdminQuotes() {
         </div>
       </div>
 
-      {/* Tableau des devis */}
+      {/* Liste des devis (style WhatsApp) */}
       <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Référence</th>
-                <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Client</th>
-                <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Service</th>
-                <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Date</th>
-                <th className="px-4 py-3 text-center text-xs font-bold text-gray-600 uppercase">Statut</th>
-                <th className="px-4 py-3 text-center text-xs font-bold text-gray-600 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredQuotes.map((quote) => {
-                const status = getStatusBadge(quote.statut);
-                const clientName = getClientName(quote);
-
-                return (
-                  <tr key={quote.id} className="hover:bg-gray-50/70 transition-colors">
-                    <td className="px-4 py-3">
-                      <span className="font-mono text-sm font-semibold text-gray-900">
-                        {quote.reference || `DEV-${quote.id.slice(0, 8)}`}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-green-600 flex items-center justify-center text-white font-bold text-xs">
-                          {clientName.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <span className="font-semibold text-sm text-gray-900 block">{clientName}</span>
-                          <span className="text-xs text-gray-400">{getClientPhone(quote)}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-sm text-gray-600">{quote.service || '-'}</span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {new Date(quote.cree_le || quote.createdAt).toLocaleDateString('fr-FR')}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${status.bg} ${status.text}`}>
-                        <span className="material-symbols-outlined text-xs">{status.icon}</span>
-                        {status.label}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => {
-                          setSelectedQuote(quote);
-                          setUploadSuccess(false);
-                          setShowModal(true);
-                        }}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
-                      >
-                        <span className="material-symbols-outlined text-sm">visibility</span>
-                        Voir détails
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {filteredQuotes.length === 0 && (
+        {filteredQuotes.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
             <span className="material-symbols-outlined text-6xl text-gray-300">description</span>
             <p className="mt-2">Aucun devis trouvé</p>
           </div>
+        ) : (
+          <div className="divide-y divide-gray-100">
+            {filteredQuotes.map((quote) => {
+              const read = isRead(quote);
+              const clientName = getClientName(quote);
+
+              return (
+                <button
+                  key={quote.id}
+                  onClick={() => {
+                    setSelectedQuote(quote);
+                    setShowModal(true);
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-gray-50 cursor-pointer ${
+                    read ? 'bg-white' : 'bg-primary/[0.04]'
+                  }`}
+                >
+                  {/* Avatar avec indicateur non lu */}
+                  <div className="relative shrink-0">
+                    <div
+                      className={`h-11 w-11 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                        read ? 'bg-gray-300' : 'bg-gradient-to-br from-primary to-green-600'
+                      }`}
+                    >
+                      {clientName.charAt(0).toUpperCase()}
+                    </div>
+                    {!read && (
+                      <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-white" />
+                    )}
+                  </div>
+
+                  {/* Infos */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className={`text-sm truncate ${read ? 'font-semibold text-gray-500' : 'font-extrabold text-gray-900'}`}>
+                        {clientName}
+                      </p>
+                      <span className="text-[10px] text-gray-400 shrink-0">
+                        {formatDate(quote.cree_le || quote.createdAt)}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                      <span className="font-mono text-[11px] text-primary font-bold">
+                        {quote.reference || `DEV-${(quote.id || '').slice(0, 8)}`}
+                      </span>
+                      {quote.mode_paiement && (
+                        <span className="text-[10px] text-gray-400">• {quote.mode_paiement}</span>
+                      )}
+                    </div>
+                    <p className={`text-xs mt-0.5 truncate ${read ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {getSnippet(quote)}
+                    </p>
+                  </div>
+
+                  {/* Indicateur lu / non lu */}
+                  <div className="shrink-0 flex flex-col items-end gap-1">
+                    {read ? (
+                      <span className="material-symbols-outlined text-lg text-gray-300" title="Lu">done_all</span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-green-600 px-1.5 py-0.5 text-[9px] font-extrabold text-white">
+                        NOUVEAU
+                      </span>
+                    )}
+                    <span className="material-symbols-outlined text-gray-300 text-base">chevron_right</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         )}
       </div>
-
-      {/* Modal détails devis */}
+{/* Modal détails devis */}
       {showModal && selectedQuote && createPortal(
         <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen bg-black/50 backdrop-blur-sm z-[99999] flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
           <div className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full overflow-hidden flex flex-col max-h-[90vh] p-0 m-0 my-auto">
-            
-            {/* Header Modal - Directement collé en haut */}
+
+            {/* Header Modal */}
             <div className="bg-gradient-to-r from-[#112d19] via-[#173d23] to-[#1b4d2b] px-5 py-4 flex items-center justify-between text-white flex-shrink-0 rounded-t-3xl m-0 border-none">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/20 text-white">
@@ -374,31 +368,32 @@ export default function AdminQuotes() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="text-lg font-extrabold text-white">Détails du devis</h3>
                     <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-white/15 text-white border border-white/20">
-                      {selectedQuote.reference || `DEV-${selectedQuote.id.slice(0, 8)}`}
+                      {selectedQuote.reference || `DEV-${(selectedQuote.id || '').slice(0, 8)}`}
                     </span>
                   </div>
                   <p className="text-[11px] text-emerald-200/80 mt-0.5">
-                    Créé le {new Date(selectedQuote.cree_le || selectedQuote.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    Créé le {formatDate(selectedQuote.cree_le || selectedQuote.createdAt)}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                {(() => {
-                  const statusInfo = getStatusBadge(selectedQuote.statut);
-                  return (
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-xs ${statusInfo.bg} ${statusInfo.text}`}>
-                      <span className="material-symbols-outlined text-xs">{statusInfo.icon}</span>
-                      {statusInfo.label}
-                    </span>
-                  );
-                })()}
+                {isRead(selectedQuote) ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-xs bg-emerald-500/20 text-emerald-100 border-emerald-300/30">
+                    <span className="material-symbols-outlined text-xs">done_all</span>
+                    Lu
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-xs bg-amber-400/20 text-amber-200 border-amber-300/30">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-300 animate-pulse" />
+                    Non lu
+                  </span>
+                )}
 
                 <button
                   onClick={() => {
                     setShowModal(false);
                     setSelectedQuote(null);
-                    setUploadSuccess(false);
                   }}
                   className="h-8 w-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-all active:scale-95"
                   title="Fermer"
@@ -408,13 +403,12 @@ export default function AdminQuotes() {
               </div>
             </div>
 
-            {/* Corps Modal - Tout lisible en un coup d'œil */}
+            {/* Corps Modal */}
             <div className="p-5 overflow-y-auto space-y-4 flex-1 bg-slate-50/60 text-xs">
-              
-              {/* Informations Client & Demande (Grid 2 colonnes compact) */}
+
+              {/* Informations Client & Demande */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                {/* Bloc Client */}
+{/* Bloc Client */}
                 <div className="bg-white rounded-2xl p-4 border border-gray-200/80 shadow-xs space-y-2.5">
                   <div className="flex items-center gap-1.5 pb-2 border-b border-gray-100 text-primary font-bold uppercase tracking-wider text-[11px]">
                     <span className="material-symbols-outlined text-base">person</span>
@@ -473,7 +467,7 @@ export default function AdminQuotes() {
                     <div className="grid grid-cols-2 gap-2">
                       <div className="bg-slate-50 p-2 rounded-xl border border-gray-100">
                         <p className="text-[10px] text-gray-400">Budget Estimatif</p>
-                        <p className="font-bold text-gray-800">{selectedQuote.budget || 'Non précisé'}</p>
+                        <p className="font-bold text-gray-800">{formatMoney(getQuoteTotals(selectedQuote).ht) || 'Non précisé'}</p>
                       </div>
                       <div className="bg-slate-50 p-2 rounded-xl border border-gray-100">
                         <p className="text-[10px] text-gray-400">Délai Souhaité</p>
@@ -484,86 +478,121 @@ export default function AdminQuotes() {
                 </div>
 
               </div>
-
-              {/* Description (Si présente) */}
-              {selectedQuote.description && (
-                <div className="bg-white rounded-2xl p-3.5 border border-gray-200/80 shadow-xs space-y-1">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Description de la demande</p>
-                  <p className="text-xs text-gray-700 leading-relaxed bg-slate-50 p-2.5 rounded-xl border border-gray-100">
-                    {selectedQuote.description}
-                  </p>
+{/* Récapitulatif de la commande : articles + paiement + montant */}
+              <div className="bg-white rounded-2xl p-3.5 border border-gray-200/80 shadow-xs space-y-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-base text-primary">shopping_bag</span>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Récapitulatif de la commande</p>
                 </div>
-              )}
 
-              {/* Bloc Upload PDF & Bouton Envoyer au Client */}
-              <div className="bg-blue-50/60 rounded-2xl p-4 border border-blue-200/80 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-blue-900 font-bold">
-                    <span className="material-symbols-outlined text-lg text-blue-600">upload_file</span>
-                    <span>Document de Devis Signé</span>
-                  </div>
-
-                  {selectedQuote.fichier_devis_url && (
-                    <a
-                      href={`${selectedQuote.fichier_devis_url}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[11px] font-bold hover:bg-blue-700 transition-colors shadow-xs"
-                    >
-                      <span className="material-symbols-outlined text-xs">open_in_new</span>
-                      Voir le PDF actuel
-                    </a>
+                {/* Articles commandés */}
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Articles commandés</p>
+                  {getSnapshotItems(selectedQuote).length > 0 ? (
+                    <div className="space-y-1.5">
+                      {getSnapshotItems(selectedQuote).map((it, idx) => {
+                        const isVeh = String(it?.type || '').startsWith('vehicle') || it?.type === 'location'
+                          || !!(it?.vehicle || it?.vehicleName || it?.vehicleType || it?.dailyPrice != null);
+                        const name = isVeh
+                          ? (it.vehicleName || it.vehicle?.name || it.vehicleType || 'Location véhicule')
+                          : (it.produit?.nom || it.product?.name || it.libelle || it.title || it.name || 'Article');
+                        const unit = Number(it.prix_unitaire ?? it.unitPrice ?? it.price ?? it.dailyPrice ?? 0);
+                        const qty = Number(it.quantite ?? it.quantity) || 1;
+                        const total = Number(it.total ?? it.prix_total ?? it.totalPrice ?? (unit * qty)) || 0;
+                        return (
+                          <div key={idx} className="flex items-center gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-gray-100">
+                            <span className="h-6 w-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-[10px] font-black flex-shrink-0">
+                              {idx + 1}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold text-gray-800 truncate">{name}</p>
+                              <p className="text-[10px] text-gray-500">
+                                {isVeh
+                                  ? `${it.destination || it.destinationLabel || 'ABIDJAN'} · ${it.days || it.duration || 1} j`
+                                  : 'Négoce'}
+                                {' · Qté : '}{qty}{unit > 0 ? ` · ${formatMoney(unit)}/u` : ''}
+                              </p>
+                            </div>
+                            <span className="text-xs font-extrabold text-gray-900 shrink-0">{formatMoney(total)}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : getQuoteItems(selectedQuote).length > 0 ? (
+                    <div className="space-y-1.5">
+                      {getQuoteItems(selectedQuote).map((item, idx) => (
+                        <div key={idx} className="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-gray-100">
+                          <span className="h-6 w-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-[10px] font-black flex-shrink-0">
+                            {idx + 1}
+                          </span>
+                          <p className="text-xs font-semibold text-gray-800 leading-snug">{item}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-500 italic">Aucun article détaillé</p>
                   )}
                 </div>
 
-                {uploadSuccess && (
-                  <div className="flex items-center gap-2 rounded-xl bg-emerald-500 text-white p-2.5 text-xs font-bold shadow-xs">
-                    <span className="material-symbols-outlined text-sm">check_circle</span>
-                    <span>Fichier PDF chargé avec succès ! Vous pouvez maintenant cliquer sur &quot;Envoyer au client&quot;.</span>
+                {/* Paiement & Montant */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                  <div className="bg-slate-50 p-2.5 rounded-xl border border-gray-100">
+                    <p className="text-[10px] text-gray-400">Moyen de paiement</p>
+                    <p className="font-bold text-gray-900">{getPaymentMode(selectedQuote)}</p>
                   </div>
-                )}
-
-                {/* Champ Fichier + Bouton Envoyer alignés dans la même carte */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 items-end pt-1">
-                  <div className="sm:col-span-2 space-y-1">
-                    <label className="block text-[11px] font-bold text-gray-700">
-                      {selectedQuote.fichier_devis_url ? 'Remplacer le fichier PDF signé' : 'Sélectionner le devis signé (PDF)'}
-                    </label>
-                    <input
-                      type="file"
-                      accept=".pdf"
-                      onChange={handleUploadSignedQuote}
-                      disabled={uploadingFile}
-                      className="block w-full text-xs text-gray-600 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 disabled:opacity-50 cursor-pointer bg-white rounded-xl border border-gray-200"
-                    />
-                  </div>
-
-                  {/* Bouton Envoyer au client - Désactivé si AUCUN fichier n'est téléversé */}
-                  <div>
-                    <button
-                      disabled={!selectedQuote.fichier_devis_url || uploadingFile}
-                      onClick={() => {
-                        if (confirm('Confirmer l\'envoi du devis signé au client ?')) {
-                          updateQuoteStatus(selectedQuote.id, 'SENT');
-                        }
-                      }}
-                      className={`w-full h-[38px] inline-flex items-center justify-center gap-1.5 px-4 rounded-xl text-xs font-extrabold transition-all shadow-xs ${
-                        selectedQuote.fichier_devis_url && !uploadingFile
-                          ? 'bg-purple-600 hover:bg-purple-700 text-white cursor-pointer active:scale-95 shadow-purple-500/20'
-                          : 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-300/50'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-base">send</span>
-                      <span>Envoyer au client</span>
-                    </button>
+                  <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[10px] text-emerald-700 font-semibold">Montant HT</p>
+                      <p className="font-bold text-emerald-900 text-xs">{formatMoney(getQuoteTotals(selectedQuote).ht) || '—'}</p>
+                    </div>
+                    {getQuoteTotals(selectedQuote).hasItems && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <p className="text-[10px] text-emerald-700 font-semibold">TVA 18%</p>
+                          <p className="font-bold text-emerald-900 text-xs">{formatMoney(getQuoteTotals(selectedQuote).tva) || '—'}</p>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <p className="text-[10px] text-emerald-700 font-semibold">TDT 2,5%</p>
+                          <p className="font-bold text-emerald-900 text-xs">{formatMoney(getQuoteTotals(selectedQuote).tdt) || '—'}</p>
+                        </div>
+                        <div className="flex items-center justify-between border-t border-emerald-200/70 pt-1">
+                          <p className="text-[10px] font-bold text-emerald-800 uppercase">Montant total</p>
+                          <p className="font-extrabold text-emerald-900 text-[13px]">{formatMoney(getQuoteTotals(selectedQuote).ttc) || '—'}</p>
+                        </div>
+                      </>
+                    )}
+                    {!getQuoteTotals(selectedQuote).hasItems && (
+                      <div className="flex items-center justify-between">
+                        <p className="text-[10px] font-bold text-emerald-800 uppercase">Montant total</p>
+                        <p className="font-extrabold text-emerald-900 text-[13px]">{formatMoney(getQuoteTotals(selectedQuote).ttc) || '—'}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
+              </div>
 
-                {!selectedQuote.fichier_devis_url && (
-                  <p className="text-[11px] text-amber-700 font-medium flex items-center gap-1">
-                    <span className="material-symbols-outlined text-xs">info</span>
-                    Le bouton &quot;Envoyer au client&quot; s&apos;activera automatiquement dès que vous aurez téléversé un fichier PDF.
-                  </p>
+              {/* Marquer comme lu */}
+              <div className="bg-emerald-50/60 rounded-2xl p-4 border border-emerald-200/80">
+                {isRead(selectedQuote) ? (
+                  <div className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl text-sm font-extrabold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                    <span className="material-symbols-outlined text-base">done_all</span>
+                    Déjà lu
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => markAsRead(selectedQuote.id)}
+                    disabled={markingRead}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-extrabold transition-all shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer active:scale-[0.99] shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {markingRead ? (
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    ) : (
+                      <>
+                        <span className="material-symbols-outlined text-base">mark_email_read</span>
+                        Marquer comme lu
+                      </>
+                    )}
+                  </button>
                 )}
               </div>
 
@@ -573,9 +602,14 @@ export default function AdminQuotes() {
             <div className="bg-white px-5 py-3 border-t border-gray-100 flex items-center justify-between gap-3 flex-shrink-0">
               <button
                 onClick={handleDownloadPdf}
-                className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors"
+                disabled={downloadingPdf}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-primary hover:bg-[#1b4c00] text-white rounded-xl text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span className="material-symbols-outlined text-sm">download</span>
+                {downloadingPdf ? (
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                ) : (
+                  <span className="material-symbols-outlined text-sm">download</span>
+                )}
                 Télécharger Fiche (PDF)
               </button>
 
@@ -583,9 +617,8 @@ export default function AdminQuotes() {
                 onClick={() => {
                   setShowModal(false);
                   setSelectedQuote(null);
-                  setUploadSuccess(false);
                 }}
-                className="px-5 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-xs font-bold transition-colors"
+                className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-xs font-bold transition-colors"
               >
                 Fermer
               </button>

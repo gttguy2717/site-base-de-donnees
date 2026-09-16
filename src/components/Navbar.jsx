@@ -21,8 +21,9 @@ function AccountButton({ icon, label, onClick, badge }) {
   );
 }
 
-export default function Navbar({ onOpenDevis, activeTab = 'home', setActiveTab, navigateTo }) {
+export default function Navbar({ onOpenDevis, activeTab = 'home', setActiveTab, navigateTo, forceSolid = false }) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [navbarHidden, setNavbarHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
@@ -32,6 +33,8 @@ export default function Navbar({ onOpenDevis, activeTab = 'home', setActiveTab, 
 
   const { user, client, token, logout } = useAuth();
   const isClient = user?.role === 'CLIENT';
+  // Le panier (produits négoce) est accessible à tous : visiteurs non connectés et clients.
+  const showCommerceButton = !(user?.role === 'ADMIN' || user?.role === 'MANAGER');
   const accountName = client?.company?.name || client?.firstName || user?.email?.split('@')[0] || 'Mon compte';
 
   const servicesTimeoutRef = useRef(null);
@@ -69,6 +72,17 @@ export default function Navbar({ onOpenDevis, activeTab = 'home', setActiveTab, 
         }
       } catch (error) {
         console.warn('Failed to load vehicle cart from localStorage:', error);
+      }
+
+      // Count catalog (négoce) items from localStorage
+      try {
+        const userId = user?.id || user?.userId || 'guest';
+        const negoceCart = JSON.parse(localStorage.getItem(`soutarah_negoce_cart_${userId}`) || '[]');
+        if (Array.isArray(negoceCart)) {
+          count += negoceCart.length;
+        }
+      } catch (error) {
+        console.warn('Failed to load négoce cart from localStorage:', error);
       }
 
       // Count product items from API (for logged in clients)
@@ -145,17 +159,47 @@ export default function Navbar({ onOpenDevis, activeTab = 'home', setActiveTab, 
     };
   }, [isClient, token, user]);
 
+  // Mode solide : sur les pages négoce/location la navbar ne doit JAMAIS être transparente.
+  // `forceSolid` est passé directement par la page (source de vérité fiable) ; le flag
+  // body.dataset.keepNavbar reste en secours pour les autres composants.
+  const [bodySolid, setBodySolid] = useState(document.body?.dataset?.keepNavbar === 'true');
   useEffect(() => {
+    const syncSolid = () => setBodySolid(document.body?.dataset?.keepNavbar === 'true');
+    syncSolid();
+    const observer = new MutationObserver(syncSolid);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['data-keep-navbar'] });
+    return () => observer.disconnect();
+  }, []);
+  const solidMode = forceSolid || bodySolid;
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
     const handleScroll = () => {
-      if (window.scrollY > 30) {
+      const y = window.scrollY;
+      if (y > 30) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
       }
+      // Bascule navbar / barre sticky (pages négoce & location) :
+      // - swipe vers le bas (descente)  → navbar masquée (la barre recherche+onglets prend le relais)
+      // - swipe vers le haut (remontée) → navbar réaffichée (la barre sticky se masque)
+      // Seuil de 3px pour éviter le frémissement sur les micro-scrolls.
+      if (y > 160 && y > lastScrollY + 3) {
+        setNavbarHidden(true);
+      } else if (y < lastScrollY - 3 || y <= 120) {
+        setNavbarHidden(false);
+      }
+      lastScrollY = y;
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Prévenir les autres composants (ex. la barre de recherche du catalogue) que la navbar est masquée.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('soutarah-navbar-visible', { detail: { hidden: navbarHidden } }));
+  }, [navbarHidden]);
 
   // Charger les annonces et la hauteur de barre de la barre défilante
   useEffect(() => {
@@ -215,8 +259,8 @@ export default function Navbar({ onOpenDevis, activeTab = 'home', setActiveTab, 
   };
 
   return (
-    <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-      isScrolled
+    <header className={`fixed top-0 w-full z-50 will-change-transform transition-all duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${navbarHidden ? '-translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'} ${
+      (isScrolled || solidMode)
         ? 'glass-nav shadow-md'
         : (activeTab === 'about' || activeTab === 'services')
           ? 'glass-nav-muted'
@@ -235,7 +279,7 @@ export default function Navbar({ onOpenDevis, activeTab = 'home', setActiveTab, 
                     key={i}
                     className="inline-flex items-center gap-2 px-7 tracking-[0.14em] uppercase"
                     style={{
-                      color: item.color === 'transparent' ? '#111827' : '#ffffff',
+                      color: item.color === 'transparent' ? '#ffffff' : '#ffffff',
                       backgroundColor: item.color === 'transparent' ? 'transparent' : (item.color || '#173d23'),
                       fontSize: item.textSize === 'text-xs' ? '12px' : item.textSize === 'text-sm' ? '14px' : item.textSize === 'text-base' ? '16px' : '11px',
                       fontWeight: item.fontStyle?.includes('bold') ? '700' : '400',
@@ -377,8 +421,8 @@ export default function Navbar({ onOpenDevis, activeTab = 'home', setActiveTab, 
             </button>
           )}
 
-          {/* Cart Button — visible uniquement pour les clients connectés */}
-          {isClient && (
+          {/* Cart Button — accessible aux visiteurs et aux clients */}
+          {showCommerceButton && user && (
             <button
               onClick={() => navigateTo('cart')}
               className="inline-flex items-center gap-2.5 rounded-full border border-primary/20 bg-white/90 px-4 py-2 text-sm font-bold text-[#30343b] shadow-sm transition hover:border-primary hover:bg-white active:scale-95"
@@ -551,15 +595,75 @@ export default function Navbar({ onOpenDevis, activeTab = 'home', setActiveTab, 
                 )}
               </button>
             )}
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                navigateTo('login');
-              }}
-              className="mt-2 w-full bg-primary text-white py-3 rounded-full font-bold text-center shimmer-btn shadow-md"
-            >
-              Demander un Devis
-            </button>
+            {showCommerceButton && user && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigateTo('cart');
+                }}
+                className="flex items-center justify-between py-2 border-b border-gray-100 text-left text-base font-semibold text-on-surface-variant"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[20px] text-primary">shopping_cart</span>
+                  Mon panier
+                </span>
+                {cartCount > 0 && (
+                  <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-600 px-1.5 text-[10px] font-black leading-none text-white">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+            )}
+            {user ? (
+              <>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    openAccountSection(isClient ? 'client' : 'admin', { tab: 'account' });
+                  }}
+                  className="flex items-center justify-between py-2 border-b border-gray-100 text-left text-base font-semibold text-on-surface-variant"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[20px] text-primary">account_circle</span>
+                    <span className="max-w-52 truncate">Bonjour, {accountName}</span>
+                  </span>
+                  <span className="material-symbols-outlined text-[18px] text-gray-400">chevron_right</span>
+                </button>
+                {isClient && (
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      openAccountSection('client', { tab: 'devis' });
+                    }}
+                    className="flex items-center gap-2 py-2 border-b border-gray-100 text-left text-base font-semibold text-on-surface-variant"
+                  >
+                    <span className="material-symbols-outlined text-[20px] text-primary">description</span>
+                    Mes devis
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    logout();
+                    if (navigateTo) navigateTo('home');
+                  }}
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-orange-500/30 bg-orange-50 py-3 font-bold text-[#e87818] transition hover:bg-orange-100"
+                >
+                  <span className="material-symbols-outlined text-[20px]">logout</span>
+                  Déconnexion
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigateTo('login');
+                }}
+                className="mt-2 w-full bg-primary text-white py-3 rounded-full font-bold text-center shimmer-btn shadow-md"
+              >
+                Demander un Devis
+              </button>
+            )}
           </nav>
         </div>
       )}

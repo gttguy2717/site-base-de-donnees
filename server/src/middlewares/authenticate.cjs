@@ -43,4 +43,36 @@ async function optionalAuthenticate(request, _response, next) {
   return authenticate(request, _response, next);
 }
 
-module.exports = { authenticate, authorize, optionalAuthenticate };
+/**
+ * Authentification acceptant aussi le jeton dans la requête (?token=...).
+ * Nécessaire pour les téléchargements via expo-file-system (downloadAsync)
+ * qui ne permet pas de définir des en-têtes HTTP personnalisés.
+ */
+async function authenticateWithTokenQuery(request, _response, next) {
+  const authorization = request.get('authorization');
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authenticate(request, _response, next);
+  }
+  const token = request.query?.token;
+  if (!token) {
+    const error = new Error('Authentification requise.');
+    error.statusCode = 401;
+    return next(error);
+  }
+  try {
+    const payload = verifyAccessToken(token);
+    const user = await User.findByPk(payload.sub, { attributes: { exclude: ['mot_de_passe_hash'] } });
+    if (!user || !user.est_actif) {
+      const error = new Error('Session invalide ou compte désactivé.');
+      error.statusCode = 401;
+      throw error;
+    }
+    request.auth = { user, token: payload };
+    return next();
+  } catch (error) {
+    if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') error.statusCode = 401;
+    return next(error);
+  }
+}
+
+module.exports = { authenticate, authorize, optionalAuthenticate, authenticateWithTokenQuery };

@@ -1,0 +1,36 @@
+@startuml
+title Diagramme de séquence : Paiement en ligne sécurisé
+
+scale 0.95
+
+actor "Client" as C
+participant "Interface Web" as UI
+participant "Serveur API" as API
+participant "Genius Pay" as PAY
+participant "Base de données" as DB
+participant "Messagerie Brevo" as MAIL
+
+C -> UI : Choisir paiement en ligne et valider
+UI -> API : Initialiser paiement (POST /initialize)
+API -> PAY : Créer session de paiement
+PAY --> API : URL guichet sécurisé
+API --> UI : Redirection vers Genius Pay
+UI -> PAY : Afficher guichet de paiement
+
+C -> PAY : Valider paiement (Carte ou Mobile OTP)
+PAY -> PAY : Traiter la transaction bancaire
+
+alt Transaction acceptée (succès)
+    PAY -> API : Notification de succès (Webhook)
+    API -> DB : Mettre à jour commande (Statut: PAYÉ)
+    API -> MAIL : Envoyer reçu par email
+    MAIL -> C : Réception reçu de paiement
+    PAY --> UI : Redirection retour succès
+    UI --> C : Afficher confirmation de paiement
+
+else Transaction refusée / annulée (échec)
+    PAY --> UI : Redirection retour échec
+    UI --> C : Afficher alerte « Paiement non abouti, veuillez réessayer »
+end
+
+@enduml

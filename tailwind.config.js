@@ -30,9 +30,9 @@ export default {
         "glass-border": "rgba(255, 255, 255, 0.2)",
       },
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
-        display: ["Manrope", "sans-serif"],
-        manrope: ["Manrope", "sans-serif"],
+        sans: ["Varela Round", "sans-serif"],
+        display: ["Varela Round", "sans-serif"],
+        manrope: ["Varela Round", "sans-serif"],
       },
       spacing: {
         "unit": "8px",

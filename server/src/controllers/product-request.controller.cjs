@@ -1,6 +1,30 @@
 const { Client, Company, Notification, ProductRequest, User } = require('../models/index.cjs');
 const { sendProductRequestEmail } = require('../services/mail.service.cjs');
 
+// Récupérer toutes les demandes de produits (admin)
+async function getAllProductRequests(request, response, next) {
+  try {
+    const requests = await ProductRequest.findAll({
+      include: [
+        {
+          model: Client,
+          as: 'client',
+          required: false,
+          include: [
+            { model: User, as: 'user', attributes: ['id', 'email', 'telephone'] },
+            { model: Company, as: 'entreprise', required: false },
+          ],
+        },
+      ],
+      order: [['cree_le', 'DESC']],
+    });
+
+    response.json({ requests });
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function createProductRequest(request, response, next) {
   try {
     const client = await Client.findOne({ where: { utilisateur_id: request.auth.user.id }, include: [{ model: Company, as: 'entreprise' }] });
@@ -31,4 +55,4 @@ async function createProductRequest(request, response, next) {
   } catch (error) { next(error); }
 }
 
-module.exports = { createProductRequest };
+module.exports = { createProductRequest, getAllProductRequests };

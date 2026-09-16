@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../api/client';
 import { useAuth } from './AuthContext';
+import { BuildQuotePayload, LastOrder, ValidateQuoteResult } from '../types';
 
 export interface CartItemProduct {
   id: string;
@@ -53,7 +54,10 @@ interface CartContextType {
   updateItemQuantity: (itemId: string, quantity: number) => Promise<void>;
   removeItem: (itemId: string) => Promise<void>;
   clearCart: () => Promise<void>;
-  validateCartQuote: (notes?: string) => Promise<{ success: boolean; message: string; reference?: string }>;
+  validateCartQuote: (payload: BuildQuotePayload) => Promise<ValidateQuoteResult>;
+  saveLastOrder: (order: LastOrder) => Promise<void>;
+  getLastOrder: () => Promise<LastOrder | null>;
+  clearLastOrder: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -162,19 +166,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         totalLigne: (product.prix_unitaire || 0) * quantity,
       };
       setItems(prev => [...prev, newItem]);
-
-      // Envoi de la notification e-mail d'ajout au panier
-      api.post('/quote-requests', {
-        service: 'Ajout au panier',
-        title: `Ajout au panier: ${product.nom}`,
-        budget: String((product.prix_unitaire || 0) * quantity),
-        description: `Un client a ajouté ${quantity}x ${product.nom} à son panier.`,
-        name: user?.email ? user.email.split('@')[0] : 'Client Mobile',
-        email: user?.email || 'client@soutarah.ci',
-        phone: user?.telephone || '0706919191',
-        location: 'Abidjan',
-      }).catch(err => console.error('Erreur email panier produit:', err?.response?.data || err));
-
       return true;
     }
   };
@@ -216,17 +207,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const updated = [...list, newVehicleItem];
       await AsyncStorage.setItem(vehicleCartKey, JSON.stringify(updated));
 
-      // Notifier le backend (email Brevo manager)
-      api.post('/quote-requests', {
-        service: 'Ajout au panier',
-        title: `Ajout au panier: ${vehicle.marque} ${vehicle.modele}`,
-        budget: String(totalLigne),
-        description: `Un client a ajouté le véhicule ${vehicle.marque} ${vehicle.modele} (${vehicle.days} jours) à son panier.`,
-        name: user?.email ? user.email.split('@')[0] : 'Client Mobile',
-        email: user?.email || 'client@soutarah.ci',
-        phone: user?.telephone || '0706919191',
-        location: 'Abidjan',
-      }).catch(err => console.error('Erreur email panier véhicule:', err?.response?.data || err));
+      // Notifier le backend comme le fait le site (notification admin + email
+      // « Location ajoutée au panier » via /cart/notify-vehicle).
+      if (token) {
+        api.post('/cart/notify-vehicle', {
+          vehicleId: vehicle.id,
+          vehicleName: `${vehicle.marque} ${vehicle.modele}`,
+          startDate: vehicle.startDate,
+          endDate: vehicle.endDate,
+          days: vehicle.days,
+          withDriver: vehicle.withDriver,
+        }).catch(err => console.error('Erreur notification ajout véhicule:', err?.response?.data || err));
+      }
 
       await refreshCart();
       return true;
@@ -304,33 +296,70 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setItems([]);
   };
 
-  // ─── Valider la commande / demande de devis synchronisée ─────────────────
-  const validateCartQuote = async (notes?: string) => {
+  // ─── Créer la demande de devis (MÊME PROCÉDÉ QUE LE SITE) ───────────────
+  // POST /quote-requests avec le snapshot des articles. Le panier N'EST PAS
+  // vidé ici : il ne sera vidé qu'après la confirmation de la commande
+  // (page « Passer commande »), exactement comme sur le site.
+  const validateCartQuote = async (payload: BuildQuotePayload) => {
     if (!token) {
       return { success: false, message: 'Veuillez vous connecter pour valider votre demande.' };
     }
 
     try {
-      // 1. Appel de l'API de validation du panier
-      const res = await api.post<{ quote?: { reference?: string }; message?: string }>('/cart/validate', {
-        notes,
-        items,
+      const res = await api.post<{ quoteRequest?: { reference?: string } }>('/quote-requests', {
+        service: payload.service,
+        title: payload.title,
+        name: payload.name,
+        email: payload.email,
+        phone: payload.phone,
+        location: payload.location,
+        description: payload.description,
+        budget: payload.budget,
+        items: payload.items,
       });
 
-      // 2. Vider le panier après validation
-      await clearCart();
-
+      const reference = res?.quoteRequest?.reference || '';
       return {
-        success: true,
-        message: res?.message || 'Votre demande de devis a été transmise avec succès !',
-        reference: res?.quote?.reference,
+        success: !!reference,
+        message: reference
+          ? 'Votre devis a été créé avec succès !'
+          : 'Le devis a été créé sans référence.',
+        reference,
+        quoteRequest: res?.quoteRequest as any,
       };
     } catch (e: any) {
+      console.error('Erreur création devis:', e);
       return {
         success: false,
-        message: e?.message || 'Une erreur est survenue lors de la validation du panier.',
+        message: e?.message || 'Une erreur est survenue lors de la création du devis.',
       };
     }
+  };
+
+  // ─── Dernière commande — même clé locale que le site web ────────────────
+  const LAST_ORDER_KEY = '@soutarah_last_order';
+
+  const saveLastOrder = async (order: LastOrder) => {
+    try {
+      await AsyncStorage.setItem(LAST_ORDER_KEY, JSON.stringify(order));
+    } catch (e) {
+      console.error('Erreur enregistrement commande:', e);
+    }
+  };
+
+  const getLastOrder = async (): Promise<LastOrder | null> => {
+    try {
+      const raw = await AsyncStorage.getItem(LAST_ORDER_KEY);
+      return raw ? (JSON.parse(raw) as LastOrder) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const clearLastOrder = async () => {
+    try {
+      await AsyncStorage.removeItem(LAST_ORDER_KEY);
+    } catch {}
   };
 
   // Calculs totaux
@@ -351,6 +380,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         removeItem,
         clearCart,
         validateCartQuote,
+        saveLastOrder,
+        getLastOrder,
+        clearLastOrder,
       }}
     >
       {children}

@@ -19,7 +19,7 @@ export default function AdminSettings({ navigateTo }) {
   // Informations entreprise
   const [company, setCompany] = useState({
     name: 'SOUTARAH GROUP',
-    address: 'Abidjan, Riviera-Palmeraie SIPIM 4',
+    address: 'Riviera Palmeraie Saint Viateur, Cité Kimi',
     phone: '+225 07 18 38 38 38',
     email: 'contact@soutarah.com',
     website: 'www.soutarah.com',

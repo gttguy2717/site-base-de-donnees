@@ -13,11 +13,10 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { api } from '../api/client';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { generateAndDownloadQuotePdf } from '../services/pdfService';
+import { computeQuoteTotals } from '../lib/quoteTotals';
 import { colors, API_URL } from '../theme';
 
 const formatMoney = (value: number | string | undefined | null): string => {
@@ -47,10 +46,16 @@ export default function CartScreen({ navigation }: { navigation: any }) {
     removeItem,
     clearCart,
     validateCartQuote,
+    saveLastOrder,
   } = useCart();
   const [validating, setValidating] = useState(false);
   const [notes, setNotes] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+
+  // Totaux conformes au modèle officiel SOUTARAH (TDT uniquement sur véhicules)
+  const vehicleHT = items.filter(i => i.type === 'vehicle').reduce((s, i) => s + (i.totalLigne || 0), 0);
+  const ht = items.reduce((s, i) => s + (i.totalLigne || 0), 0);
+  const displayTotals = computeQuoteTotals(ht, vehicleHT);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -65,7 +70,7 @@ export default function CartScreen({ navigation }: { navigation: any }) {
     ]);
   };
 
-  const handleValidate = async () => {
+const handleValidate = async () => {
     if (!user) {
       Alert.alert('Connexion requise', 'Veuillez vous connecter pour valider votre demande de devis.', [
         { text: 'Annuler', style: 'cancel' },
@@ -81,98 +86,124 @@ export default function CartScreen({ navigation }: { navigation: any }) {
 
     Alert.alert(
       'Transmission du devis',
-      `Confirmez-vous l'envoi de votre demande pour un montant total estimé de ${formatMoney(totalAmount)} ? Votre devis en PDF sera automatiquement généré et téléchargé.`,
+      `Confirmez-vous l'envoi de votre demande pour un montant total estimé de ${formatMoney(displayTotals.ttc)} ? Votre devis en PDF sera automatiquement généré.`,
       [
         { text: 'Annuler', style: 'cancel' },
         {
-          text: 'Confirmer & Télécharger PDF',
+          text: 'Confirmer la demande',
           onPress: async () => {
             setValidating(true);
             try {
-              // Copie locale des items avant réinitialisation du panier
               const currentItems = [...items];
-              const currentTotal = totalAmount;
+              const currentNotes = notes;
 
-              const res = await validateCartQuote(notes);
-              
-              // On génère toujours le PDF, même si l'API de validation échoue, pour garantir l'expérience client
-              const quoteRef = res?.reference || `DMD-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+              // 1. Demande de devis via /quote-requests (MÊME PROCÉDÉ QUE LE SITE :
+              //    le panier n'est PAS vidé ici, il ne le sera qu'après confirmation).
+              const clientName = [client?.prenom, client?.nom].filter(Boolean).join(' ') || user?.email?.split('@')[0] || 'Client SOUTARAH';
+              const phone = user?.telephone || '';
+              const description = currentItems
+                .map(it => `${it.quantite || 1}x ${it.type === 'vehicle' ? (it.vehicleName || 'Location Véhicule') : (it.produit?.nom || 'Article')}`)
+                .join(' | ')
+                .slice(0, 3000);
 
-              // Génération et téléchargement automatique du PDF
-              await generateAndDownloadQuotePdf({
-                  reference: quoteRef,
-                  client: {
-                    name: [client?.prenom, client?.nom].filter(Boolean).join(' ') || user?.email?.split('@')[0] || 'Client',
-                    companyName: client?.entreprise?.nom,
-                    phone: user?.telephone,
-                    email: user?.email,
-                    address: client?.adresse || undefined,
-                  },
-                  items: currentItems.map(it => ({
-                    title: it.type === 'vehicle' ? it.vehicleName || 'Location Véhicule' : it.produit?.nom || 'Fourniture',
-                    vehicleModel: it.type === 'vehicle' ? it.vehicleName : undefined,
-                    destination: 'ABIDJAN',
-                    startDate: it.startDate,
-                    endDate: it.endDate,
-                    days: it.days || 1,
-                    quantity: it.quantite || 1,
-                    dailyPrice: it.prixUnitaire || 0,
-                    total: it.totalLigne || (it.prixUnitaire * (it.days || 1)),
-                    imageUrl: it.imageUrl || it.produit?.image_url,
-                  })),
-                  totalAmount: currentTotal,
-                  notes: notes || undefined,
-                });
-
-              // Enregistrement local garanti pour "Mes devis"
-              const clientName = [client?.prenom, client?.nom].filter(Boolean).join(' ') || user?.email?.split('@')[0] || 'Client';
-              const newQuoteObj = {
-                id: `quote_${Date.now()}`,
-                reference: quoteRef,
-                service: 'Devis Panier SOUTARAH',
-                titre: 'Devis Panier SOUTARAH',
-                budget: currentTotal,
-                cree_le: new Date().toISOString(),
-                statut: 'PENDING',
-              };
-
-              try {
-                const savedQuotes = await AsyncStorage.getItem('@soutarah_my_quotes');
-                const list = savedQuotes ? JSON.parse(savedQuotes) : [];
-                await AsyncStorage.setItem('@soutarah_my_quotes', JSON.stringify([newQuoteObj, ...list]));
-              } catch (err) {
-                console.error('Erreur sauvegarde devis local:', err);
-              }
-
-              // Envoi de la notification au backend / SMTP Brevo email
-              api.post('/quote-requests', {
-                service: 'Devis Panier SOUTARAH',
-                title: `Demande de devis (${quoteRef})`,
-                budget: String(currentTotal),
-                description: currentItems.map(it => `${it.quantite || 1}x ${it.type === 'vehicle' ? it.vehicleName : it.produit?.nom}`).join(', '),
-                name: clientName || 'Client SOUTARAH',
+              const res = await validateCartQuote({
+                service: 'Négoce et Location',
+                title: 'Devis Panier SOUTARAH',
+                name: clientName,
                 email: user?.email || 'client@soutarah.ci',
-                phone: user?.telephone || '0706919191',
-                location: 'Abidjan',
-              }).catch(() => {});
+                phone: phone || '0700000000',
+                location: client?.adresse || 'Abidjan',
+                description: description || 'Devis panier client',
+                budget: String(displayTotals.ttc),
+                items: currentItems.map(ci => ({
+                  id: ci.id,
+                  type: ci.type,
+                  name: ci.type === 'vehicle' ? ci.vehicleName : ci.produit?.nom,
+                  vehicleName: ci.vehicleName,
+                  productName: ci.produit?.nom,
+                  quantity: ci.quantite,
+                  unitPrice: ci.prixUnitaire,
+                  totalPrice: ci.totalLigne,
+                  startDate: ci.startDate,
+                  endDate: ci.endDate,
+                  days: ci.days,
+                  withDriver: ci.withDriver,
+                  imageUrl: ci.imageUrl || ci.produit?.image_url,
+                })),
+              });
 
-              await clearCart();
-
-                Alert.alert(
-                  '✅ Demande transmise & Devis généré',
-                  `Votre demande de devis (${quoteRef}) a été enregistrée avec succès et votre document PDF est prêt.`,
-                  [
-                    {
-                      text: 'Voir mes devis',
-                      onPress: () => navigation.navigate('Reservations'),
-                    },
-                  ]
-                );
-              } catch (e: any) {
-                Alert.alert('Erreur', e?.message || 'Une erreur est survenue.');
-              } finally {
+              if (!res.success) {
+                Alert.alert('Erreur', res.message);
                 setValidating(false);
+                return;
               }
+              const quoteRef = res.reference || `DEV-${Date.now()}`;
+
+              // 2. Générer et télécharger le PDF avec le snapshot + la référence serveur
+              await generateAndDownloadQuotePdf({
+                reference: quoteRef,
+                client: {
+                  name: clientName,
+                  companyName: client?.entreprise?.nom,
+                  phone: phone,
+                  email: user?.email,
+                  address: client?.adresse || undefined,
+                },
+                items: currentItems.map(it => ({
+                  title: it.type === 'vehicle' ? it.vehicleName || 'Location Véhicule' : it.produit?.nom || 'Fourniture',
+                  vehicleModel: it.type === 'vehicle' ? it.vehicleName : undefined,
+                  destination: 'ABIDJAN',
+                  startDate: it.startDate,
+                  endDate: it.endDate,
+                  days: it.days || 1,
+                  quantity: it.quantite || 1,
+                  dailyPrice: it.prixUnitaire || 0,
+                  total: it.totalLigne || (it.prixUnitaire * (it.days || 1)),
+                  imageUrl: it.imageUrl || it.produit?.image_url,
+                })),
+                totalAmount: displayTotals.ttc,
+                notes: currentNotes || undefined,
+              });
+// 3. Enregistrer la commande puis rediriger vers « Passer commande »
+              //    (le panier reste intact tant que la commande n'est pas confirmée)
+              const nVehicles = currentItems.filter(i => i.type === 'vehicle').length;
+              await saveLastOrder({
+                reference: quoteRef,
+                name: clientName,
+                phone,
+                service: 'Négoce et Location',
+                ht: displayTotals.ht,
+                tva: displayTotals.tva,
+                tdt: displayTotals.tdt,
+                carburant: displayTotals.carburant,
+                peage: displayTotals.peage,
+                ttc: displayTotals.ttc,
+                itemCount: currentItems.length,
+                summaryTitle: `${nVehicles} location(s) de véhicule${currentItems.length > nVehicles ? ' · articles' : ''}`,
+                items: currentItems.map(ci => ({
+                  id: ci.id,
+                  type: ci.type,
+                  name: ci.type === 'vehicle' ? ci.vehicleName : ci.produit?.nom,
+                  vehicleName: ci.vehicleName,
+                  productName: ci.produit?.nom,
+                  quantity: ci.quantite,
+                  unitPrice: ci.prixUnitaire,
+                  totalPrice: ci.totalLigne,
+                  startDate: ci.startDate,
+                  endDate: ci.endDate,
+                  days: ci.days,
+                  withDriver: ci.withDriver,
+                  imageUrl: ci.imageUrl || ci.produit?.image_url,
+                })),
+                createdAt: new Date().toISOString(),
+              });
+
+              navigation.getParent()?.navigate('PasserCommande');
+            } catch (e: any) {
+              Alert.alert('Erreur', e?.message || 'Une erreur est survenue lors de la création du devis.');
+            } finally {
+              setValidating(false);
+            }
           },
         },
       ]
@@ -324,24 +355,24 @@ export default function CartScreen({ navigation }: { navigation: any }) {
 
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Montant HT</Text>
-                <Text style={styles.summaryVal}>{formatMoney(totalAmount)}</Text>
+                <Text style={styles.summaryVal}>{formatMoney(displayTotals.ht)}</Text>
               </View>
 
               <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>TVA 18% (non facturée)</Text>
-                <Text style={styles.summaryVal}>{formatMoney(Math.round(totalAmount * 0.18))}</Text>
+                <Text style={styles.summaryLabel}>TVA 18%</Text>
+                <Text style={styles.summaryVal}>{formatMoney(displayTotals.tva)}</Text>
               </View>
 
               <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>TDT 2.5% (non facturée)</Text>
-                <Text style={styles.summaryVal}>{formatMoney(Math.round(totalAmount * 0.025))}</Text>
+                <Text style={styles.summaryLabel}>TDT 2.5% (sur véhicules)</Text>
+                <Text style={styles.summaryVal}>{formatMoney(displayTotals.tdt)}</Text>
               </View>
 
               <View style={styles.summaryDivider} />
 
               <View style={styles.summaryRowTotal}>
                 <Text style={styles.summaryTotalLabel}>Montant TTC Estimé</Text>
-                <Text style={styles.summaryTotalVal}>{formatMoney(totalAmount)}</Text>
+                <Text style={styles.summaryTotalVal}>{formatMoney(displayTotals.ttc)}</Text>
               </View>
 
               <TouchableOpacity

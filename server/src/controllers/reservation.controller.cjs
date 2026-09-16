@@ -202,19 +202,22 @@ async function getMyReservations(request, response, next) {
 async function notifyVehicleAdded(request, response, next) {
   try {
     const userId = request.auth.user.id;
-    const { vehicleName, startDate, endDate, days, withDriver } = request.body || {};
+    const { vehicleId, vehicleName, startDate, endDate, days, withDriver } = request.body || {};
 
     // Vérifier si le véhicule est déjà réservé sur la période demandée
-    if (vehicleName && startDate && endDate) {
-      const vehicle = await Vehicle.findOne({
-        where: {
-          [Op.or]: [
-            { marque: vehicleName },
-            { modele: vehicleName },
-            { [Op.and]: [{ marque: { [Op.like]: `%${vehicleName.split(' ')[0] || ''}%` } }, { modele: { [Op.like]: `%${vehicleName.split(' ')[1] || ''}%` } }] },
-          ],
-        },
-      });
+    if ((vehicleId || vehicleName) && startDate && endDate) {
+      // Priorité à l'ID réel du véhicule envoyé par le frontend
+      const vehicle = vehicleId
+        ? await Vehicle.findByPk(vehicleId)
+        : await Vehicle.findOne({
+            where: {
+              [Op.or]: [
+                { marque: vehicleName },
+                { modele: vehicleName },
+                { [Op.and]: [{ marque: { [Op.like]: `%${vehicleName.split(' ')[0] || ''}%` } }, { modele: { [Op.like]: `%${vehicleName.split(' ')[1] || ''}%` } }] },
+              ],
+            },
+          });
 
       if (vehicle) {
         const requestedStart = new Date(startDate);

@@ -4,7 +4,7 @@ import { apiRequest } from '../lib/api';
 
 export default function ReqModal({ onClose, navigateTo }) {
   const { token } = useAuth();
-  const [formData, setFormData] = useState({ productName: '', category: '', description: '', desiredQuantity: '', comment: '' });
+  const [formData, setFormData] = useState({ productName: '', category: '', description: '', desiredQuantity: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
@@ -29,11 +29,10 @@ export default function ReqModal({ onClose, navigateTo }) {
           category: formData.category || undefined,
           description: formData.description || undefined,
           desiredQuantity: formData.desiredQuantity ? Number(formData.desiredQuantity) : undefined,
-          comment: formData.comment || undefined,
         }),
       });
       setNotice('Votre demande a ete envoyee. Notre equipe vous contactera rapidement.');
-      setFormData({ productName: '', category: '', description: '', desiredQuantity: '', comment: '' });
+      setFormData({ productName: '', category: '', description: '', desiredQuantity: '' });
     } catch (err) {
       setError(err.message || 'Une erreur est survenue.');
     } finally {
@@ -42,26 +41,32 @@ export default function ReqModal({ onClose, navigateTo }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-md animate-fadeIn overflow-y-auto">
-      <div className="w-full max-w-lg my-8 overflow-hidden rounded-[30px] border border-gray-100 bg-white shadow-2xl">
-        <div className="flex items-center justify-between border-b border-gray-100 bg-gradient-to-r from-[#173d23] to-green-700 px-6 py-4">
-          <div>
-            <h3 className="font-display text-lg font-extrabold text-white">Produit non trouve ?</h3>
-            <p className="text-xs text-emerald-100/80 mt-0.5">Decrivez le produit que vous recherchez</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-md animate-fadeIn">
+      <div className="relative flex max-h-[90dvh] w-full max-w-lg flex-col overflow-hidden rounded-[30px] border border-white/70 bg-white shadow-2xl">
+        <button onClick={onClose} className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-gray-500 shadow-md transition-colors hover:bg-gray-100">
+          <span className="material-symbols-outlined text-xl">close</span>
+        </button>
+
+        <div className="relative shrink-0 overflow-hidden bg-gradient-to-br from-[#143e22] via-[#2d5f1e] to-[#4a7c59] p-6 text-white">
+          <div className="absolute inset-0 bg-[url('/fond-home.png')] opacity-10 bg-cover" />
+          <div className="relative pr-10">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
+              <span className="material-symbols-outlined text-[16px]">search</span>
+              Produit non trouvé
+            </div>
+            <h3 className="mt-2.5 font-display text-xl font-extrabold">Demandez un produit spécifique</h3>
+            <p className="mt-1 text-sm text-emerald-100">Décrivez le produit recherché, notre équipe vous recontactera rapidement.</p>
           </div>
-          <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full text-white/70 hover:bg-white/20 hover:text-white transition">
-            <span className="material-symbols-outlined text-xl">close</span>
-          </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="min-h-0 flex-1 overflow-y-auto p-5 space-y-3">
           {notice && <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-bold text-emerald-800">{notice}</div>}
           {error && <div className="rounded-2xl border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-700">{error}</div>}
 
           <div>
             <label className="mb-1.5 block text-xs font-bold text-gray-700">Nom du produit recherche *</label>
             <input type="text" name="productName" value={formData.productName} onChange={handleChange} required
-              placeholder="Ex: Tuyau PVC 50, Cable H200 3x2.5..."
+              placeholder="Ex: Fil HG 1000 4mm², Goulotte 40x25..."
               className="w-full rounded-2xl border border-gray-200 bg-[#f9fbf9] px-4 py-3 text-sm font-semibold text-[#111827] outline-none transition focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20" />
           </div>
 
@@ -71,7 +76,7 @@ export default function ReqModal({ onClose, navigateTo }) {
               className="w-full rounded-2xl border border-gray-200 bg-[#f9fbf9] px-4 py-3 text-sm font-semibold text-[#111827] outline-none transition focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20">
               <option value="">Selectionner une categorie...</option>
               <option value="Quincaillerie">Quincaillerie</option>
-              <option value="Cables & Electricite">Cables & Electricite</option>
+              <option value="Cables & Electricite">Fils & Electricite</option>
               <option value="Groupes Electrogenes">Groupes Electrogenes</option>
               <option value="Plomberie">Plomberie</option>
               <option value="Peinture & Finition">Peinture & Finition</option>
@@ -88,13 +93,7 @@ export default function ReqModal({ onClose, navigateTo }) {
 
           <div>
             <label className="mb-1.5 block text-xs font-bold text-gray-700">Description / Specifications</label>
-            <textarea name="description" value={formData.description} onChange={handleChange} rows={3} placeholder="Decrivez le produit, les dimensions, la marque..."
-              className="w-full rounded-2xl border border-gray-200 bg-[#f9fbf9] px-4 py-3 text-sm font-semibold text-[#111827] outline-none transition focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 resize-none" />
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-xs font-bold text-gray-700">Commentaire</label>
-            <textarea name="comment" value={formData.comment} onChange={handleChange} rows={2} placeholder="Informations complementaires..."
+            <textarea name="description" value={formData.description} onChange={handleChange} rows={2} placeholder="Decrivez le produit, les dimensions, la marque..."
               className="w-full rounded-2xl border border-gray-200 bg-[#f9fbf9] px-4 py-3 text-sm font-semibold text-[#111827] outline-none transition focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 resize-none" />
           </div>
 

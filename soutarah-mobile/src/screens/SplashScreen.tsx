@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet, Image } from 'react-native';
-import { colors, radius, shadows } from '../theme';
+import { colors } from '../theme';
+
+const LOGO = require('../../assets/logo-soutarah.png');
 
 export default function SplashScreen() {
   const opacity = useRef(new Animated.Value(0)).current;
@@ -16,11 +18,8 @@ export default function SplashScreen() {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.logoContainer, { opacity, transform: [{ scale }] }]}>
-        <View style={styles.logoCircle}>
-          <Text style={styles.logoText}>S</Text>
-        </View>
-        <Text style={styles.title}>SOUTARAH</Text>
-        <Text style={styles.subtitle}>GROUP</Text>
+        <Image source={LOGO} style={styles.logoImage} resizeMode="contain" />
+        <Text style={styles.title}>SOUTARAH GROUP</Text>
       </Animated.View>
       <Text style={styles.tagline}>Mobilité · Énergie · Immobilier</Text>
     </View>
@@ -38,40 +37,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  contentContainer: {
-    alignItems: 'center',
-  },
-  logoCircle: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...shadows.lg,
-  },
-  logoText: {
-    fontSize: 52,
-    fontWeight: '900',
-    color: colors.darkGreen,
+  logoImage: {
+    width: 160,
+    height: 120,
+    marginBottom: 20,
   },
   title: {
-    marginTop: 20,
-    fontSize: 36,
+    marginTop: 12,
+    fontSize: 24,
     fontWeight: '900',
     color: colors.white,
-    letterSpacing: 8,
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.primaryLight,
-    letterSpacing: 12,
-    marginTop: 4,
+    letterSpacing: 4,
   },
   tagline: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 50,
     color: colors.white,
     opacity: 0.6,
     fontSize: 13,

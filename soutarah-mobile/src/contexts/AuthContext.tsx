@@ -22,26 +22,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setTokenState] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Restaurer la session au démarrage
+  // Restaurer la session au démarrage.
   useEffect(() => {
+    let cancelled = false;
+
     (async () => {
       try {
         const stored = await getToken();
-        if (stored) {
+
+        if (!cancelled && stored) {
           setTokenState(stored);
           try {
             const data = await api.get<{ user: User; client: Client }>('/auth/me');
-            setUser(data.user);
-            setClient(data.client);
+            if (!cancelled) {
+              setUser(data.user);
+              setClient(data.client);
+            }
           } catch {
-            await clearToken();
-            setTokenState(null);
+            // Token invalide, backend inaccessible ou session expirée.
+            if (!cancelled) {
+              await clearToken();
+              setTokenState(null);
+            }
           }
+        } else if (!cancelled) {
+          // Pas de token → on reste non authentifié (login screen).
+          setTokenState(null);
+        }
+      } catch (err: unknown) {
+        // Sécurité : même en cas d'erreur inattendue durant l'init,
+        // on garantit que l'écran de chargement se retire.
+        if (!cancelled) {
+          await clearToken().catch(() => undefined);
+          setTokenState(null);
         }
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const login = useCallback(async (payload: LoginPayload) => {

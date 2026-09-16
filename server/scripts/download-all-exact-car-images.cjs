@@ -1,4 +1,4 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const { sequelize, Vehicle } = require('../src/models/index.cjs');
@@ -78,7 +78,7 @@ const VEHICLE_CAR_SPECS = [
   { key: 'Tesla Model 3 Long Range', make: 'tesla', model: 'model-3', filename: 'tesla_model3.jpg' },
   { key: 'Jaguar XF Portfolio', make: 'jaguar', model: 'xf', filename: 'jaguar_xf.jpg' },
 
-  // ─── Citadines supplémentaires ───────────────────────────────────────────
+  // ─── Économiques supplémentaires ───────────────────────────────────────────
   { key: 'Toyota Yaris', make: 'toyota', model: 'yaris', filename: 'toyota_yaris.jpg' },
   { key: 'Hyundai i10', make: 'hyundai', model: 'i10', filename: 'hyundai_i10.jpg' },
   { key: 'Kia Picanto', make: 'kia', model: 'picanto', filename: 'kia_picanto.jpg' },

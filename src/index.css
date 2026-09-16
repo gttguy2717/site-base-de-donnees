@@ -370,7 +370,7 @@ a[href]:active {
 }
 
 .glass-nav {
-  background-color: rgba(255, 255, 255, 0.97);
+  background-color: #ffffff;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
@@ -428,6 +428,20 @@ a[href]:active {
 
 .ticker-track:hover {
   animation-play-state: paused;
+}
+
+/* Lisibilité : ombre légère derrière les textes du ticker (fond vert/doré) */
+.ticker-track span {
+  text-shadow: 0 1px 3px rgba(10, 30, 15, 0.55);
+}
+
+/* Masquer la barre de défilement horizontale des rangées d'onglets */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
 
 

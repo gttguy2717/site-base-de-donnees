@@ -172,6 +172,7 @@ export default function MyReservationsScreen({ navigation }: { navigation: any }
         await AsyncStorage.setItem('@soutarah_my_quotes', JSON.stringify(updated));
       }
     } catch {}
+    api.delete(`/quote-requests/${quoteId}`).catch(() => {});
     api.delete(`/quotes/${quoteId}`).catch(() => {});
   };
 

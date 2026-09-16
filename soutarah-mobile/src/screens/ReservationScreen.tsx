@@ -20,7 +20,6 @@ import { Vehicle, Reservation } from '../types';
 import { colors, spacing, radius, typography, shadows } from '../theme';
 
 const DESTINATIONS = ['Abidjan', 'Intérieur'];
-const COLORS = ['Noir', 'Blanc'];
 
 function formatDateFR(date: Date): string {
   const d = date.getDate().toString().padStart(2, '0');
@@ -40,7 +39,6 @@ export default function ReservationScreen({ route, navigation }: { route: any; n
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
   const [destination, setDestination] = useState('Abidjan');
-  const [vehicleColor, setVehicleColor] = useState('Noir');
   const [withDriver, setWithDriver] = useState(false);
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -79,7 +77,6 @@ export default function ReservationScreen({ route, navigation }: { route: any; n
           `Date début : ${formatDateFR(startDate)}`,
           `Date fin : ${formatDateFR(endDate)}`,
           `Destination : ${destination}`,
-          `Couleur : ${vehicleColor}`,
           `Chauffeur : ${withDriver ? 'Oui' : 'Non'}`,
           notes ? `Notes : ${notes}` : '',
         ].filter(Boolean).join(' | '),
@@ -190,24 +187,6 @@ export default function ReservationScreen({ route, navigation }: { route: any; n
           </TouchableOpacity>
         ))}
       </View>
-
-      {/* Couleur du véhicule (sauf utilitaires) */}
-      {vehicle.categorie !== 'Utilitaires' && (
-        <>
-          <Text style={styles.label}>Couleur du véhicule</Text>
-          <View style={styles.destinationRow}>
-            {COLORS.map((color) => (
-              <TouchableOpacity
-                key={color}
-                style={[styles.destinationChip, vehicleColor === color && styles.destinationChipActive]}
-                onPress={() => setVehicleColor(color)}
-              >
-                <Text style={[styles.destinationText, vehicleColor === color && styles.destinationTextActive]}>{color}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </>
-      )}
 
       {/* Chauffeur */}
       <View style={styles.switchRow}>

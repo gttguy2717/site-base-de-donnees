@@ -19,7 +19,7 @@ import { useCart } from '../contexts/CartContext';
 import { Vehicle } from '../types';
 import { colors, API_URL } from '../theme';
 
-const CATEGORIES = ['Tous', 'SUV', 'Berline', '4x4', 'Pick-up', 'Minibus', 'Autocar', 'Utilitaire'];
+const CATEGORIES = ['Tous', 'Économiques', 'SUV', '4x4', 'Pick-up', 'Utilitaires', 'Minibus', 'Luxe', 'Autocar'];
 
 const formatMoney = (value: number | string | undefined | null): string => {
   const n = Number(value || 0);

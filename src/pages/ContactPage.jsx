@@ -4,10 +4,13 @@ import Footer from '../components/Footer';
 import DevisModal from '../components/DevisModal';
 import FadeInSection from '../components/FadeInSection';
 import { CONTACT_DETAILS } from '../data/companyData';
+import { useAuth } from '../hooks/useAuth';
+import { openDevisByAuth } from '../lib/quoteGate';
 
 const CONTACT_HERO_IMAGE = 'https://soutarahgroup.ci/img/callme.jpeg';
 
 export default function ContactPage({ navigateTo, onRequestQuote }) {
+  const { user } = useAuth();
   const [isDevisOpen, setIsDevisOpen] = useState(false);
 
   useEffect(() => {
@@ -25,7 +28,7 @@ export default function ContactPage({ navigateTo, onRequestQuote }) {
 
   return (
     <div className="min-h-screen bg-[#eef3ec] text-[#1a1c1c] flex flex-col font-sans selection:bg-primary selection:text-white">
-      <Navbar onOpenDevis={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))} activeTab="contact" navigateTo={navigateTo} />
+      <Navbar onOpenDevis={() => openDevisByAuth({ user, navigateTo, onAuthed: () => setIsDevisOpen(true) })} activeTab="contact" navigateTo={navigateTo} />
 
       <main className="flex-grow pt-28">
         <section className="relative overflow-hidden bg-[#f6faf4] py-16 sm:py-20 lg:py-24">

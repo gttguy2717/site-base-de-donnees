@@ -5,6 +5,8 @@ import DevisModal from '../components/DevisModal';
 import FadeInSection from '../components/FadeInSection';
 import { SERVICES_DATA } from '../data/servicesData';
 import { CONTACT_DETAILS, PROJECT_PRINCIPLES } from '../data/companyData';
+import { useAuth } from '../hooks/useAuth';
+import { openDevisByAuth } from '../lib/quoteGate';
 
 const TECHNICIAN_IMAGE = 'https://soutarahgroup.ci/img/tecg.jpeg';
 
@@ -19,6 +21,7 @@ const initialApplication = {
 };
 
 export default function CareersPage({ navigateTo, onRequestQuote }) {
+  const { user } = useAuth();
   const [isDevisOpen, setIsDevisOpen] = useState(false);
   const [application, setApplication] = useState(initialApplication);
   const [isPrepared, setIsPrepared] = useState(false);
@@ -73,7 +76,7 @@ export default function CareersPage({ navigateTo, onRequestQuote }) {
 
   return (
     <div className="min-h-screen bg-[#f3f7f1] text-[#1a1c1c] flex flex-col font-sans selection:bg-primary selection:text-white">
-      <Navbar onOpenDevis={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))} activeTab="careers" navigateTo={navigateTo} />
+      <Navbar onOpenDevis={() => openDevisByAuth({ user, navigateTo, onAuthed: () => setIsDevisOpen(true) })} activeTab="careers" navigateTo={navigateTo} />
 
       <main className="flex-grow pt-28">
         <section className="relative flex min-h-[calc(100svh-5rem)] flex-col justify-center overflow-hidden bg-[#253f22] py-12 text-white sm:py-14 lg:py-16">

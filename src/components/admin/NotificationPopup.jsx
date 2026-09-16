@@ -36,6 +36,8 @@ export default function NotificationPopup({ notifications, onClose, onViewAll })
     switch (type) {
       case 'VEHICLE_REQUEST':
         return 'local_shipping';
+      case 'PRODUCT_REQUEST_CREATED':
+        return 'inventory_2';
       case 'CART_ITEM_ADDED':
         return 'shopping_cart';
       case 'QUOTE_REQUEST':
@@ -53,6 +55,8 @@ export default function NotificationPopup({ notifications, onClose, onViewAll })
     switch (type) {
       case 'VEHICLE_REQUEST':
         return 'bg-blue-100 text-blue-600';
+      case 'PRODUCT_REQUEST_CREATED':
+        return 'bg-indigo-100 text-indigo-600';
       case 'CART_ITEM_ADDED':
         return 'bg-green-100 text-green-600';
       case 'QUOTE_REQUEST':

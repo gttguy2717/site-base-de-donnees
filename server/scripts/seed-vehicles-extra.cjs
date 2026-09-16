@@ -1,4 +1,4 @@
-const { sequelize } = require('../src/models/index.cjs');
+﻿const { sequelize } = require('../src/models/index.cjs');
 
 // Véhicules supplémentaires - images professionnelles fond blanc (soutarahgroup.ci)
 const EXTRA_VEHICLES = [
@@ -34,12 +34,12 @@ const EXTRA_VEHICLES = [
   { category: 'Berline', name: 'Tesla Model 3 Long Range', plate: 'AA-TSL3-CI', pricePerDay: 60000, image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=800&q=80', specs: ['5 personnes', 'Automatique', '100% Électrique'] },
   { category: 'Berline', name: 'Jaguar XF Portfolio', plate: 'AA-JAGX-CI', pricePerDay: 90000, image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800&q=80', specs: ['5 personnes', 'Automatique', 'Chic Britannique'] },
 
-  // ─── Citadines HD ────────────────────────────────────────────────────────
-  { category: 'Citadines', name: 'Toyota Yaris', plate: 'AA-101-AB', pricePerDay: 20000, image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&w=800&q=80', specs: ['5 personnes', 'Automatique', 'Assurée'] },
-  { category: 'Citadines', name: 'Hyundai i10', plate: 'AA-102-AB', pricePerDay: 18000, image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=800&q=80', specs: ['5 personnes', 'Manuel', 'Assurée'] },
-  { category: 'Citadines', name: 'Kia Picanto', plate: 'AA-103-AB', pricePerDay: 17000, image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800&q=80', specs: ['5 personnes', 'Automatique', 'Assurée'] },
-  { category: 'Citadines', name: 'Peugeot 208', plate: 'AA-104-AB', pricePerDay: 22000, image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80', specs: ['5 personnes', 'Automatique', 'Assurée'] },
-  { category: 'Citadines', name: 'Renault Clio', plate: 'AA-105-AB', pricePerDay: 21000, image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80', specs: ['5 personnes', 'Manuel', 'Assurée'] },
+  // ─── Économiques HD ────────────────────────────────────────────────────────
+  { category: 'Économiques', name: 'Toyota Yaris', plate: 'AA-101-AB', pricePerDay: 20000, image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&w=800&q=80', specs: ['5 personnes', 'Automatique', 'Assurée'] },
+  { category: 'Économiques', name: 'Hyundai i10', plate: 'AA-102-AB', pricePerDay: 18000, image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=800&q=80', specs: ['5 personnes', 'Manuel', 'Assurée'] },
+  { category: 'Économiques', name: 'Kia Picanto', plate: 'AA-103-AB', pricePerDay: 17000, image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800&q=80', specs: ['5 personnes', 'Automatique', 'Assurée'] },
+  { category: 'Économiques', name: 'Peugeot 208', plate: 'AA-104-AB', pricePerDay: 22000, image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80', specs: ['5 personnes', 'Automatique', 'Assurée'] },
+  { category: 'Économiques', name: 'Renault Clio', plate: 'AA-105-AB', pricePerDay: 21000, image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80', specs: ['5 personnes', 'Manuel', 'Assurée'] },
 
   // ─── SUV HD ──────────────────────────────────────────────────────────────
   { category: 'SUV', name: 'Toyota RAV4', plate: 'AA-201-AB', pricePerDay: 45000, image: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80', specs: ['5 personnes', 'Automatique', 'Assurée'] },

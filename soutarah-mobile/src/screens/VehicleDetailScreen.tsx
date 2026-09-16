@@ -83,7 +83,6 @@ export default function VehicleDetailScreen({ route, navigation }: { route: any;
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
   const [showDestMenu, setShowDestMenu] = useState(false);
-  const [selectedColor, setSelectedColor] = useState<'Noir' | 'Blanc'>('Noir');
   const [destination, setDestination] = useState<'Abidjan' | 'Intérieur'>('Abidjan');
   const [addingToCart, setAddingToCart] = useState(false);
 
@@ -145,7 +144,7 @@ export default function VehicleDetailScreen({ route, navigation }: { route: any;
         `${vehicle.marque} ${vehicle.modele} (${computedDays} jours à ${destination}) a été ajouté à votre panier. Vous pouvez consulter le détail tarifaire et télécharger votre devis officiel dans le panier.`,
         [
           { text: 'Continuer', style: 'cancel' },
-          { text: 'Voir le panier', onPress: () => navigation.navigate('Main', { screen: 'Cart' }) },
+          { text: 'Passer commande', onPress: () => navigation.navigate('PasserCommande') },
         ]
       );
     }
@@ -345,37 +344,6 @@ export default function VehicleDetailScreen({ route, navigation }: { route: any;
             </View>
           )}
 
-          {/* Couleur */}
-          <Text style={styles.fieldLabel}>Couleur du véhicule *</Text>
-          <View style={styles.colorPillsRow}>
-            {[
-              { label: 'Noir', colorHex: '#0f172a' },
-              { label: 'Blanc', colorHex: '#ffffff', border: '#cbd5e1' },
-            ].map((c) => (
-              <TouchableOpacity
-                key={c.label}
-                style={[
-                  styles.colorPill,
-                  selectedColor === c.label && styles.colorPillActive,
-                ]}
-                onPress={() => setSelectedColor(c.label as any)}
-              >
-                <View
-                  style={[
-                    styles.colorDot,
-                    {
-                      backgroundColor: c.colorHex,
-                      borderWidth: c.border ? 1 : 0,
-                      borderColor: c.border || 'transparent',
-                    },
-                  ]}
-                />
-                <Text style={styles.colorPillText}>{c.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* Option Chauffeur Card */}
           <TouchableOpacity
             style={[styles.driverOptionCard, withDriver && styles.driverOptionCardActive]}
             onPress={() => setWithDriver(!withDriver)}
@@ -837,38 +805,6 @@ const styles = StyleSheet.create({
   dropdownMenuItemTextActive: {
     color: '#15803d',
     fontWeight: '800',
-  },
-  colorPillsRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 16,
-  },
-  colorPill: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    backgroundColor: '#f8fafc',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    paddingVertical: 12,
-  },
-  colorPillActive: {
-    borderColor: '#226600',
-    backgroundColor: '#ffffff',
-    borderWidth: 1.5,
-  },
-  colorDot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-  },
-  colorPillText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#0f172a',
   },
   driverOptionCard: {
     flexDirection: 'row',

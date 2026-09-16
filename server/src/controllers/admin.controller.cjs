@@ -2,6 +2,17 @@ const { Op } = require('sequelize');
 const { sequelize, User, Client, Company, Product, Category, Tariff, Vehicle, Reservation, Quote, QuoteItem, Promotion, StockMovement, Notification } = require('../models/index.cjs');
 const XLSX = require('xlsx');
 const fs = require('fs');
+const { repairRecursive, repairText } = require('../utilities/text-encoding.cjs');
+
+// Répare les chaînes (clés ET valeurs) d'une ligne d'export Excel
+function repairExcelRow(row) {
+  const cleaned = {};
+  for (const key of Object.keys(row)) {
+    const val = row[key];
+    cleaned[repairText(key)] = typeof val === 'string' ? repairText(val) : val;
+  }
+  return cleaned;
+}
 
 // ===== CLIENTS =====
 async function createClient(request, response, next) {
@@ -121,6 +132,8 @@ async function getAllClients(_request, response, next) {
       entreprise: client.entreprise,
       utilisateur: client.user,
       cree_le: client.cree_le,
+      delai_blocage_jours: client.delai_blocage_jours,
+      bloque_le: client.bloque_le,
       color: ['blue', 'green', 'purple', 'orange', 'teal', 'yellow', 'pink', 'indigo'][Math.floor(Math.random() * 8)],
     }));
 
@@ -242,7 +255,9 @@ async function exportProductPrices(request, response, next) {
     // Préparer les données pour Excel - TOUTES LES INFOS MODIFIABLES
     const data = products.map(product => {
       const tarifParticulier = product.tarifs?.find(t => t.type_client === 'PARTICULIER')?.prix || 0;
-      const tarifEntreprise = product.tarifs?.find(t => t.type_client === 'ENTREPRISE')?.prix || tarifParticulier;
+      // Prix Entreprise = Prix Particulier : seules les ENTREPRISES CLIENTES (colonnes dédiées)
+      // peuvent avoir leurs propres tarifs (SUCAF, etc.)
+      const tarifEntreprise = tarifParticulier;
       
       const row = {
         'ID': product.id,
@@ -261,7 +276,7 @@ async function exportProductPrices(request, response, next) {
         row[company.nom] = companyTariff ? parseFloat(companyTariff.prix) : '';
       }
 
-      return row;
+      return repairExcelRow(row);
     });
 
     // Créer le workbook et worksheet
@@ -356,17 +371,19 @@ async function importProductPrices(request, response, next) {
         // Mettre à jour les tarifs standards
         if (!isNaN(prixParticulier)) {
           await Tariff.destroy({ where: { produit_id: productId, entreprise_id: null } });
-          
+
           await Tariff.create({
             produit_id: productId,
             type_client: 'PARTICULIER',
             prix: prixParticulier,
           });
 
+          // Prix Entreprise = Prix Particulier (les tarifs spécifiques par entreprise
+          // cliente sont gérés via les colonnes dédiées, pas via le tarif générique)
           await Tariff.create({
             produit_id: productId,
             type_client: 'ENTREPRISE',
-            prix: !isNaN(prixEntreprise) ? prixEntreprise : prixParticulier,
+            prix: prixParticulier,
           });
         }
 
@@ -552,7 +569,7 @@ async function exportVehicles(request, response, next) {
         row[company.nom] = companyPrice ? parseFloat(companyPrice.prix_journalier) : '';
       }
 
-      return row;
+      return repairExcelRow(row);
     });
 
     // Créer le workbook et worksheet
@@ -838,8 +855,16 @@ async function getAllQuotes(_request, response, next) {
       order: [['cree_le', 'DESC']],
     });
 
-    // Adapter le format pour l'interface admin
-    const formattedQuotes = quotes.map(q => ({
+    const formattedQuotes = quotes.map(q => {
+      let snapshot = null;
+      if (q.snapshot) {
+        try {
+          snapshot = JSON.parse(q.snapshot);
+        } catch (e) {
+          snapshot = null;
+        }
+      }
+      return {
       id: q.id,
       reference: q.reference,
       statut: q.statut === 'PENDING' ? 'ISSUED' : q.statut,
@@ -859,7 +884,11 @@ async function getAllQuotes(_request, response, next) {
       entreprise: q.entreprise,
       source: q.source,
       fichier_devis_url: q.fichier_devis_url,
-    }));
+      mode_paiement: q.mode_paiement,
+      lu_le: q.lu_le,
+      snapshot,
+    };
+    });
 
     response.json({ quotes: formattedQuotes });
   } catch (error) {
@@ -892,51 +921,44 @@ async function updateQuoteStatus(request, response, next) {
     await quote.update({ statut });
 
 
-    // Si le devis est approuvé, créer une réservation
-    if (statut === 'APPROVED' && quote.client) {
+    // Si le devis est approuvé OU envoyé (signé), créer une réservation
+    if ((statut === 'APPROVED' || statut === 'SENT') && quote.client) {
       try {
-        // Chercher un véhicule correspondant au titre du devis
-        // D'abord essayer de matcher le titre du devis avec un véhicule
-        const titleLower = (quote.titre || '').toLowerCase();
-        let vehicle = null;
-
-        // Essayer de trouver un véhicule dont la marque ou le modèle apparaît dans le titre
-        if (titleLower) {
-          const allVehicles = await Vehicle.findAll({ where: { statut: 'ACTIVE' } });
-          vehicle = allVehicles.find(v => {
-            const vehicleName = `${v.marque} ${v.modele}`.toLowerCase();
-            return vehicleName.split(' ').some(word => word.length > 2 && titleLower.includes(word));
-          }) || null;
-        }
-
-        // Fallback : prendre le premier véhicule actif
-        if (!vehicle) {
-          vehicle = await Vehicle.findOne({
-            where: { statut: 'ACTIVE' },
-            order: [['cree_le', 'DESC']],
-          });
-        }
+        // Résoudre le VRAI véhicule : ID stocké dans le snapshot du panier →
+        // correspondance par nom → sinon aucune réservation véhicule (jamais
+        // de fallback « premier véhicule actif » = bug Toyota Tacoma).
+        const { resolveVehicleFromSnapshot } = require('../services/vehicle-resolve.service.cjs');
+        const vehicle = await resolveVehicleFromSnapshot(quote.snapshot, quote.titre || '');
 
         const startDate = new Date();
         const endDate = new Date();
         endDate.setDate(endDate.getDate() + 3);
 
-        // Créer la réservation en statut CONFIRMED pour qu'elle apparaisse sur le calendrier
-        await Reservation.create({
-          client_id: quote.client.id,
-          vehicule_id: vehicle?.id || null,
-          reference: `RES-${quote.reference || Date.now()}`,
-          commence_le: startDate,
-          termine_le: endDate,
-          statut: 'CONFIRMED',
-          prix_journalier: vehicle?.prix_journalier_particulier || 0,
-          montant_total: vehicle ? Number(vehicle.prix_journalier_particulier) * 3 : 0,
-          avec_chauffeur: false,
-          expire_le: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-          note_gestionnaire: `Devis ${quote.reference} approuvé - ${quote.titre || ''}`.trim(),
-        });
+        // Éviter les doublons : si une réservation existe déjà pour ce devis, on ne recrée pas
+        const reservationRef = `RES-${quote.reference || Date.now()}`;
+        const existingReservation = await Reservation.findOne({ where: { reference: reservationRef } });
 
-        console.log(`✅ Réservation CONFIRMED créée pour le devis approuvé ${quote.reference}${vehicle ? ` - ${vehicle.marque} ${vehicle.modele}` : ''}`);
+        if (!existingReservation && vehicle) {
+          // Créer la réservation en statut CONFIRMED pour qu'elle apparaisse sur le calendrier
+          await Reservation.create({
+            client_id: quote.client.id,
+            vehicule_id: vehicle.id,
+            reference: reservationRef,
+            commence_le: startDate,
+            termine_le: endDate,
+            statut: 'CONFIRMED',
+            prix_journalier: vehicle.prix_journalier_particulier || 0,
+            montant_total: Number(vehicle.prix_journalier_particulier || 0) * 3,
+            avec_chauffeur: false,
+            expire_le: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+            note_gestionnaire: `Devis ${quote.reference} signé/envoyé - ${quote.titre || ''}`.trim(),
+          });
+          console.log(`✅ Réservation CONFIRMED créée pour le devis ${statut} ${quote.reference} - ${vehicle.marque} ${vehicle.modele}`);
+        } else if (!vehicle) {
+          console.log(`ℹ️  Aucun véhicule identifiable dans le devis ${quote.reference} — pas de réservation véhicule créée.`);
+        } else {
+          console.log(`ℹ️  Réservation déjà existante pour ${quote.reference}, pas de doublon.`);
+        }
       } catch (resError) {
         console.error('❌ Erreur création réservation:', resError);
       }
@@ -974,6 +996,27 @@ async function updateQuoteStatus(request, response, next) {
 
     response.json({ quote });
   } catch (error) {
+    next(error);
+  }
+}
+
+// Marquer un devis comme lu par l'admin
+async function markQuoteAsRead(request, response, next) {
+  try {
+    const { QuoteRequest } = require('../models/index.cjs');
+
+    const quote = await QuoteRequest.findByPk(request.params.id);
+    if (!quote) {
+      return response.status(404).json({ message: 'Devis non trouvé' });
+    }
+
+    if (!quote.lu_le) {
+      await quote.update({ lu_le: new Date() });
+    }
+
+    response.json({ success: true, lu_le: quote.lu_le });
+  } catch (error) {
+    console.error('Erreur markQuoteAsRead:', error);
     next(error);
   }
 }
@@ -1181,7 +1224,8 @@ async function getDashboardStats(_request, response, next) {
       reservationsTotal,
       reservationsEnCours,
       quotesTotal,
-      quotesPending
+      quotesPending,
+      quotesNonLus
     ] = await Promise.all([
       Client.count(),
       Client.count({ where: { cree_le: { [Op.gte]: thirtyDaysAgo } } }),
@@ -1189,12 +1233,13 @@ async function getDashboardStats(_request, response, next) {
       Reservation.count({ where: { statut: { [Op.in]: ['CONFIRMED', 'PENDING'] } } }),
       QuoteRequest.count(),
       QuoteRequest.count({ where: { statut: { [Op.in]: ['PENDING', 'ISSUED', 'CONTACTED'] } } }),
+      QuoteRequest.count({ where: { lu_le: null } }),
     ]);
 
     response.json({
       stats: {
         clients: { total: clientsTotal, nouveau: clientsNew },
-        devis: { total: quotesTotal, enAttente: quotesPending },
+        devis: { total: quotesTotal, enAttente: quotesPending, nonLus: quotesNonLus },
         reservations: { total: reservationsTotal, enCours: reservationsEnCours },
       },
     });
@@ -1203,6 +1248,150 @@ async function getDashboardStats(_request, response, next) {
     next(error);
   }
 }
+// ===== DASHBOARD : ÉVOLUTION DES VENTES =====
+function dayKey(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+const SALES_MONTHS_SHORT = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+const SALES_WEEKDAYS_SHORT = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+
+async function getSalesEvolution(request, response, next) {
+  try {
+    const { Reservation, QuoteRequest } = require('../models/index.cjs');
+
+    const period = parseInt(request.query.period, 10);
+    const days = [7, 30, 90].includes(period) ? period : 7;
+
+    // Début de la période (minuit, il y a (days - 1) jours)
+    const startDate = new Date();
+    startDate.setHours(0, 0, 0, 0);
+    startDate.setDate(startDate.getDate() - (days - 1));
+
+    // Ventes réelles n°1 : réservations CONFIRMED créées sur la période (avec CA)
+    const reservationsParJour = await Reservation.findAll({
+      attributes: [
+        [sequelize.fn('DATE', sequelize.col('cree_le')), 'jour'],
+        [sequelize.fn('COUNT', sequelize.col('id')), 'total'],
+        [sequelize.fn('COALESCE', sequelize.fn('SUM', sequelize.col('montant_total')), 0), 'ca'],
+      ],
+      where: { cree_le: { [Op.gte]: startDate }, statut: 'CONFIRMED' },
+      group: [sequelize.fn('DATE', sequelize.col('cree_le'))],
+      raw: true,
+    });
+
+    // Ventes réelles n°2 : demandes de devis CONVERTED (converties en commandes)
+    const devisParJour = await QuoteRequest.findAll({
+      attributes: [
+        [sequelize.fn('DATE', sequelize.col('cree_le')), 'jour'],
+        [sequelize.fn('COUNT', sequelize.col('id')), 'total'],
+      ],
+      where: { cree_le: { [Op.gte]: startDate }, statut: 'CONVERTED' },
+      group: [sequelize.fn('DATE', sequelize.col('cree_le'))],
+      raw: true,
+    });
+
+    const reservationsMap = new Map();
+    reservationsParJour.forEach((row) => {
+      reservationsMap.set(dayKey(new Date(row.jour)), {
+        total: Number(row.total) || 0,
+        ca: Number(row.ca) || 0,
+      });
+    });
+
+    const devisMap = new Map();
+    devisParJour.forEach((row) => {
+      devisMap.set(dayKey(new Date(row.jour)), Number(row.total) || 0);
+    });
+
+    // Construction des buckets : par jour (7j / 30j) ou par semaine (90j)
+    const buckets = [];
+
+    if (days === 90) {
+      // Regroupement par semaines de 7 jours, du plus ancien au plus récent
+      const weekStart = new Date(startDate);
+      const now = new Date();
+      while (weekStart <= now) {
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+
+        let ventes = 0;
+        let reservations = 0;
+        let devis = 0;
+        let ca = 0;
+
+        const cursor = new Date(weekStart);
+        while (cursor <= weekEnd) {
+          const key = dayKey(cursor);
+          const res = reservationsMap.get(key);
+          if (res) {
+            ventes += res.total;
+            reservations += res.total;
+            ca += res.ca;
+          }
+          const dv = devisMap.get(key);
+          if (dv) {
+            ventes += dv;
+            devis += dv;
+          }
+          cursor.setDate(cursor.getDate() + 1);
+        }
+
+        buckets.push({
+          label: `${weekStart.getDate()} ${SALES_MONTHS_SHORT[weekStart.getMonth()]}`,
+          ventes,
+          reservations,
+          devis,
+          ca,
+        });
+
+        weekStart.setDate(weekStart.getDate() + 7);
+      }
+    } else {
+      const cursor = new Date(startDate);
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+
+      while (cursor <= today) {
+        const key = dayKey(cursor);
+        const res = reservationsMap.get(key) || { total: 0, ca: 0 };
+        const dv = devisMap.get(key) || 0;
+
+        buckets.push({
+          label: days === 7
+            ? SALES_WEEKDAYS_SHORT[cursor.getDay()]
+            : `${cursor.getDate()} ${SALES_MONTHS_SHORT[cursor.getMonth()]}`,
+          ventes: res.total + dv,
+          reservations: res.total,
+          devis: dv,
+          ca: res.ca,
+        });
+
+        cursor.setDate(cursor.getDate() + 1);
+      }
+    }
+
+    const total = buckets.reduce(
+      (acc, b) => ({
+        ventes: acc.ventes + b.ventes,
+        reservations: acc.reservations + b.reservations,
+        devis: acc.devis + b.devis,
+        ca: acc.ca + b.ca,
+      }),
+      { ventes: 0, reservations: 0, devis: 0, ca: 0 },
+    );
+
+    response.json({ period: days, buckets, total });
+  } catch (error) {
+    console.error('Erreur getSalesEvolution:', error);
+    next(error);
+  }
+}
+
+// ===== ANNONCES (BARRE DÉFILANTE) =====
 
 // ===== ANNONCES (BARRE DÉFILANTE) =====
 async function getAnnouncements(_request, response, next) {
@@ -1213,12 +1402,12 @@ async function getAnnouncements(_request, response, next) {
 
     // Ancien format : tableau simple d'annonces
     if (Array.isArray(raw)) {
-      return response.json({ announcements: raw, barHeight: 34 });
+      return response.json({ announcements: repairRecursive(raw), barHeight: 34 });
     }
 
     // Nouveau format : { items: [...], barHeight: 34 }
     return response.json({
-      announcements: raw?.items || [],
+      announcements: repairRecursive(raw?.items || []),
       barHeight: Number(raw?.barHeight) || 34,
     });
   } catch (error) {
@@ -1260,7 +1449,7 @@ async function getSettings(_request, response, next) {
     const settings = await Setting.findAll();
     const result = {};
     settings.forEach((s) => {
-      result[s.cle] = s.valeur;
+      result[s.cle] = repairRecursive(s.valeur);
     });
     response.json({ settings: result });
   } catch (error) {
@@ -1316,6 +1505,169 @@ async function updateClientStatus(request, response, next) {
   }
 }
 
+// Examen des documents d'entreprise (approbation / rejet)
+async function reviewClientVerification(request, response, next) {
+  try {
+    const { id } = request.params;
+    const { status, note } = request.body;
+
+    if (!['APPROVED', 'REJECTED'].includes(status)) {
+      return response.status(400).json({ message: 'Statut invalide. Utilisez APPROVED ou REJECTED.' });
+    }
+
+    const client = await Client.findByPk(id, {
+      include: [{ model: User, as: 'user' }, { model: Company, as: 'entreprise' }],
+    });
+    if (!client) return response.status(404).json({ message: 'Client introuvable' });
+    if (!client.entreprise) return response.status(400).json({ message: 'Ce client n’est pas une entreprise' });
+
+    await client.entreprise.update({
+      verification_status: status,
+      note_verification: note?.trim() || null,
+      verifie_le: new Date(),
+    });
+
+    // Approuvé → active le compte utilisateur ; rejeté → le laisse inactif
+    if (client.user) {
+      await client.user.update({ est_actif: status === 'APPROVED' });
+    }
+
+    // Notification de la décision au client
+    if (client.user) {
+      try {
+        await Notification.create({
+          utilisateur_destinataire_id: client.user.id,
+          type: status === 'APPROVED' ? 'NEW_ACCOUNT' : 'CART_VALIDATED',
+          titre: status === 'APPROVED' ? 'Compte entreprise approuvé' : 'Inscription entreprise refusée',
+          message: status === 'APPROVED'
+            ? `Félicitations ! Votre compte entreprise (${client.entreprise.nom}) a été validé. Vous pouvez vous connecter avec vos propres tarifs.`
+            : `Votre inscription d’entreprise (${client.entreprise.nom}) a été refusée. ${note ? note : 'Contactez-nous pour plus d’informations.'}`,
+          lien: '/client',
+          est_lu: false,
+        });
+      } catch (e) {
+        console.error('Erreur notification décision entreprise:', e.message);
+      }
+    }
+
+    response.json({
+      success: true,
+      message: status === 'APPROVED' ? 'Entreprise approuvée, compte activé.' : 'Inscription entreprise refusée.',
+      verification_status: status,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+// Conversion d'une entreprise simple en entreprise cliente (avec délai de blocage optionnel)
+async function convertEntrepriseClient(request, response, next) {
+  try {
+    const { id } = request.params;
+    const { delai_blocage_jours } = request.body;
+
+    let delai = null;
+    if (delai_blocage_jours !== null && delai_blocage_jours !== undefined && delai_blocage_jours !== '') {
+      delai = Number(delai_blocage_jours);
+      if (!Number.isInteger(delai) || delai <= 0) {
+        return response.status(400).json({ message: 'Le délai de blocage doit être un nombre entier de jours positif, ou null (sans durée).' });
+      }
+    }
+
+    const client = await Client.findByPk(id, {
+      include: [{ model: User, as: 'user' }, { model: Company, as: 'entreprise' }],
+    });
+    if (!client) return response.status(404).json({ message: 'Client introuvable' });
+    if (client.type_client !== 'ENTREPRISE') {
+      return response.status(400).json({ message: 'Seul un compte de type "Entreprise" peut être converti en entreprise cliente.' });
+    }
+
+    await client.update({
+      type_client: 'ENTREPRISE_CLIENT',
+      delai_blocage_jours: delai,
+      bloque_le: null,
+    });
+
+    // Ancrer le délai à la date de conversion (le login compte les jours depuis verifie_le)
+    if (client.entreprise) {
+      await client.entreprise.update({ verifie_le: new Date() });
+    }
+
+    // Activer le compte utilisateur (l'entreprise a passé la validation pour être convertie)
+    if (client.user) {
+      await client.user.update({ est_actif: true });
+    }
+
+    // Notification au client
+    if (client.user) {
+      try {
+        await Notification.create({
+          utilisateur_destinataire_id: client.user.id,
+          type: 'NEW_ACCOUNT',
+          titre: 'Compte entreprise cliente activé',
+          message: delai
+            ? `Votre compte (${client.entreprise?.nom || 'entreprise'}) est désormais une entreprise cliente SOUTARAH. Il restera actif pendant ${delai} jour(s), puis sera bloqué automatiquement.`
+            : `Votre compte (${client.entreprise?.nom || 'entreprise'}) est désormais une entreprise cliente SOUTARAH, sans limite de durée.`,
+          lien: '/client',
+          est_lu: false,
+        });
+      } catch (e) {
+        console.error('Erreur notification conversion entreprise:', e.message);
+      }
+    }
+
+    response.json({
+      success: true,
+      message: delai
+        ? `Entreprise convertie en entreprise cliente (blocage automatique après ${delai} jour(s)).`
+        : 'Entreprise convertie en entreprise cliente (sans durée de blocage).',
+      type_client: 'ENTREPRISE_CLIENT',
+      delai_blocage_jours: delai,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// Téléchargement d'un vrai document d'entreprise par l'admin
+async function downloadClientDocument(request, response, next) {
+  try {
+    const path = require('path');
+    const { id, docIndex } = request.params;
+    const index = Number(docIndex);
+
+    const client = await Client.findByPk(id, {
+      include: [{ model: Company, as: 'entreprise' }],
+    });
+    if (!client || !client.entreprise) {
+      return response.status(404).json({ message: 'Entreprise introuvable' });
+    }
+
+    const documents = Array.isArray(client.entreprise.documents) ? client.entreprise.documents : [];
+    const doc = documents[index];
+    if (!doc) {
+      return response.status(404).json({ message: 'Document introuvable' });
+    }
+
+    // Le fichier est stocké dans uploads/ avec son nom multer (doc.filename)
+    const uploadsDir = path.join(__dirname, '../../uploads');
+    const safeName = path.basename(String(doc.filename || ''));
+    const filePath = path.join(uploadsDir, safeName);
+
+    if (!fs.existsSync(filePath)) {
+      return response.status(404).json({ message: `Fichier non trouvé sur le serveur (${safeName}).` });
+    }
+
+    // Envoyer le vrai fichier avec son nom original
+    response.download(filePath, doc.originalname || safeName, (err) => {
+      if (err) next(err);
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// Upload du devis signé
+
 // Upload du devis signé
 async function uploadSignedQuote(request, response, next) {
   try {
@@ -1351,6 +1703,9 @@ module.exports = {
   getAllClients,
   createClient,
   updateClientStatus,
+  reviewClientVerification,
+  convertEntrepriseClient,
+  downloadClientDocument,
   getCompanyPricing,
   saveCompanyVehiclePrice,
   deleteCompanyVehiclePrice,
@@ -1372,6 +1727,7 @@ module.exports = {
   updateReservationStatus,
   getAllQuotes,
   updateQuoteStatus,
+  markQuoteAsRead,
   uploadSignedQuote,
   getAllPromotions,
   createPromotion,
@@ -1381,6 +1737,7 @@ module.exports = {
   addStockMovement,
   getLowStockAlerts,
   getDashboardStats,
+  getSalesEvolution,
   getSettings,
   saveSettings,
   getAnnouncements,

@@ -60,7 +60,7 @@ export default function VehicleRequestModal({ onClose, navigateTo }) {
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-md animate-fadeIn">
-      <div className="relative my-8 w-full max-w-2xl overflow-hidden rounded-[30px] border border-white/70 bg-white shadow-2xl">
+      <div className="relative flex max-h-[90dvh] w-full max-w-2xl flex-col overflow-hidden rounded-[30px] border border-white/70 bg-white shadow-2xl">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-gray-500 shadow-md transition-colors hover:bg-gray-100"
@@ -68,19 +68,19 @@ export default function VehicleRequestModal({ onClose, navigateTo }) {
           <span className="material-symbols-outlined text-xl">close</span>
         </button>
 
-        <div className="relative min-h-[200px] overflow-hidden bg-gradient-to-br from-[#143e22] via-[#2d5f1e] to-[#4a7c59] p-8 text-white">
+        <div className="relative shrink-0 overflow-hidden bg-gradient-to-br from-[#143e22] via-[#2d5f1e] to-[#4a7c59] p-6 text-white">
           <div className="absolute inset-0 bg-[url('/fond-home.png')] opacity-10 bg-cover" />
-          <div className="relative">
+          <div className="relative pr-10">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
               <span className="material-symbols-outlined text-[16px]">search</span>
               Véhicule non trouvé
             </div>
-            <h2 className="mt-4 font-display text-3xl font-extrabold">Demandez un véhicule spécifique</h2>
-            <p className="mt-2 text-sm text-emerald-100">Notre équipe vous recontactera rapidement pour vous proposer une solution adaptée.</p>
+            <h2 className="mt-2.5 font-display text-xl font-extrabold">Demandez un véhicule spécifique</h2>
+            <p className="mt-1 text-sm text-emerald-100">Notre équipe vous recontactera rapidement avec une solution adaptée.</p>
           </div>
         </div>
 
-        <div className="p-8">
+        <div className="min-h-0 flex-1 overflow-y-auto p-6">
           {success ? (
             <div className="rounded-2xl border border-green-200 bg-green-50 p-6 text-center">
               <span className="material-symbols-outlined text-5xl text-green-600">check_circle</span>

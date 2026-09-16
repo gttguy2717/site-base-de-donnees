@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { PackageSearch, ShoppingCart } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import CtaBanner from '../components/CtaBanner';
 import Footer from '../components/Footer';
@@ -8,9 +7,13 @@ import CarReservationModal from '../components/CarReservationModal';
 import VehicleRequestModal from '../components/VehicleRequestModal';
 import ReqModal from '../components/ReqModal';
 import { useAuth } from '../hooks/useAuth';
+import { openDevisByAuth } from '../lib/quoteGate';
 import FadeInSection from '../components/FadeInSection';
 import { SERVICES_DATA } from '../data/servicesData';
 import { apiRequest } from '../lib/api';
+import RentalFleetSection from '../components/RentalFleetSection';
+import VehicleDetailModal from '../components/VehicleDetailModal';
+import NexansCatalogSection from '../components/NexansCatalogSection';
 
 const FUEL_TYPES = ['Essence', 'Gazole', 'Hybride', 'Diesel'];
 const displaySpecs = (vehicle) => (vehicle.specs || []).filter((spec) => !FUEL_TYPES.includes(spec));
@@ -29,41 +32,109 @@ function OfficialImage({ src, alt, className = '', loading = 'lazy' }) {
   );
 }
 
-const money = (value) => new Intl.NumberFormat('fr-CI', { maximumFractionDigits: 0 }).format(value || 0);
 const vehicleCategoryGroups = [
   { id: 'Toutes', label: 'Toutes', match: () => true },
-  { id: 'Citadines', label: 'Citadines', match: (category) => category.includes('Citadines') },
+  { id: 'Économiques', label: 'Économiques', match: (category) => category.includes('Économiques') },
   { id: 'SUV', label: 'SUV', match: (category) => category.includes('SUV') },
   { id: '4x4', label: '4x4', match: (category) => category.includes('4x4') },
   { id: 'Pick-Up', label: 'Pick-Up', match: (category) => category.includes('Pick-Up') },
   { id: 'Utilitaires', label: 'Utilitaires', match: (category) => category.includes('Utilitaires') },
-  { id: 'Minibus', label: 'Minibus & Autocars', match: (category) => category.includes('Minibus') || category.includes('Autocar') },
+  { id: 'Minibus', label: 'Minibus & Autocars', match: (category) => category.includes('Minibus') || category.includes('Autocar') || category.includes('Autocars') },
 ];
 
 export default function ServiceDetailPage({ service, navigateTo, onRequestQuote }) {
   const { user, token } = useAuth();
   const [isDevisOpen, setIsDevisOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [detailVehicle, setDetailVehicle] = useState(null);
   const [showVehicleRequestModal, setShowVehicleRequestModal] = useState(false);
-  const [vehicleSearchQuery, setVehicleSearchQuery] = useState('');
-  const [negoceProducts, setNegoceProducts] = useState([]);
-  const [negoceCategories, setNegoceCategories] = useState([]);
-  const [negoceCategoryId, setNegoceCategoryId] = useState('');
-  const [negoceLoading, setNegoceLoading] = useState(false);
-  const [addingProductId, setAddingProductId] = useState(null);
-  const [negoceNotice, setNegoceNotice] = useState('');
-  const [productSearchQuery, setProductSearchQuery] = useState('');
   const [showProductRequestModal, setShowProductRequestModal] = useState(false);
+  const [vehicleSearchQuery, setVehicleSearchQuery] = useState('');
   const [dynamicVehicles, setDynamicVehicles] = useState([]);
+  const [dbProducts, setDbProducts] = useState([]);
+  const [cartToast, setCartToast] = useState('');
+  const [navbarHidden, setNavbarHidden] = useState(false);
+
+  // Suit l'état masqué/visible de la navbar pour que les barres collantes puissent prendre sa place.
+  useEffect(() => {
+    const handler = (e) => setNavbarHidden(!!e.detail?.hidden || false);
+    window.addEventListener('soutarah-navbar-visible', handler);
+    return () => window.removeEventListener('soutarah-navbar-visible', handler);
+  }, []);
+
+  // Sur négoce/location, la navbar reste toujours visible (seule la barre sticky se masque)
+  useEffect(() => {
+    if (service.id === 'negoce' || service.id === 'vehicules') {
+      document.body.dataset.keepNavbar = 'true';
+      return () => { delete document.body.dataset.keepNavbar; };
+    }
+  }, [service.id]);
+
+  // Bandeau de confirmation « ajouté au panier »
+  useEffect(() => {
+    if (!cartToast) return;
+    const t = window.setTimeout(() => setCartToast(''), 2600);
+    return () => window.clearTimeout(t);
+  }, [cartToast]);
+
+  const handleOpenDevis = () => openDevisByAuth({ user, navigateTo, onAuthed: () => setIsDevisOpen(true) });
 
   const handleVehicleReservation = (vehicle) => {
     if (!user) {
       window.sessionStorage.setItem('soutarah_pending_vehicle', JSON.stringify(vehicle));
-      (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true));
+      // Retour automatique sur cette page après connexion : le modal de
+      // réservation s'ouvrira pour choisir les préférences (dates, chauffeur...)
+      window.sessionStorage.setItem('soutarah_return_route', JSON.stringify({ page: 'service', slug: 'vehicules' }));
+      if (navigateTo) navigateTo('login');
       return;
     }
 
     setSelectedVehicle(vehicle);
+  };
+
+  const addToNegoceCart = (product) => {
+    try {
+      const userId = user?.id || user?.userId || 'guest';
+      const cartKey = `soutarah_negoce_cart_${userId}`;
+      const existing = JSON.parse(localStorage.getItem(cartKey) || '[]');
+      const alreadyAdded = existing.some((item) => item.id === product.id);
+      if (!alreadyAdded) {
+        existing.push({
+          id: product.id,
+          name: product.name || product.nom || (product.produit?.nom) || 'Article',
+          ref: product.ref || product.reference || '',
+          desc: product.desc || product.description || '',
+          image: product.image || product.image_url || '/img/nexans/cable_04_v_jpg.jpg',
+          pdf: product.pdf || '',
+          category: product.category || product.categorie?.nom || 'Négoce',
+          quantity: 1,
+          price: Number(product.prixMarche ?? product.price ?? product.prix_unitaire ?? product.tarifs?.[0]?.prix) || 0,
+          unitPrice: Number(product.prixMarche ?? product.price ?? product.prix_unitaire ?? product.tarifs?.[0]?.prix) || 0,
+        });
+        localStorage.setItem(cartKey, JSON.stringify(existing));
+        window.dispatchEvent(new Event('soutarah-cart-updated'));
+        setCartToast(`✓ « ${product.name || product.nom} » a été ajouté au panier.`);
+      } else {
+        setCartToast('Ce produit est déjà dans votre panier.');
+      }
+    } catch (e) {
+      console.warn('Impossible d\u2019ajouter au panier négoce', e);
+    }
+  };
+
+  const handleAddNexansToCart = (product) => {
+    // Commander un produit exige un compte : le visiteur est envoyé vers le
+    // login / création de compte, puis ramené sur cette page où son produit
+    // est automatiquement ajouté au panier.
+    if (!user) {
+      try {
+        window.sessionStorage.setItem('soutarah_pending_product', JSON.stringify(product));
+        window.sessionStorage.setItem('soutarah_return_route', JSON.stringify({ page: 'service', slug: 'negoce' }));
+      } catch (storageError) { /* sessionStorage indisponible */ }
+      if (navigateTo) navigateTo('login');
+      return;
+    }
+    addToNegoceCart(product);
   };
   const [activeFleetCategory, setActiveFleetCategory] = useState('Toutes');
 
@@ -82,22 +153,6 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
       .filter((group) => group.id === 'Toutes' || group.count > 0);
   }, [service.rentalVehicles]);
 
-  const displayedProducts = useMemo(() => {
-    let products = negoceProducts;
-    
-    if (productSearchQuery.trim()) {
-      const query = productSearchQuery.toLowerCase();
-      products = products.filter((product) => 
-        (product.nom || product.name || '').toLowerCase().includes(query) ||
-        (product.reference || '').toLowerCase().includes(query) ||
-        (product.categorie?.nom || product.category?.nom || '').toLowerCase().includes(query) ||
-        (product.description || '').toLowerCase().includes(query)
-      );
-    }
-    
-    return products;
-  }, [negoceProducts, productSearchQuery]);
-
   // Charger les véhicules avec les prix dynamiques selon le profil client (base de données)
   useEffect(() => {
     if (service.id !== 'vehicules') return undefined;
@@ -111,30 +166,63 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
     return () => { active = false; };
   }, [service.id, token]);
 
+  // Charger les VRAIS produits de négoce depuis la base de données (comme l'admin)
+  useEffect(() => {
+    if (service.id !== 'negoce') return undefined;
+    let active = true;
+    apiRequest('/products', { token }).then((res) => {
+      if (!active) return;
+      setDbProducts(res.products || []);
+    }).catch(() => {
+      if (active) setDbProducts([]);
+    });
+    return () => { active = false; };
+  }, [service.id, token]);
+
   const displayedVehicles = useMemo(() => {
-    let vehicles = service.rentalVehicles ?? [];
-    
-    // Fusionner les prix dynamiques de la base (selon le profil client) avec les données statiques
+    // Si des véhicules dynamiques (base de données) sont chargés, on les utilise DIRECTEMENT
+    // pour que le client voie exactement les mêmes véhicules que dans l'admin.
     if (dynamicVehicles.length > 0) {
-      vehicles = vehicles.map((staticVehicle) => {
-        // Essayer de matcher par nom (ex: "Mitsubishi Pajero 13" ↔ marque+modele)
-        const matcher = staticVehicle.name.toLowerCase();
-        const dynamic = dynamicVehicles.find((v) => {
-          const fullName = `${v.marque || ''} ${v.modele || ''}`.toLowerCase();
-          const altName = `${v.modele || ''} ${v.marque || ''}`.toLowerCase();
-          return fullName.includes(matcher) || altName.includes(matcher) || matcher.includes(fullName);
-        });
-        if (!dynamic) return staticVehicle;
-        // Surcharger le prix de base avec le prix dynamique calculé par l'API selon le profil client
-        return {
-          ...staticVehicle,
-          id: dynamic.id, // ID du véhicule en base (utilisé pour vérifier la disponibilité)
-          pricePerDay: dynamic.dailyPrice != null ? Number(dynamic.dailyPrice) : staticVehicle.pricePerDay,
-          dynamicPricePerDay: dynamic.dailyPrice != null ? Number(dynamic.dailyPrice) : null,
-        };
-      });
+      let vehicles = dynamicVehicles.map((v) => ({
+        id: v.id,
+        name: `${v.marque || ''} ${v.modele || ''}`.trim() || 'Véhicule',
+        category: v.categorie || 'Véhicule',
+        specs: [v.places ? `${v.places} personnes` : '', v.transmission || ''].filter(Boolean),
+        image: v.image_url || '/img/vehicles/dusterAvant.jpg',
+        pricePerDay: Number(v.dailyPrice) || 0,
+        dynamicPricePerDay: Number(v.dailyPrice) || 0,
+        plate: v.immatriculation || v.plaque || '',
+        ...v,
+      }));
+
+      // Filtre par catégorie
+      if (activeFleetCategory !== 'Toutes') {
+        const group = fleetCategories.find((item) => item.id === activeFleetCategory);
+        if (group) {
+          vehicles = vehicles.filter((vehicle) => group.match(vehicle.category || ''));
+        }
+      }
+      // Filtre par recherche
+      if (vehicleSearchQuery.trim()) {
+        const query = vehicleSearchQuery.toLowerCase();
+        vehicles = vehicles.filter((vehicle) =>
+          vehicle.name?.toLowerCase().includes(query) ||
+          vehicle.category?.toLowerCase().includes(query) ||
+          String(vehicle.specs || []).toLowerCase().includes(query)
+        );
+      }
+      return vehicles;
     }
-    
+
+    // Fallback : les fiches statiques illustrées par une image locale (uniquement si l'API ne répond pas)
+    const usedImages = new Set();
+    let vehicles = (service.rentalVehicles ?? []).filter((vehicle) => {
+      const image = vehicle.image || '';
+      if (!image.startsWith('/img/vehicles/') || usedImages.has(image)) return false;
+      usedImages.add(image);
+      return true;
+    });
+
     // Filtre par catégorie
     if (activeFleetCategory !== 'Toutes') {
       const group = fleetCategories.find((item) => item.id === activeFleetCategory);
@@ -142,62 +230,24 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
         vehicles = vehicles.filter((vehicle) => group.match(vehicle.category || ''));
       }
     }
-    
     // Filtre par recherche
     if (vehicleSearchQuery.trim()) {
       const query = vehicleSearchQuery.toLowerCase();
-      vehicles = vehicles.filter((vehicle) => 
+      vehicles = vehicles.filter((vehicle) =>
         vehicle.name?.toLowerCase().includes(query) ||
         vehicle.category?.toLowerCase().includes(query) ||
-        vehicle.specs?.some(spec => spec.toLowerCase().includes(query))
+        vehicle.specs?.some((spec) => spec.toLowerCase().includes(query))
       );
     }
-    
+
     return vehicles;
   }, [activeFleetCategory, vehicleSearchQuery, service.rentalVehicles, fleetCategories, dynamicVehicles]);
-
-  useEffect(() => {
-    if (service.id !== 'negoce') return undefined;
-    let active = true;
-    setNegoceLoading(true);
-    Promise.all([
-      apiRequest('/categories').catch(() => ({ categories: [] })),
-      apiRequest(`/products${negoceCategoryId ? `?categoryId=${encodeURIComponent(negoceCategoryId)}` : ''}`, { token }).catch(() => ({ products: [] })),
-    ]).then(([categoriesRes, productsRes]) => {
-      if (!active) return;
-      setNegoceCategories(categoriesRes.categories || []);
-      setNegoceProducts(productsRes.products || []);
-    }).finally(() => active && setNegoceLoading(false));
-    return () => { active = false; };
-  }, [service.id, negoceCategoryId, token]);
-
-  const addNegoceToCart = async (product) => {
-    if (!token) {
-      navigateTo('login');
-      return;
-    }
-    setAddingProductId(product.id);
-    setNegoceNotice('');
-    try {
-      await apiRequest('/cart/items', { token, method: 'POST', body: JSON.stringify({ productId: product.id, quantity: 1 }) });
-      window.dispatchEvent(new Event('soutarah-cart-updated'));
-      setNegoceNotice(`${product.nom || product.name} ajouté au panier — consultez votre panier pour voir le tarif.`);
-    } catch (e) {
-      setNegoceNotice(e.message);
-    } finally {
-      setAddingProductId(null);
-    }
-  };
 
 
   useEffect(() => {
     window.scrollTo(0, 0);
     setActiveFleetCategory('Toutes');
     setVehicleSearchQuery('');
-    setNegoceCategoryId('');
-    setNegoceNotice('');
-    setProductSearchQuery('');
-    setShowProductRequestModal(false);
   }, [service.id]);
 
   useEffect(() => {
@@ -212,6 +262,25 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
           }
         } catch (e) {
           console.error('Erreur lecture location vehicule en attente', e);
+        }
+      }
+    }
+  }, [user, service.id]);
+
+  // Après connexion : reprise automatique côté négoce — le produit mis de côté
+  // avant le login est ajouté au panier (le visiteur est ramené sur cette page).
+  useEffect(() => {
+    if (user && service.id === 'negoce') {
+      const pendingRaw = window.sessionStorage.getItem('soutarah_pending_product');
+      if (pendingRaw) {
+        window.sessionStorage.removeItem('soutarah_pending_product');
+        try {
+          const product = JSON.parse(pendingRaw);
+          if (product && (product.id || product.ref)) {
+            addToNegoceCart(product);
+          }
+        } catch (e) {
+          console.error('Erreur lecture produit en attente', e);
         }
       }
     }
@@ -236,16 +305,19 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
     navigateTo('home', { section: target });
   };
 
+  const showLegacyFleet = service.id === '__legacy_fleet__';
+
   return (
     <div className="min-h-screen bg-[#f9f9f9] text-[#1a1c1c] flex flex-col font-sans selection:bg-primary selection:text-white">
       <Navbar
-        onOpenDevis={() => setIsDevisOpen(true)}
+        onOpenDevis={handleOpenDevis}
         activeTab="services"
         navigateTo={navigateTo}
+        forceSolid={service.id === 'negoce' || service.id === 'vehicules'}
       />
 
       <main className="flex-grow pt-28">
-        <section className="relative overflow-hidden bg-[#f4f8f4] pb-14 pt-12 sm:pb-20 sm:pt-16">
+        <section className={`relative overflow-hidden bg-[#f4f8f4] pb-14 pt-12 sm:pb-20 sm:pt-16 ${service.id === 'vehicules' || service.id === 'negoce' ? 'hidden' : ''}`}>
           <div className="absolute right-0 top-0 h-72 w-72 translate-x-1/3 -translate-y-1/3 rounded-full bg-primary/10 blur-3xl" />
           <div className="absolute bottom-0 left-[10%] h-48 w-48 rounded-full bg-[#69c33b]/10 blur-3xl" />
 
@@ -274,7 +346,7 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
 
                 <div className="mt-8 flex flex-wrap gap-3">
                   <button
-                    onClick={() => setIsDevisOpen(true)}
+                    onClick={handleOpenDevis}
                     className="shimmer-btn inline-flex min-h-12 items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-[#1b4c00] hover:shadow-xl active:scale-95"
                   >
                     Demander un devis
@@ -327,7 +399,7 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
           </div>
         </section>
 
-        <FadeInSection immediate as="section" className="bg-white py-8 sm:py-10">
+        <FadeInSection immediate as="section" className={`bg-white py-8 sm:py-10 ${service.id === 'vehicules' || service.id === 'negoce' ? 'hidden' : ''}`}>
           <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-center lg:gap-10">
               <div className="lg:col-span-5">
@@ -337,7 +409,7 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
                 </h2>
                 <p className="mt-2 text-sm leading-relaxed text-gray-600 line-clamp-3">{service.overview}</p>
                 <button
-                  onClick={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))}
+                  onClick={handleOpenDevis}
                   className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-primary transition-colors hover:text-[#1b4c00]"
                 >
                   Échangeons sur votre besoin
@@ -361,6 +433,20 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
         </FadeInSection>
 
         {service.rentalVehicles && (
+          <RentalFleetSection
+            categories={fleetCategories}
+            activeCategory={activeFleetCategory}
+            onCategoryChange={setActiveFleetCategory}
+            searchQuery={vehicleSearchQuery}
+            onSearchChange={setVehicleSearchQuery}
+            vehicles={displayedVehicles}
+            onReserve={handleVehicleReservation}
+            onDetails={setDetailVehicle}
+            onRequest={() => setShowVehicleRequestModal(true)}
+          />
+        )}
+
+        {showLegacyFleet && service.rentalVehicles && (
           <FadeInSection immediate as="section" id="flotte" className="scroll-mt-24 bg-[#f8faf7] py-14 sm:py-18 lg:py-20">
             <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -383,7 +469,7 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
               </div>
 
               <div className="mt-8 grid gap-6 lg:grid-cols-[230px_minmax(0,1fr)]">
-                <aside className="self-start rounded-[24px] border border-primary/10 bg-white p-3 shadow-sm shadow-[#143e22]/5 lg:sticky lg:top-32">
+                <aside className="self-start rounded-[24px] border border-primary/10 bg-white p-3 shadow-sm shadow-[#143e22]/5 lg:sticky" style={{ top: navbarHidden ? '0.75rem' : '8rem' }}>
                   <div className="border-b border-gray-100 px-2 pb-3">
                     <p className="text-[10px] font-black uppercase tracking-[0.16em] text-primary">Types de véhicules</p>
                     <p className="mt-1 text-xs font-semibold leading-5 text-gray-500">Sélectionnez une catégorie.</p>
@@ -416,8 +502,11 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
                 </aside>
 
                 <div className="min-w-0">
-                  {/* Barre de recherche + Bouton demande véhicule */}
-                  <div className="mb-4 flex flex-wrap items-center gap-3">
+                  {/* Barre de recherche collante : prend la place de la navbar quand elle se masque */}
+                  <div
+                                                                                className="sticky z-20 mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-gray-100 bg-white px-3 py-2 shadow-[0_4px_18px_-6px_rgba(23,61,35,0.12)]"
+                    style={{ top: navbarHidden ? 8 : 116.8 }}
+                  >
                     <div className="relative flex-1 min-w-[240px]">
                       <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">
                         search
@@ -430,20 +519,12 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
                         className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       />
                     </div>
-                    
-                    <button
-                      onClick={() => setShowVehicleRequestModal(true)}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold text-sm transition-all whitespace-nowrap"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">help</span>
-                      Véhicule non trouvé ?
-                    </button>
                   </div>
 
                   <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[22px] border border-primary/10 bg-white/80 px-4 py-3 shadow-sm">
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-[0.16em] text-primary">{activeFleetCategory}</p>
-                      <p className="mt-0.5 text-xs font-semibold text-gray-500">{displayedVehicles.length} vehicule{displayedVehicles.length > 1 ? 's' : ''} affiche{displayedVehicles.length > 1 ? 's' : ''}</p>
+                      <p className="mt-0.5 text-xs font-semibold text-gray-500">{displayedVehicles.length} véhicule{displayedVehicles.length > 1 ? 's' : ''} affiché{displayedVehicles.length > 1 ? 's' : ''}</p>
                     </div>
                   </div>
 
@@ -476,7 +557,7 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
                             src={vehicle.image}
                             alt={vehicle.name}
                             loading={index > 2 ? 'lazy' : 'eager'}
-                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            className="h-full w-full object-contain p-2 transition-transform duration-700 group-hover:scale-105"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-[#09220f]/60 via-transparent to-transparent" />
                           <span className="absolute bottom-2.5 left-2.5 max-w-[82%] rounded-full border border-white/20 bg-black/35 px-2.5 py-1 text-[9px] font-bold text-white backdrop-blur-sm">
@@ -508,7 +589,7 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
                               onClick={() => handleVehicleReservation(vehicle)}
                               className="shimmer-btn inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2 text-[11px] font-black text-white shadow-md shadow-primary/15 transition-all hover:bg-[#1b4c00] active:scale-95"
                             >
-                              Reserver ce vehicule
+                              Réserver ce véhicule
                               <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
                             </button>
                           </div>
@@ -524,162 +605,40 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
         )}
 
         {service.id === 'negoce' && (
-          <FadeInSection immediate as="section" id="negoce-produits" className="scroll-mt-24 bg-[#f8faf7] py-14 sm:py-18 lg:py-20">
-            <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
-              <div className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-primary">
-                  <span className="material-symbols-outlined text-[15px]">inventory_2</span>
-                  Négoce & import-export
-                </div>
-                <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-[#111827] sm:text-4xl">Produits et équipements disponibles</h2>
-                <p className="mt-2 text-sm text-gray-600">Ajoutez les articles à votre panier — le tarif s&apos;affiche uniquement dans le panier selon votre profil client.</p>
-              </div>
-
-              {negoceNotice && (
-                <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
-                  {negoceNotice}
-                </div>
-              )}
-
-              <div className="mt-8 grid gap-6 lg:grid-cols-[230px_minmax(0,1fr)]">
-                <aside className="self-start rounded-[24px] border border-primary/10 bg-white p-3 shadow-sm shadow-[#143e22]/5 lg:sticky lg:top-32 lg:max-h-[calc(100vh-9rem)] lg:overflow-y-auto">
-                  <div className="border-b border-gray-100 px-2 pb-3">
-                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-primary">Catégories</p>
-                    <p className="mt-1 text-xs font-semibold leading-5 text-gray-500">Sélectionnez une catégorie.</p>
-                  </div>
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-                    <button
-                      onClick={() => setNegoceCategoryId('')}
-                      aria-pressed={!negoceCategoryId}
-                      className={`group flex min-h-12 items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left text-xs font-extrabold transition-all ${
-                        !negoceCategoryId
-                          ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                          : 'border border-gray-100 bg-[#f8faf7] text-[#30343b] hover:border-primary/25 hover:bg-white hover:text-primary hover:shadow-md'
-                      }`}
-                    >
-                      <span className="leading-snug">Toutes</span>
-                      <span className={`grid h-6 min-w-6 place-items-center rounded-full px-1.5 text-[10px] ${
-                        !negoceCategoryId ? 'bg-white/20 text-white' : 'bg-white text-primary ring-1 ring-primary/10'
-                      }`}>
-                        {negoceCategories.reduce((sum, c) => sum + (c._count?.produits || 0), displayedProducts.length) || negoceProducts.length}
-                      </span>
-                    </button>
-                    {negoceCategories.map((category) => {
-                      const isActive = negoceCategoryId === category.id;
-                      const count = negoceProducts.filter(p => (p.categorie?.id || p.category?.id) === category.id).length;
-                      return (
-                        <button
-                          key={category.id}
-                          onClick={() => setNegoceCategoryId(category.id)}
-                          aria-pressed={isActive}
-                          className={`group flex min-h-12 items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-left text-xs font-extrabold transition-all ${
-                            isActive
-                              ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                              : 'border border-gray-100 bg-[#f8faf7] text-[#30343b] hover:border-primary/25 hover:bg-white hover:text-primary hover:shadow-md'
-                          }`}
-                        >
-                          <span className="leading-snug">{category.nom || category.name}</span>
-                          <span className={`grid h-6 min-w-6 place-items-center rounded-full px-1.5 text-[10px] ${
-                            isActive ? 'bg-white/20 text-white' : 'bg-white text-primary ring-1 ring-primary/10'
-                          }`}>
-                            {count}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </aside>
-
-                <div className="min-w-0">
-                  <div className="mb-4 flex flex-wrap items-center gap-3">
-                    <div className="relative flex-1 min-w-[240px]">
-                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">
-                        search
-                      </span>
-                      <input
-                        type="text"
-                        placeholder="Rechercher un produit, une référence..."
-                        value={productSearchQuery}
-                        onChange={(e) => setProductSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                      />
-                    </div>
-                    <button
-                      onClick={() => setShowProductRequestModal(true)}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold text-sm transition-all whitespace-nowrap"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">help</span>
-                      Produit non trouvé ?
-                    </button>
-                    <div className="flex items-center gap-2 rounded-2xl border border-primary/15 bg-white px-4 py-2.5 shadow-sm text-primary">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-white">
-                        <span className="material-symbols-outlined text-[18px]">inventory_2</span>
-                      </span>
-                      <span>
-                        <strong className="block text-base leading-none font-extrabold">{displayedProducts.length}</strong>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">produits</span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {negoceLoading ? (
-                    <p className="py-14 text-center font-semibold text-gray-500">Chargement des produits…</p>
-                  ) : displayedProducts.length ? (
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                      {displayedProducts.map((product) => (
-                        <article key={product.id} className="flex flex-col overflow-hidden rounded-[20px] border border-gray-200/80 bg-white shadow-sm transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10">
-                          <div className="relative h-36 overflow-hidden bg-[#e8f1e5] text-primary">
-                            {product.image_url || product.imageUrl ? (
-                              <img src={product.image_url || product.imageUrl} alt={product.nom || product.name} className="h-full w-full object-cover" />
-                            ) : (
-                              <div className="grid h-full w-full place-items-center"><PackageSearch size={36} /></div>
-                            )}
-                            <span className="absolute top-2.5 left-2.5 rounded-full bg-white/90 px-2 py-0.5 text-[9px] font-extrabold text-primary shadow-sm">
-                              {product.categorie?.nom || product.category?.nom || 'Négoce'}
-                            </span>
-                          </div>
-                          <div className="flex flex-1 flex-col p-4">
-                            <h3 className="font-display text-base font-extrabold text-[#111827]">{product.nom || product.name}</h3>
-                            <p className="mt-1 line-clamp-2 flex-1 text-xs text-gray-600">{product.description || 'Produit disponible sur demande.'}</p>
-                            <div className="mt-3 flex items-center justify-between">
-                              <span className="text-[10px] font-bold text-gray-400">
-                                {product.unite || 'unité'}
-                              </span>
-                            </div>
-                            <button
-                              disabled={addingProductId === product.id}
-                              onClick={() => addNegoceToCart(product)}
-                              className="mt-3 inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-primary px-3 py-2 text-[11px] font-black text-white disabled:bg-gray-300"
-                            >
-                              <ShoppingCart size={14} />
-                              {addingProductId === product.id ? 'Ajout…' : 'Ajouter au panier'}
-                            </button>
-                          </div>
-                        </article>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="mt-8 rounded-[24px] border border-[#1b4c00] bg-[#1b4c00] px-6 py-12 text-center">
-                      <span className="material-symbols-outlined text-5xl text-emerald-300">search_off</span>
-                      <h3 className="mt-3 font-display text-lg font-bold text-white">Produit recherché</h3>
-                      <p className="mt-1 text-sm text-emerald-200">Essayez une autre recherche ou faites-nous part de votre besoin.</p>
-                      <button
-                        onClick={() => setShowProductRequestModal(true)}
-                        className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[#1b4c00] hover:bg-emerald-50 transition"
-                      >
-                        <span className="material-symbols-outlined text-base">help</span>
-                        Demander ce produit
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </FadeInSection>
+          <NexansCatalogSection
+            categories={[
+              ...(Array.isArray(dbProducts) ? [...new Set(dbProducts.map((p) => p.categorie?.nom).filter(Boolean))].map((catName) => ({
+                id: catName,
+                label: catName,
+                icon: {
+                  'Câbles de bâtiments': 'home_work',
+                  'Câbles basse tension': 'bolt',
+                  'Câbles moyenne tension': 'power',
+                  'Lignes aériennes': 'air',
+                  'Transformateurs': 'transform',
+                  'Cellules HTA': 'electrical_services',
+                  'Infrastructures Télécom': 'router',
+                  'Accessoires d’énergie': 'settings',
+                  'Postes préfabriqués': 'home_work',
+                }[catName] || 'category',
+                image: '/img/nexans/cable_04_v_jpg.jpg',
+              })) : []),
+            ]}
+            products={(Array.isArray(dbProducts) ? dbProducts : []).map((p) => ({
+              id: p.id,
+              name: p.nom,
+              ref: p.reference || '',
+              desc: p.description || '',
+              image: p.image_url || '/img/nexans/cable_04_v_jpg.jpg',
+              pdf: '',
+              category: p.categorie?.nom || 'Négoce',
+              prixMarche: Number(p.price ?? p.tarifs?.[0]?.prix) || 0,
+            }))}
+            onRequestQuote={() => setShowProductRequestModal(true)}
+            onAddToCart={handleAddNexansToCart}
+          />
         )}
-
-
-        <FadeInSection immediate as="section" className="bg-[#f9f9f9] py-14 sm:py-16">
+<FadeInSection immediate as="section" className="bg-[#f9f9f9] py-14 sm:py-16">
           <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
             <div className="mb-7 flex flex-col justify-between gap-4 sm:mb-8 sm:flex-row sm:items-end">
               <div>
@@ -713,17 +672,27 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
           </div>
         </FadeInSection>
 
-        <CtaBanner onOpenDevis={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))} />
+        <CtaBanner onOpenDevis={handleOpenDevis} />
       </main>
 
       <Footer onNavClick={handleFooterNavigation} />
       <DevisModal isOpen={isDevisOpen} onClose={() => setIsDevisOpen(false)} />
       <CarReservationModal vehicle={selectedVehicle} onClose={() => setSelectedVehicle(null)} navigateTo={navigateTo} />
+      <VehicleDetailModal vehicle={detailVehicle} onClose={() => setDetailVehicle(null)} onReserve={(vehicle) => { setDetailVehicle(null); handleVehicleReservation(vehicle); }} />
       {showVehicleRequestModal && (
         <VehicleRequestModal onClose={() => setShowVehicleRequestModal(false)} navigateTo={navigateTo} />
       )}
       {showProductRequestModal && (
         <ReqModal onClose={() => setShowProductRequestModal(false)} navigateTo={navigateTo} />
+      )}
+      {cartToast && (
+        <div className="fixed bottom-6 left-1/2 z-[90] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 animate-fadeIn">
+          <div className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-[#12251a] px-4 py-3 text-sm font-semibold text-white shadow-2xl shadow-black/20">
+            <span className="material-symbols-outlined text-[20px] text-[#88e05a]">check_circle</span>
+            <span className="min-w-0">{cartToast}</span>
+            <button onClick={() => setCartToast('')} className="ml-auto text-white/50 transition hover:text-white" aria-label="Fermer">×</button>
+          </div>
+        </div>
       )}
     </div>
   );

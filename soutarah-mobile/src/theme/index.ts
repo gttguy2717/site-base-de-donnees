@@ -78,4 +78,8 @@ export const shadows = {
   },
 };
 
-export const API_URL = 'http://192.168.1.11:5000/api';
+// API de production (backend déployé sur Hostinger, joignable depuis partout).
+// Pour développer en local : remplacer par 'http://<IP-du-PC>:5000/api'
+// (le backend local doit tourner sur le port 5000 et le téléphone être sur
+// le même Wi-Fi — sinon utiliser https://soutarahgroup.com/api).
+export const API_URL = 'https://soutarahgroup.com/api';

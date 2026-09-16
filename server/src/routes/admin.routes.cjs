@@ -5,6 +5,9 @@ const {
   getAllClients,
   createClient,
   updateClientStatus,
+  reviewClientVerification,
+  convertEntrepriseClient,
+  downloadClientDocument,
   getCompanyPricing,
   saveCompanyVehiclePrice,
   deleteCompanyVehiclePrice,
@@ -26,6 +29,7 @@ const {
   updateReservationStatus,
   getAllQuotes,
   updateQuoteStatus,
+  markQuoteAsRead,
   uploadSignedQuote,
   getAllPromotions,
   createPromotion,
@@ -35,6 +39,7 @@ const {
   addStockMovement,
   getLowStockAlerts,
   getDashboardStats,
+  getSalesEvolution,
   getSettings,
   saveSettings,
   getAnnouncements,
@@ -52,11 +57,15 @@ const adminRouter = Router();
 
 // Dashboard
 adminRouter.get('/dashboard/stats', getDashboardStats);
+adminRouter.get('/dashboard/sales-evolution', getSalesEvolution);
 
 // Clients
 adminRouter.get('/clients', getAllClients);
 adminRouter.post('/clients', createClient);
 adminRouter.put('/clients/:id/status', updateClientStatus);
+adminRouter.post('/clients/:id/verification', reviewClientVerification);
+adminRouter.put('/clients/:id/convert-entreprise', convertEntrepriseClient);
+adminRouter.get('/clients/:id/documents/:docIndex', downloadClientDocument);
 
 // Prix par entreprise client
 adminRouter.get('/company-pricing', getCompanyPricing);
@@ -88,6 +97,7 @@ adminRouter.put('/reservations/:id/status', updateReservationStatus);
 // Devis
 adminRouter.get('/quotes', getAllQuotes);
 adminRouter.put('/quotes/:id/status', updateQuoteStatus);
+adminRouter.put('/quotes/:id/read', markQuoteAsRead);
 adminRouter.post('/quotes/:id/upload-signed', upload.single('file'), uploadSignedQuote);
 
 // Promotions

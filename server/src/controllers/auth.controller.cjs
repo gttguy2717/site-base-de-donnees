@@ -28,14 +28,31 @@ async function register(request, response, next) {
     const email = normalizeEmail(request.body.email);
     const telephone = normalizePhone(request.body.phone);
 
+    // Documents fournis (multipart) pour les entreprises
+    const documents = (request.files || []).map((file) => ({
+      originalname: file.originalname,
+      mimetype: file.mimetype,
+      size: file.size,
+      path: file.path,
+      filename: file.filename,
+      url: '/uploads/' + file.filename,
+    }));
+
+    const cleanupFiles = () => documents.forEach((d) => { try { fs.unlinkSync(d.path); } catch (e) {} });
+
     if (!CUSTOMER_TYPES.has(customerType)) throw badRequest('Le type de client doit être PARTICULIER ou ENTREPRISE.');
     if (customerType === 'PARTICULIER' && (!firstName?.trim() || !lastName?.trim())) throw badRequest('Le nom et le prénom sont requis pour un particulier.');
     if (customerType === 'ENTREPRISE' && !companyName?.trim()) throw badRequest('Le nom de l’entreprise est requis.');
+    if (customerType === 'ENTREPRISE' && documents.length === 0) {
+      throw badRequest('Les documents justificatifs de l’entreprise (RCCM, pièce d’identité, etc.) sont obligatoires.');
+    }
 
     const existingUser = await User.findOne({ where: { [Op.or]: [{ email }, { telephone }] }, transaction });
-    if (existingUser) throw badRequest('Un compte utilise déjà cet email ou ce numéro de téléphone.');
+    if (existingUser) { cleanupFiles(); throw badRequest('Un compte utilise déjà cet email ou ce numéro de téléphone.'); }
 
-    const user = await User.create({ email, telephone, mot_de_passe_hash: await hashPassword(password), role: 'CLIENT' }, { transaction });
+    const isEntreprise = customerType === 'ENTREPRISE';
+    // Les entreprises sont inactives tant que l'admin n'a pas validé leurs documents
+    const user = await User.create({ email, telephone, mot_de_passe_hash: await hashPassword(password), role: 'CLIENT', est_actif: !isEntreprise }, { transaction });
     const client = await Client.create({
       utilisateur_id: user.id,
       type_client: customerType,
@@ -45,16 +62,22 @@ async function register(request, response, next) {
     }, { transaction });
 
     let company = null;
-    if (customerType === 'ENTREPRISE') {
+    if (isEntreprise) {
       company = await Company.create({
         client_id: client.id,
         nom: companyName.trim(),
         nom_responsable: responsibleName?.trim() || null,
         numero_identification: identificationNumber?.trim() || null,
+        verification_status: 'PENDING',
+        documents,
       }, { transaction });
     }
 
     await transaction.commit();
+    if (!isEntreprise) {
+      // Nettoyage : pas de documents pour un particulier
+      cleanupFiles();
+    }
 
     // Notification aux admins + email
     try {
@@ -92,6 +115,16 @@ async function register(request, response, next) {
       console.error('❌ Erreur email admin nouveau compte:', mailError.message);
     }
 
+    // Compte entreprise en attente de validation : on ne renvoie pas de token
+    if (isEntreprise) {
+      response.status(201).json({
+        requiresVerification: true,
+        message: 'Votre compte entreprise a bien été créé. Il sera actif après validation de vos documents par notre équipe.',
+        email,
+      });
+      return;
+    }
+
     response.status(201).json({
       token: signAccessToken(user),
       user: publicUser(user),
@@ -113,18 +146,37 @@ async function login(request, response, next) {
       include: [{ model: Client, as: 'client', include: [{ model: Company, as: 'entreprise' }] }]
     });
 
-    if (!user || !user.est_actif || !(await comparePassword(request.body.password, user.mot_de_passe_hash))) {
+    if (!user || !(await comparePassword(request.body.password, user.mot_de_passe_hash))) {
       const error = new Error('Identifiants invalides.');
       error.statusCode = 401;
       throw error;
     }
 
+    // Entreprise en attente de validation des documents
+    if (user.client?.entreprise?.verification_status === 'PENDING' || (user.client?.type_client === 'ENTREPRISE' && user.client?.entreprise?.verification_status === 'PENDING')) {
+      const error = new Error('Votre inscription d’entreprise est en cours de validation. L’administrateur doit approuver vos documents avant d’accéder à votre espace.');
+      error.statusCode = 403;
+      throw error;
+    }
+    if (user.client?.entreprise?.verification_status === 'REJECTED') {
+      const error = new Error('Votre inscription d’entreprise a été refusée. Contactez SOUTARAH GROUP pour plus d’informations.');
+      error.statusCode = 403;
+      throw error;
+    }
+    if (!user.est_actif) {
+      const error = new Error('Votre compte est bloqué. Contactez SOUTARAH GROUP.');
+      error.statusCode = 403;
+      throw error;
+    }
+
     // Vérifier le blocage automatique pour les entreprises clients
+    // Le délai est compté à partir de la date de validation/conversion (verifie_le), sinon depuis la création du compte
     if (user.client?.type_client === 'ENTREPRISE_CLIENT' && user.client?.delai_blocage_jours) {
       const delaiJours = Number(user.client.delai_blocage_jours);
-      const creeLe = new Date(user.client.cree_le);
+      const ancre = user.client.entreprise?.verifie_le || user.client.cree_le;
+      const dateAncre = new Date(ancre);
       const maintenant = new Date();
-      const joursEcoules = Math.floor((maintenant - creeLe) / 86400000);
+      const joursEcoules = Math.floor((maintenant - dateAncre) / 86400000);
       if (joursEcoules >= delaiJours && !user.client.bloque_le) {
         await user.update({ est_actif: false });
         await user.client.update({ bloque_le: maintenant });

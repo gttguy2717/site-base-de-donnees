@@ -5,6 +5,9 @@ import AvatarUploader from '../components/AvatarUploader';
 import { useAuth } from '../hooks/useAuth';
 import { apiRequest } from '../lib/api';
 import { generateQuotePdf } from '../lib/quotePdf';
+import { computeQuoteTotals } from '../lib/quoteTotals';
+
+const formatMoneyClient = (val) => new Intl.NumberFormat('fr-FR').format(Number(val) || 0);
 
 export default function ClientDashboardPage({ navigateTo, initialTab = 'account' }) {
   const { user, client, token, updateProfile } = useAuth();
@@ -101,7 +104,6 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
     : ([client?.prenom || client?.firstName, client?.nom || client?.lastName].filter(Boolean).join(' ') || 'Client SOUTARAH');
 
   const unreadNotifsCount = notifications.filter((n) => !(n.est_lu ?? n.isRead)).length;
-  const pendingQuotesCount = quoteRequests.filter((q) => ['PENDING', 'ISSUED', 'CONTACTED'].includes(q.statut || q.status)).length;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -161,20 +163,64 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
     }
   };
 
-  const handleDownloadQuotePdf = async (quote) => {
-    // Si un devis signé existe, télécharger le fichier signé (nouvelle version)
-    if (quote.fichier_devis_url) {
-      window.open(`${quote.fichier_devis_url}`, '_blank', 'noopener,noreferrer');
-      return;
-    }
-
-    // Sinon, générer le PDF
-    setDownloadingQuoteId(quote.id);
+  // Récupère les articles depuis le snapshot (même source que le PDF et l'admin)
+  const getSnapshotItems = (quote) => {
+    if (!quote?.snapshot) return [];
+    let items = [];
     try {
-      await generateQuotePdf({ quote, user, client });
+      items = typeof quote.snapshot === 'string' ? JSON.parse(quote.snapshot) : quote.snapshot;
+    } catch (e) {
+      items = [];
+    }
+    return Array.isArray(items) ? items : [];
+  };
+
+  // Calcule les montants réels à partir des articles (HT/TVA/TDT/TTC)
+  const getQuoteTotals = (quote) => {
+    const items = getSnapshotItems(quote);
+    const hasItems = items.length > 0;
+    let montantHT = 0;
+    let vehicleBase = 0;
+    for (const it of items) {
+      const isVeh = String(it?.type || '').startsWith('vehicle') || it?.type === 'location'
+        || !!(it?.vehicle || it?.vehicleName || it?.vehicleType || it?.dailyPrice != null);
+      const unit = Number(it.prix_unitaire ?? it.unitPrice ?? it.price ?? it.dailyPrice ?? 0);
+      const qty = Number(it.quantite ?? it.quantity) || 1;
+      const total = Number(it.total ?? it.prix_total ?? it.totalPrice ?? (unit * qty)) || 0;
+      montantHT += total;
+      if (isVeh) vehicleBase += total;
+    }
+    if (montantHT > 0) {
+      const totals = computeQuoteTotals(montantHT, vehicleBase);
+      return { ...totals, ht: totals.ht ?? montantHT, hasItems };
+    }
+    // Aucun article détaillé : on retombe sur le budget fourni
+    const budget = Number(String(quote?.budget ?? '').replace(/\D/g, '')) || 0;
+    return { ht: budget, tva: 0, tdt: 0, ttc: budget, hasItems };
+  };
+
+  const handleDownloadQuotePdf = async (quote) => {
+    try {
+      setDownloadingQuoteId(quote.id);
+      let items = [];
+      if (quote?.snapshot) {
+        try {
+          items = typeof quote.snapshot === 'string'
+            ? JSON.parse(quote.snapshot)
+            : quote.snapshot;
+        } catch (e) {
+          items = [];
+        }
+      }
+      await generateQuotePdf({
+        quote,
+        user,
+        client,
+        items: Array.isArray(items) ? items : [],
+      });
     } catch (error) {
       console.error('Erreur génération PDF:', error);
-      alert('❌ Erreur lors de la génération du PDF');
+      alert(`❌ Erreur lors de la génération du PDF : ${error?.message || 'erreur inconnue'}`);
     } finally {
       setDownloadingQuoteId(null);
     }
@@ -199,16 +245,6 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
               </h2>
             </div>
             <div className="ml-auto flex items-center gap-2">
-              {pendingQuotesCount > 0 && (
-                <button
-                  onClick={() => setActiveTab('devis')}
-                  className="inline-flex items-center gap-2 rounded-full bg-amber-50 border border-amber-200 px-4 py-2 text-xs font-extrabold text-amber-700 hover:bg-amber-100 transition"
-                  title="Devis en attente"
-                >
-                  <span className="material-symbols-outlined text-base">description</span>
-                  {pendingQuotesCount} devis en attente
-                </button>
-              )}
               {unreadNotifsCount > 0 && (
                 <button
                   onClick={() => setActiveTab('notifications')}
@@ -404,7 +440,6 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
                             <span className="rounded-full bg-primary/10 px-3 py-0.5 font-mono text-xs font-extrabold text-primary">
                               {quote.reference || 'DEMANDE DE DEVIS'}
                             </span>
-                            <StatusBadge status={quote.statut || quote.status} />
                             <span className="text-xs font-medium text-gray-400">
                               • {new Date(quote.cree_le || quote.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })} à {new Date(quote.cree_le || quote.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                             </span>
@@ -420,52 +455,32 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
                               {quote.description}
                             </p>
                           )}
-                          {quote.fichier_devis_url && (
-                            <div className="mt-3 flex flex-wrap items-center gap-2">
-                              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-extrabold text-emerald-700">
-                                <span className="material-symbols-outlined text-xs">picture_as_pdf</span>
-                                Devis signé disponible
-                              </span>
-                              <a
-                                href={`${quote.fichier_devis_url}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-3 py-1 text-[10px] font-extrabold text-white transition hover:bg-emerald-700"
-                              >
-                                <span className="material-symbols-outlined text-xs">download</span>
-                                Télécharger signé
-                              </a>
-                            </div>
-                          )}
-                        </div>
+                          </div>
 
-                        <div className="flex shrink-0 flex-col items-end gap-2">
-                          <div className="flex gap-2">
-                            {/* Bouton Télécharger visible uniquement si devis non approuvé/signé */}
-                            {!(quote.statut === 'APPROVED' || quote.statut === 'SENT' || quote.fichier_devis_url) && (
-                              <button
-                                onClick={() => handleDownloadQuotePdf(quote)}
-                                disabled={downloadingQuoteId === quote.id}
-                                className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-[10px] font-bold text-blue-700 transition hover:bg-blue-100 disabled:opacity-50"
-                                title="Télécharger le devis"
-                              >
-                                {downloadingQuoteId === quote.id ? (
-                                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-blue-700 border-t-transparent" />
-                                ) : (
-                                  <span className="material-symbols-outlined text-sm">download</span>
-                                )}
-                                Télécharger
-                              </button>
-                            )}
+                        <div className="flex w-full shrink-0 flex-col items-stretch gap-2 sm:w-auto sm:items-end">
+                          <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+                            <button
+                              onClick={() => handleDownloadQuotePdf(quote)}
+                              disabled={downloadingQuoteId === quote.id}
+                              className="inline-flex w-full items-center justify-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-3 py-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100 disabled:opacity-50 sm:w-auto sm:py-1.5 sm:text-[10px]"
+                              title="Télécharger le devis"
+                            >
+                              {downloadingQuoteId === quote.id ? (
+                                <span className="h-3 w-3 animate-spin rounded-full border-2 border-blue-700 border-t-transparent" />
+                              ) : (
+                                <span className="material-symbols-outlined text-sm">download</span>
+                              )}
+                              Télécharger
+                            </button>
                             <button
                               onClick={() => setSelectedQuote(quote)}
-                              className="rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 text-xs font-bold text-gray-700 transition hover:border-primary hover:bg-primary hover:text-white"
+                              className="w-full rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-bold text-gray-700 transition hover:border-primary hover:bg-primary hover:text-white sm:w-auto sm:py-1.5 sm:text-xs"
                             >
                               Détails
                             </button>
                           </div>
                           {confirmDeleteId === quote.id ? (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-center gap-2 sm:justify-end">
                               <span className="text-[10px] font-bold text-red-600">Confirmer ?</span>
                               <button
                                 onClick={() => handleDeleteQuote(quote.id)}
@@ -484,7 +499,7 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
                           ) : (
                             <button
                               onClick={() => setConfirmDeleteId(quote.id)}
-                              className="inline-flex items-center gap-1 rounded-full border border-red-200 px-3 py-1.5 text-[10px] font-bold text-red-600 transition hover:bg-red-50"
+                              className="inline-flex w-full items-center justify-center gap-1 rounded-full border border-red-200 px-3 py-2.5 text-xs font-bold text-red-600 transition hover:bg-red-50 sm:w-auto sm:py-1.5 sm:text-[10px]"
                             >
                               <span className="material-symbols-outlined text-sm">delete</span>
                               Supprimer
@@ -586,9 +601,9 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
 
       {/* QUOTE DETAIL MODAL */}
       {selectedQuote && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-md animate-fadeIn overflow-y-auto">
-          <div className="w-full max-w-4xl my-8 overflow-hidden rounded-[30px] border border-gray-100 bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-gray-100 bg-gradient-to-r from-[#173d23] to-green-700 px-6 py-4">
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 backdrop-blur-md animate-fadeIn overflow-y-auto sm:items-center">
+          <div className="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-[30px] border border-gray-100 bg-white shadow-2xl">
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-100 bg-gradient-to-r from-[#173d23] to-green-700 px-6 py-4">
               <div>
                 <span className="rounded-full bg-emerald-100/20 px-2.5 py-0.5 font-mono text-[10px] font-extrabold text-emerald-100">
                   {selectedQuote.reference || 'DEVIS'}
@@ -605,7 +620,7 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
               </button>
             </div>
 
-            <div className="p-6">
+            <div className="min-h-0 flex-1 overflow-y-auto p-6">
               {/* Infos de la demande */}
               <div className="grid grid-cols-2 gap-4 rounded-2xl bg-gray-50 p-4 text-xs text-gray-700">
                 <div>
@@ -613,8 +628,10 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
                   <p className="font-bold text-[#111827] mt-0.5">{selectedQuote.service}</p>
                 </div>
                 <div>
-                  <p className="text-gray-400 font-bold uppercase tracking-wider text-[10px]">Statut</p>
-                  <div className="mt-0.5"><StatusBadge status={selectedQuote.statut || selectedQuote.status} /></div>
+                  <p className="text-gray-400 font-bold uppercase tracking-wider text-[10px]">Moyen de paiement</p>
+                  <p className="font-bold text-[#111827] mt-0.5">
+                    {selectedQuote.mode_paiement || '—'}
+                  </p>
                 </div>
                 {selectedQuote.lieu && (
                   <div>
@@ -631,7 +648,9 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
                 {selectedQuote.budget && (
                   <div>
                     <p className="text-gray-400 font-bold uppercase tracking-wider text-[10px]">Budget estimatif</p>
-                    <p className="font-bold text-[#111827] mt-0.5">{selectedQuote.budget}</p>
+                    <p className="font-bold text-[#111827] mt-0.5">
+                      {new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Number(String(selectedQuote.budget).replace(/\D/g, '')) || 0)} FCFA
+                    </p>
                   </div>
                 )}
                 {selectedQuote.delai && (
@@ -642,55 +661,89 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
                 )}
               </div>
 
-              {/* Description de la demande */}
-              {selectedQuote.description && (
-                <div className="mt-6">
-                  <p className="font-bold text-gray-900 mb-2 text-sm">Description de la demande :</p>
-                  <p className="rounded-2xl border border-gray-200/80 bg-gray-50 p-4 text-xs leading-relaxed text-gray-600">
-                    {selectedQuote.description}
-                  </p>
-                </div>
-              )}
-
-              {/* Actions de téléchargement */}
+              {/* Récapitulatif : articles commandés + montant (même source que le PDF / l'admin) */}
               <div className="mt-6">
-                {(selectedQuote.statut === 'APPROVED' || selectedQuote.statut === 'SENT' || selectedQuote.fichier_devis_url) ? (
-                  /* Devis approuvé/validé — uniquement le devis signé */
-                  selectedQuote.fichier_devis_url ? (
-                    <a
-                      href={`${selectedQuote.fichier_devis_url}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-emerald-700"
-                    >
-                      <span className="material-symbols-outlined">picture_as_pdf</span>
-                      Télécharger le devis signé
-                    </a>
-                  ) : (
-                    <div className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-bold text-gray-400">
-                      <span className="material-symbols-outlined">hourglass_empty</span>
-                      Devis signé en attente
+                <p className="font-bold text-gray-900 mb-2 text-sm">Articles commandés :</p>
+                <div className="rounded-2xl border border-gray-200/80 bg-gray-50 p-4">
+                  {getSnapshotItems(selectedQuote).length > 0 ? (
+                    <div className="space-y-2">
+                      {getSnapshotItems(selectedQuote).map((it, idx) => {
+                        const isVeh = String(it?.type || '').startsWith('vehicle') || it?.type === 'location'
+                          || !!(it?.vehicle || it?.vehicleName || it?.vehicleType || it?.dailyPrice != null);
+                        const name = isVeh
+                          ? (it.vehicleName || it.vehicle?.name || it.vehicleType || 'Location véhicule')
+                          : (it.produit?.nom || it.product?.name || it.libelle || it.title || it.name || 'Article');
+                        const unit = Number(it.prix_unitaire ?? it.unitPrice ?? it.price ?? it.dailyPrice ?? 0);
+                        const qty = Number(it.quantite ?? it.quantity) || 1;
+                        const total = Number(it.total ?? it.prix_total ?? it.totalPrice ?? (unit * qty)) || 0;
+                        return (
+                          <div key={idx} className="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-gray-100">
+                            <span className="h-6 w-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-[10px] font-black shrink-0">
+                              {idx + 1}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold text-gray-800 truncate">{name}</p>
+                              <p className="text-[10px] text-gray-500">
+                                {isVeh
+                                  ? `${it.destination || it.destinationLabel || 'ABIDJAN'} · ${it.days || it.duration || 1} j`
+                                  : 'Négoce'}
+                                {' · Qté : '}{qty}{unit > 0 ? ` · ${formatMoneyClient(unit)}/u` : ''}
+                              </p>
+                            </div>
+                            <span className="text-xs font-extrabold text-gray-900 shrink-0">{formatMoneyClient(total)} FCFA</span>
+                          </div>
+                        );
+                      })}
                     </div>
-                  )
-                ) : (
-                  /* Devis non encore approuvé — générer le PDF provisoire */
-                  <button
-                    onClick={() => handleDownloadQuotePdf(selectedQuote)}
-                    disabled={downloadingQuoteId === selectedQuote.id}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700 transition hover:bg-blue-100 disabled:opacity-50"
-                  >
-                    {downloadingQuoteId === selectedQuote.id ? (
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-700 border-t-transparent" />
-                    ) : (
-                      <span className="material-symbols-outlined">download</span>
-                    )}
-                    Télécharger le devis (PDF)
-                  </button>
-                )}
+                  ) : (selectedQuote.description || '').split('|').map((item) => item.trim()).filter(Boolean).length > 0 ? (
+                    (selectedQuote.description || '')
+                      .split('|')
+                      .map((item) => item.trim())
+                      .filter(Boolean)
+                      .map((item, idx) => (
+                        <div key={idx} className="flex items-start gap-2 py-1.5 text-xs leading-relaxed text-gray-700 border-b border-gray-100 last:border-0">
+                          <span className="material-symbols-outlined text-sm text-primary shrink-0">check_circle</span>
+                          <span>{item}</span>
+                        </div>
+                      ))
+                  ) : (
+                    <p className="text-xs text-gray-500 italic">Aucun article détaillé.</p>
+                  )}
+                </div>
+                <div className="mt-3 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3">
+                  {getQuoteTotals(selectedQuote).hasItems && (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-semibold text-emerald-700">Montant HT</p>
+                        <p className="text-xs font-bold text-emerald-900">{formatMoneyClient(getQuoteTotals(selectedQuote).ht)} FCFA</p>
+                      </div>
+                      <div className="mt-1 flex items-center justify-between">
+                        <p className="text-xs font-semibold text-emerald-700">TVA 18%</p>
+                        <p className="text-xs font-bold text-emerald-900">{formatMoneyClient(getQuoteTotals(selectedQuote).tva)} FCFA</p>
+                      </div>
+                      <div className="mt-1 flex items-center justify-between">
+                        <p className="text-xs font-semibold text-emerald-700">TDT 2,5%</p>
+                        <p className="text-xs font-bold text-emerald-900">{formatMoneyClient(getQuoteTotals(selectedQuote).tdt)} FCFA</p>
+                      </div>
+                      <div className="mt-1.5 flex items-center justify-between border-t border-emerald-200/70 pt-1.5">
+                        <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Montant total</p>
+                        <p className="text-base font-extrabold text-emerald-900">{formatMoneyClient(getQuoteTotals(selectedQuote).ttc)} FCFA</p>
+                      </div>
+                    </>
+                  )}
+                  {!getQuoteTotals(selectedQuote).hasItems && (
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Montant total</p>
+                      <p className="text-base font-extrabold text-emerald-900">
+                        {getQuoteTotals(selectedQuote).ttc > 0 ? `${formatMoneyClient(getQuoteTotals(selectedQuote).ttc)} FCFA` : '—'}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="border-t border-gray-100 bg-[#f9fbf9] px-6 py-4 flex items-center justify-between">
+            <div className="flex flex-shrink-0 items-center justify-between border-t border-gray-100 bg-[#f9fbf9] px-6 py-4">
               <button
                 onClick={() => {
                   setConfirmDeleteId(selectedQuote.id);
@@ -823,32 +876,6 @@ function ProfileCard({ icon, title, onEdit, noEdit, children }) {
         </div>
       )}
     </div>
-  );
-}
-
-function StatusBadge({ status }) {
-  const configs = {
-    EN_ATTENTE: { label: 'En attente', color: 'bg-amber-100 text-amber-800 border-amber-200' },
-    EN_COURS: { label: 'En cours d’étude', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-    TRAITE: { label: 'Devis traité', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-    VALIDE: { label: 'Validé', color: 'bg-green-100 text-green-800 border-green-200' },
-    REJETE: { label: 'Refusé', color: 'bg-red-100 text-red-800 border-red-200' },
-    PENDING: { label: 'En attente', color: 'bg-amber-100 text-amber-800 border-amber-200' },
-    ISSUED: { label: 'En attente', color: 'bg-amber-100 text-amber-800 border-amber-200' },
-    CONTACTED: { label: 'En cours d’étude', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-    CONVERTED: { label: 'Devis traité', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-    APPROVED: { label: 'Devis approuvé', color: 'bg-green-100 text-green-800 border-green-200' },
-    REJECTED: { label: 'Devis refusé', color: 'bg-red-100 text-red-800 border-red-200' },
-    SENT: { label: 'Devis envoyé', color: 'bg-purple-100 text-purple-800 border-purple-200' },
-    CANCELLED: { label: 'Annulé', color: 'bg-gray-100 text-gray-700 border-gray-200' },
-  };
-
-  const config = configs[status] || { label: status || 'En attente', color: 'bg-gray-100 text-gray-700 border-gray-200' };
-
-  return (
-    <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-extrabold ${config.color}`}>
-      {config.label}
-    </span>
   );
 }
 

@@ -8,19 +8,13 @@ const FUEL_TYPES = ['Essence', 'Gazole', 'Hybride', 'Diesel'];
 
 const displaySpecs = (vehicle) => (vehicle.specs || []).filter((spec) => !FUEL_TYPES.includes(spec));
 
-const isUtilityVehicle = (vehicle) => {
-  if (!vehicle) return false;
-  const placesSpec = (vehicle.specs || []).find((spec) => spec.includes('places') || spec.includes('personnes'));
-  const numPlaces = placesSpec ? parseInt(placesSpec.match(/\d+/)?.[0] || '0', 10) : 0;
-  return numPlaces >= 9 && numPlaces <= 28;
-};
+const COUNTRY_CODES = `AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS YE YT ZA ZM ZW`.split(' ');
+const countryNames = new Intl.DisplayNames(['fr'], { type: 'region' });
+const COUNTRIES = COUNTRY_CODES.map((code) => ({ code, name: countryNames.of(code) || code })).sort((a, b) => a.name.localeCompare(b.name, 'fr'));
 
 export default function CarReservationModal({ vehicle, onClose, navigateTo }) {
   const { user, client, token } = useAuth();
   const isLoggedIn = !!user;
-  const [show360, setShow360] = useState(false);
-
-  const availableColors = isUtilityVehicle(vehicle) ? ['Blanc'] : ['Bleu', 'Noir', 'Blanc'];
 
   const [formData, setFormData] = useState({
     startDate: '',
@@ -30,10 +24,18 @@ export default function CarReservationModal({ vehicle, onClose, navigateTo }) {
     email: '',
     withDriver: false,
     zoneId: 'abidjan',
-    color: '',
+    countryCode: 'CI',
   });
 
   const [availabilityError, setAvailabilityError] = useState('');
+  const [countryInput, setCountryInput] = useState('Côte d’Ivoire');
+  const [countrySearch, setCountrySearch] = useState('');
+  const [countryOpen, setCountryOpen] = useState(false);
+  const filteredCountries = COUNTRIES.filter(
+    (country) =>
+      country.name.toLowerCase().includes(countrySearch.toLowerCase()) ||
+      country.code.toLowerCase().includes(countrySearch.toLowerCase()),
+  );
 
   useEffect(() => {
     if (!vehicle) return;
@@ -58,8 +60,9 @@ export default function CarReservationModal({ vehicle, onClose, navigateTo }) {
       email,
       withDriver: false,
       zoneId: 'abidjan',
-      color: isUtilityVehicle(vehicle) ? 'Blanc' : '',
+      countryCode: 'CI',
     });
+    setCountryInput(countryNames.of('CI') || 'CI');
   }, [vehicle, user, client]);
 
   if (!vehicle) return null;
@@ -109,30 +112,37 @@ export default function CarReservationModal({ vehicle, onClose, navigateTo }) {
       console.warn('Endpoint disponibilité non joignable, vérification via notify-vehicle:', availError.message);
     }
 
-    // Étape 2 : Envoyer la notification au serveur (vérifie à nouveau les conflits)
-    try {
-      await apiRequest('/cart/notify-vehicle', {
-        token,
-        method: 'POST',
-        body: JSON.stringify({
-          vehicleName: vehicle.name,
-          startDate: formData.startDate,
-          endDate: formData.endDate,
-          days,
-          withDriver: formData.withDriver,
-        }),
-      });
-    } catch (notifyError) {
-      console.error('Vérification disponibilité véhicule:', notifyError.message);
-      setAvailabilityError(vehicleUnavailableMessage);
-      return;
+    // Étape 2 : Envoyer la notification au serveur (vérifie à nouveau les conflits).
+    // Invité : endpoint protégé — on saute l'appel ; la disponibilité a déjà été
+    // vérifiée via l'endpoint public /vehicles/:id/availability (étape 1).
+    if (token) {
+      try {
+        await apiRequest('/cart/notify-vehicle', {
+          token,
+          method: 'POST',
+          body: JSON.stringify({
+            vehicleId: vehicle.id,
+            vehicleName: vehicle.name,
+            startDate: formData.startDate,
+            endDate: formData.endDate,
+            days,
+            withDriver: formData.withDriver,
+          }),
+        });
+      } catch (notifyError) {
+        console.error('Vérification disponibilité véhicule:', notifyError.message);
+        setAvailabilityError(vehicleUnavailableMessage);
+        return;
+      }
     }
 
     // Étape 3 : Si disponible, ajouter au panier (localStorage)
     const rentalItem = {
       id: `rental-${Date.now()}`,
       type: 'vehicle_rental',
+      vehicleId: vehicle.id,
       vehicle: {
+        id: vehicle.id,
         name: vehicle.name,
         category: vehicle.category,
         image: vehicle.image,
@@ -144,7 +154,6 @@ export default function CarReservationModal({ vehicle, onClose, navigateTo }) {
       days,
       withDriver: formData.withDriver,
       zoneId: formData.zoneId,
-      color: formData.color,
       destination: DESTINATION_ZONES.find((z) => z.id === formData.zoneId)?.label || 'Abidjan',
       unitPrice,
       totalPrice,
@@ -152,6 +161,8 @@ export default function CarReservationModal({ vehicle, onClose, navigateTo }) {
         name: formData.name,
         phone: formData.phone,
         email: formData.email,
+        country: COUNTRIES.find((country) => country.code === formData.countryCode)?.name || formData.countryCode,
+        countryCode: formData.countryCode,
       },
       createdAt: new Date().toISOString(),
     };
@@ -186,7 +197,7 @@ export default function CarReservationModal({ vehicle, onClose, navigateTo }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="relative min-h-[280px] overflow-hidden bg-[#143e22] text-white sm:p-0">
-            {show360 ? (
+            {vehicle.image360 ? (
               <>
                 <Vehicle360Viewer vehicle={vehicle} />
                 <button
@@ -208,8 +219,8 @@ export default function CarReservationModal({ vehicle, onClose, navigateTo }) {
                   }}
                 />
                 <button
-                  onClick={() => setShow360(true)}
-                  className="absolute bottom-[196px] right-3 z-20 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-black/50 px-4 py-2 text-[11px] font-black uppercase tracking-[0.12em] text-white backdrop-blur-md transition-all hover:bg-black/70 active:scale-95"
+                  onClick={() => {}}
+                  className="hidden"
                 >
                   <span className="material-symbols-outlined text-base">360</span>
                   Aperçu 360°
@@ -230,7 +241,7 @@ export default function CarReservationModal({ vehicle, onClose, navigateTo }) {
             </div>
           </div>
 
-          <div className="p-6 sm:p-8">
+          <div className="max-h-[calc(100vh-2rem)] overflow-y-auto p-5 sm:p-7">
             <span className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Location de véhicule</span>
             <h3 className="mt-1 font-display text-2xl font-extrabold tracking-tight text-[#111827]">
               {isLoggedIn ? 'Sélectionnez vos dates' : 'Vos dates & coordonnées'}
@@ -270,12 +281,64 @@ export default function CarReservationModal({ vehicle, onClose, navigateTo }) {
               </div>
 
               <label className="block">
+                <span className="mb-1 block text-xs font-bold text-[#1a1c1c]">Pays *</span>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setCountryOpen((open) => !open)}
+                    className="flex min-h-11 w-full items-center justify-between rounded-xl border border-gray-200 bg-[#fafcf9] px-3 text-sm outline-none transition hover:border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/10"
+                  >
+                    <span className="truncate font-semibold text-[#1a1c1c]">{countryInput || 'Sélectionner un pays…'}</span>
+                    <span className="material-symbols-outlined text-[18px] text-gray-400">{countryOpen ? 'expand_less' : 'expand_more'}</span>
+                  </button>
+                  {countryOpen && (
+                    <div className="absolute left-0 right-0 top-full z-40 mt-1 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl">
+                      <div className="relative border-b border-gray-100 p-2">
+                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[16px] text-gray-400">search</span>
+                        <input
+                          type="text"
+                          autoFocus
+                          value={countrySearch}
+                          onChange={(event) => setCountrySearch(event.target.value)}
+                          placeholder="Rechercher un pays…"
+                          className="min-h-9 w-full rounded-lg border border-gray-200 bg-[#fafcf9] pl-8 pr-3 text-xs outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        />
+                      </div>
+                      <ul className="max-h-44 overflow-y-auto py-1 text-sm">
+                        {filteredCountries.length === 0 && (
+                          <li className="px-3 py-2 text-xs text-gray-500">Aucun pays trouvé</li>
+                        )}
+                        {filteredCountries.map((country) => (
+                          <li key={country.code}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCountryInput(country.name);
+                                setFormData((current) => ({ ...current, countryCode: country.code }));
+                                setCountrySearch('');
+                                setCountryOpen(false);
+                              }}
+                              className={`flex w-full items-center justify-between px-3 py-1.5 text-left transition hover:bg-primary/5 ${formData.countryCode === country.code ? 'bg-primary/10 font-bold text-primary' : 'text-[#33393a]'}`}
+                            >
+                              <span className="truncate">{country.name}</span>
+                              <span className="ml-2 text-[10px] font-bold uppercase text-gray-400">{country.code}</span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </label>
+
+              <label className="block">
                 <span className="mb-1 block text-xs font-bold text-[#1a1c1c]">Destination *</span>
                 <select
                   name="zoneId"
                   value={formData.zoneId}
                   onChange={handleChange}
-                  className="min-h-11 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
+                  style={{ colorScheme: 'light' }}
+                  className="min-h-11 w-full rounded-xl border border-gray-200 bg-[#fafcf9] px-3 text-sm text-[#1a1c1c] outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10 [&>option]:bg-white [&>option]:text-[#1a1c1c]"
                 >
                   {DESTINATION_ZONES.map((zone) =>
                     <option key={zone.id} value={zone.id}>{zone.label}</option>
@@ -311,35 +374,6 @@ export default function CarReservationModal({ vehicle, onClose, navigateTo }) {
                   </label>
                 </div>
               )}
-
-              <label className="block">
-                <span className="mb-1 block text-xs font-bold text-[#1a1c1c]">Couleur du véhicule *</span>
-                <div className="grid grid-cols-3 gap-2">
-                  {availableColors.map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => handleChange({ target: { name: 'color', value: color } })}
-                      className={`flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3 text-sm font-bold transition-all ${
-                        formData.color === color
-                          ? 'border-primary bg-primary/10 text-primary ring-2 ring-primary/20'
-                          : 'border-gray-200 bg-[#fafcf9] text-gray-600 hover:border-primary/30'
-                      }`}
-                    >
-                      <span
-                        className="h-4 w-4 rounded-full border border-black/10"
-                        style={{
-                          backgroundColor:
-                            color === 'Blanc' ? '#ffffff' :
-                            color === 'Noir' ? '#111827' :
-                            '#1d4ed8',
-                        }}
-                      />
-                      {color}
-                    </button>
-                  ))}
-                </div>
-              </label>
 
               <label className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-primary/15 bg-primary/5 p-3 transition-colors hover:bg-primary/10">
                 <div>

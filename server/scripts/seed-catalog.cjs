@@ -18,18 +18,29 @@ const catalog = [
     ],
   },
   {
-    category: { nom: 'Cables & Electricite', slug: 'cables-electricite', description: 'Cables H200, fils electriques, disjoncteurs et accessoires.' },
+    category: { nom: 'Cables & Electricite', slug: 'cables-electricite', description: 'Fils HG 1000 et TH, disjoncteurs, peignes, goulottes, coffrets et accessoires.' },
     products: [
-      { name: 'Cable H200 2x1.5mm2 (rouleau 100m)', reference: 'CBL-H200-2X15', description: 'Cable electrique H200 2 conducteurs 1.5mm2.', unit: 'rouleau', stock: 50, alertThreshold: 8, particular: 35000, company: 29000 },
-      { name: 'Cable H200 2x2.5mm2 (rouleau 100m)', reference: 'CBL-H200-2X25', description: 'Cable electrique H200 2 conducteurs 2.5mm2.', unit: 'rouleau', stock: 40, alertThreshold: 8, particular: 45000, company: 38000 },
-      { name: 'Cable H200 3x1.5mm2 (rouleau 100m)', reference: 'CBL-H200-3X15', description: 'Cable electrique H200 3 conducteurs 1.5mm2, avec terre.', unit: 'rouleau', stock: 35, alertThreshold: 6, particular: 42000, company: 35000 },
-      { name: 'Cable H200 3x2.5mm2 (rouleau 100m)', reference: 'CBL-H200-3X25', description: 'Cable electrique H200 3 conducteurs 2.5mm2.', unit: 'rouleau', stock: 30, alertThreshold: 5, particular: 55000, company: 46000 },
-      { name: 'Cable H200 4x6mm2 (rouleau 100m)', reference: 'CBL-H200-4X6', description: 'Cable electrique H200 4 conducteurs 6mm2.', unit: 'rouleau', stock: 20, alertThreshold: 4, particular: 95000, company: 80000 },
-      { name: 'Disjoncteur 16A 1P', reference: 'CBL-DIS-16A', description: 'Disjoncteur modulaire 16A unipolaire.', unit: 'unite', stock: 60, alertThreshold: 10, particular: 5000, company: 4200 },
-      { name: 'Disjoncteur 32A 2P', reference: 'CBL-DIS-32A', description: 'Disjoncteur modulaire 32A bipolaire.', unit: 'unite', stock: 40, alertThreshold: 8, particular: 12000, company: 10000 },
+      { name: 'Fil HG 1000 1.5mm² (rouleau 100m)', reference: 'FIL-HG15', description: 'Fil electrique HG 1000, section 1.5mm².', unit: 'rouleau', stock: 50, alertThreshold: 8, particular: 25000, company: 21000 },
+      { name: 'Fil HG 1000 4mm² (rouleau 100m)', reference: 'FIL-HG4', description: 'Fil electrique HG 1000, section 4mm².', unit: 'rouleau', stock: 40, alertThreshold: 8, particular: 45000, company: 38000 },
+      { name: 'Fil HG 1000 6mm² (rouleau 100m)', reference: 'FIL-HG6', description: 'Fil electrique HG 1000, section 6mm².', unit: 'rouleau', stock: 30, alertThreshold: 6, particular: 65000, company: 55000 },
+      { name: 'Fil HG 1000 10mm² (rouleau 100m)', reference: 'FIL-HG10', description: 'Fil electrique HG 1000, section 10mm².', unit: 'rouleau', stock: 25, alertThreshold: 5, particular: 95000, company: 80000 },
+      { name: 'Fil HG 1000 16mm² (rouleau 100m)', reference: 'FIL-HG16', description: 'Fil electrique HG 1000, section 16mm².', unit: 'rouleau', stock: 20, alertThreshold: 4, particular: 140000, company: 118000 },
+      { name: 'Fil TH 1.5mm² (rouleau 100m)', reference: 'FIL-TH15', description: 'Fil electrique TH, section 1.5mm².', unit: 'rouleau', stock: 55, alertThreshold: 8, particular: 28000, company: 23500 },
+      { name: 'Fil TH 4mm² (rouleau 100m)', reference: 'FIL-TH4', description: 'Fil electrique TH, section 4mm².', unit: 'rouleau', stock: 35, alertThreshold: 6, particular: 48000, company: 40000 },
+      { name: 'Fil TH 6mm² (rouleau 100m)', reference: 'FIL-TH6', description: 'Fil electrique TH, section 6mm².', unit: 'rouleau', stock: 28, alertThreshold: 5, particular: 68000, company: 57000 },
+      { name: 'Fil TH 10mm² (rouleau 100m)', reference: 'FIL-TH10', description: 'Fil electrique TH, section 10mm².', unit: 'rouleau', stock: 22, alertThreshold: 4, particular: 98000, company: 82000 },
+      { name: 'Fil TH 16mm² (rouleau 100m)', reference: 'FIL-TH16', description: 'Fil electrique TH, section 16mm².', unit: 'rouleau', stock: 18, alertThreshold: 4, particular: 145000, company: 122000 },
+      { name: 'Disjoncteur 10A 1P', reference: 'CBL-DIS-10A', description: 'Disjoncteur modulaire 10A unipolaire.', unit: 'unite', stock: 60, alertThreshold: 10, particular: 5000, company: 4200 },
+      { name: 'Disjoncteur 20A 2P', reference: 'CBL-DIS-20A', description: 'Disjoncteur modulaire 20A bipolaire.', unit: 'unite', stock: 40, alertThreshold: 8, particular: 12000, company: 10000 },
+      { name: 'Peigne de distribution 1P', reference: 'CBL-PGN-1P', description: 'Peigne de distribution electrique unipolaire.', unit: 'unite', stock: 45, alertThreshold: 8, particular: 3500, company: 2900 },
+      { name: 'Peigne de distribution 2P', reference: 'CBL-PGN-2P', description: 'Peigne de distribution electrique bipolaire.', unit: 'unite', stock: 40, alertThreshold: 8, particular: 6000, company: 5000 },
+      { name: 'Goulotte PVC 20x10 (2m)', reference: 'CBL-GLT-2010', description: 'Goulotte plastique 20x10 pour passage des fils.', unit: 'barre', stock: 80, alertThreshold: 12, particular: 2500, company: 2100 },
+      { name: 'Goulotte PVC 40x25 (2m)', reference: 'CBL-GLT-4025', description: 'Goulotte plastique 40x25 pour passage des fils.', unit: 'barre', stock: 60, alertThreshold: 10, particular: 4500, company: 3800 },
+      { name: 'Coffret de protection 6 modules', reference: 'CBL-CFR-6M', description: 'Coffret electrique de protection 6 modules.', unit: 'unite', stock: 25, alertThreshold: 5, particular: 12000, company: 10000 },
+      { name: 'Coffret de protection 12 modules', reference: 'CBL-CFR-12M', description: 'Coffret electrique de protection 12 modules.', unit: 'unite', stock: 20, alertThreshold: 4, particular: 18000, company: 15000 },
       { name: 'Interrupteur simple allumage', reference: 'CBL-INT-SIMPLE', description: 'Interrupteur simple allumage encastrable.', unit: 'unite', stock: 80, alertThreshold: 15, particular: 3500, company: 2900 },
       { name: 'Prise de courant 2P+T 16A', reference: 'CBL-PRS-16A', description: 'Prise de courant encastrable 2P+T 16A.', unit: 'unite', stock: 70, alertThreshold: 12, particular: 4000, company: 3300 },
-      { name: 'Gaine ICTA 20mm (rouleau 25m)', reference: 'CBL-GNT-20', description: 'Gaine isolante ICTA 20mm pour protection des cables.', unit: 'rouleau', stock: 55, alertThreshold: 10, particular: 8000, company: 6800 },
+      { name: 'Gaine ICTA 20mm (rouleau 25m)', reference: 'CBL-GNT-20', description: 'Gaine isolante ICTA 20mm pour protection des fils.', unit: 'rouleau', stock: 55, alertThreshold: 10, particular: 8000, company: 6800 },
     ],
   },
   {
@@ -89,6 +100,8 @@ const catalog = [
 async function seed() {
   for (const group of catalog) {
     const [category] = await Category.findOrCreate({ where: { slug: group.category.slug }, defaults: group.category });
+    // Mise à jour de la description de la catégorie (supprime les références "Câbles H200")
+    await category.update({ nom: group.category.nom, description: group.category.description });
     for (const entry of group.products) {
       const [product] = await Product.findOrCreate({
         where: { reference: entry.reference },
@@ -101,6 +114,21 @@ async function seed() {
       }
     }
   }
+
+  // ── Nettoyage : désactiver les anciens produits "Câble H200" et anciens disjoncteurs 16A/32A ──
+  const anciensProduits = await Product.findAll({
+    where: {
+      reference: [
+        'CBL-H200-2X15', 'CBL-H200-2X25', 'CBL-H200-3X15', 'CBL-H200-3X25', 'CBL-H200-4X6',
+        'CBL-DIS-16A', 'CBL-DIS-32A',
+      ],
+    },
+  });
+  for (const produit of anciensProduits) {
+    await produit.update({ statut: 'INACTIVE' });
+    console.log(`  Produit désactivé: ${produit.nom} (${produit.reference})`);
+  }
+
   console.log('Catalogue enrichi avec succes.');
 }
 

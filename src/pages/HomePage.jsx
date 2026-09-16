@@ -8,6 +8,8 @@ import CtaBanner from '../components/CtaBanner';
 import Footer from '../components/Footer';
 import DevisModal from '../components/DevisModal';
 import FadeInSection from '../components/FadeInSection';
+import { useAuth } from '../hooks/useAuth';
+import { openDevisByAuth } from '../lib/quoteGate';
 
 const heroSlides = [
   {
@@ -32,7 +34,7 @@ const heroSlides = [
     eyebrow: 'Location de véhicules',
     title: 'Une mobilité fiable pour vos missions',
     description:
-      'Citadines, SUV, utilitaires, véhicules de prestige et solutions avec chauffeur pour les besoins professionnels ou personnels.',
+      'Économiques, SUV, utilitaires, véhicules de prestige et solutions avec chauffeur pour les besoins professionnels ou personnels.',
     image: 'https://soutarahgroup.ci/img/carRe.jpeg',
     fallbackImage: 'https://soutarahgroup.ci/img/carRe.jpeg',
     alt: 'Véhicule de location SOUTARAH GROUP',
@@ -63,11 +65,12 @@ const heroSlides = [
 ];
 
 export default function HomePage({ navigateTo, onRequestQuote }) {
+  const { user } = useAuth();
   const [isDevisOpen, setIsDevisOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [activeHeroSlide, setActiveHeroSlide] = useState(0);
 
-  const handleOpenDevis = () => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true));
+  const handleOpenDevis = () => openDevisByAuth({ user, navigateTo, onAuthed: () => setIsDevisOpen(true) });
   const handleCloseDevis = () => setIsDevisOpen(false);
 
   useEffect(() => {

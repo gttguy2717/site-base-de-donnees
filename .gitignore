@@ -6,6 +6,40 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+# Assets de deploy / runtime (déjà en ligne sur Hostinger)
+*.jar
+/public/pdf/
+/dist/pdf/
+/public/img/kete/
+/dist/img/kete/
+/public/img/nexans/
+/dist/img/nexans/
+/server/uploads/
+/rapport/
+/Rapport_de_Stage_*.docx
+/Soutenance_Stage_*.pptx
+/public/fond-home.png
+/dist/fond-home.png
+/public/img/espacevert.jpg
+/dist/img/espacevert.jpg
+/public/img/installation.jpg
+/dist/img/installation.jpg
+# Artefacts Python / deploy / IDE
+__pycache__/
+*.pyc
+*.tar.gz
+.expo/
+_build*.txt
+# Dossiers locaux volumineux / artefacts (ancre a la racine)
+/mobile/
+/tmp/
+/out/
+/inspect_40_images/
+/extracted_docx_images/
+/extracted_pptx_images/
+~$*
+
+_b.txt
 
 node_modules
 dist-ssr

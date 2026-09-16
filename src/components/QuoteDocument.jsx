@@ -126,7 +126,11 @@ export default function QuoteDocument({ quote, items = [], user = null, client =
     return Number(quote?.montant_total || 0);
   }, [normalizedRows, quote]);
 
-  const totals = computeQuoteTotals(totalHT);
+  const vehicleBase = normalizedRows
+    .filter((r) => r.designation.includes('LOCATION'))
+    .reduce((sum, r) => sum + r.total, 0);
+
+  const totals = computeQuoteTotals(totalHT, vehicleBase);
 
   // Frais de carburant et péage à la charge du client (non inclus dans le TTC)
   const hasVehicles = normalizedRows.some((r) => r.designation.includes('LOCATION'));
@@ -295,7 +299,7 @@ export default function QuoteDocument({ quote, items = [], user = null, client =
         <p className="text-xs font-bold text-red-600">NB :</p>
         <p className="mt-0.5 text-xs text-gray-600">- Le chauffeur est à votre disposition de 7h à 21h</p>
         {hasVehicles && (
-          <p className="mt-0.5 text-xs text-gray-600">- Frais de carburant, péage et infarcation à la charge du client</p>
+          <p className="mt-0.5 text-xs text-gray-600">- Frais de carburant, péage et stationnement : à la charge du client</p>
         )}
       </div>
 

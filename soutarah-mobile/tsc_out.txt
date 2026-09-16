@@ -1,0 +1,1 @@
+src/contexts/AuthContext.tsx(43,43): error TS2339: Property 'getStatusAsync' does not exist on type 'typeof import("C:/Users/HP/Downloads/PARCOURS TS/STAGE/STAGE TS STIC 2/site-soutarah/soutarah-mobile/node_modules/expo-network/build/Network")'.

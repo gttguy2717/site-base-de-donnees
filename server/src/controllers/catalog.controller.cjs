@@ -36,7 +36,8 @@ async function listProducts(request, response, next) {
     ]);
     const payload = await Promise.all(products.map(async (product) => ({
       ...product.toJSON(),
-      price: await getProductPrice(product.id, type_client, entreprise_id),
+      // Pour un visiteur non connecté, on affiche le tarif PARTICULIER (visible sur la page publique)
+      price: await getProductPrice(product.id, type_client || 'PARTICULIER', entreprise_id),
     })));
     response.json({ products: payload, customerType: type_client });
   } catch (error) { next(error); }

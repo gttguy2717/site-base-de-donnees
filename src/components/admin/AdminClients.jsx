@@ -1,6 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 
+const COLOR_CLASSES = {
+  blue: 'bg-blue-500',
+  green: 'bg-green-500',
+  purple: 'bg-purple-500',
+  orange: 'bg-orange-500',
+  teal: 'bg-teal-500',
+  yellow: 'bg-yellow-500',
+  pink: 'bg-pink-500',
+  indigo: 'bg-indigo-500',
+};
+
+function getColorClass(color) {
+  return COLOR_CLASSES[color] || 'bg-gray-500';
+}
+
 export default function AdminClients() {
   const { token } = useAuth();
   const [clients, setClients] = useState([]);
@@ -8,23 +23,14 @@ export default function AdminClients() {
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('ALL');
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [formError, setFormError] = useState('');
-  const [formSuccess, setFormSuccess] = useState('');
-  const [formData, setFormData] = useState({
-    companyName: '',
-    responsibleName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    identificationNumber: '',
-    password: '',
-    confirmPassword: '',
-    delaiBlocageJours: '',
-    delaiBlocageUnite: 'jours',
-  });
+  const [reviewClient, setReviewClient] = useState(null);
+  const [reviewNote, setReviewNote] = useState('');
+  const [reviewBusy, setReviewBusy] = useState(false);
+  const [convertClient, setConvertClient] = useState(null);
+  const [convertMode, setConvertMode] = useState('none'); // 'none' = sans durée, 'days' = délai en jours
+  const [convertDays, setConvertDays] = useState('30');
+  const [convertBusy, setConvertBusy] = useState(false);
+  const [busyUserId, setBusyUserId] = useState(null);
 
   const loadClients = async () => {
     try {
@@ -32,7 +38,7 @@ export default function AdminClients() {
       const response = await fetch('/api/admin/clients', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setClients(data.clients || []);
@@ -44,446 +50,243 @@ export default function AdminClients() {
     }
   };
 
-  const toggleClientStatus = async (clientId, currentStatus) => {
-    if (!confirm(`Voulez-vous vraiment ${currentStatus ? 'bloquer' : 'débloquer'} ce client ?`)) {
-      return;
+  useEffect(() => {
+    if (token) loadClients();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
+  const isEntrepriseAccount = (c) =>
+    c.type_client === 'ENTREPRISE' || c.type_client === 'ENTREPRISE_CLIENT' || !!c.entreprise;
+
+  useEffect(() => {
+    let filtered = [...clients];
+
+    if (filterType === 'PARTICULIER') {
+      filtered = filtered.filter((c) => !isEntrepriseAccount(c));
+    } else if (filterType === 'ENTREPRISE') {
+      // Entreprises simples uniquement
+      filtered = filtered.filter((c) => c.type_client === 'ENTREPRISE');
+    } else if (filterType === 'ENTREPRISE_CLIENT') {
+      // Entreprises clientes uniquement
+      filtered = filtered.filter((c) => c.type_client === 'ENTREPRISE_CLIENT');
+    } else if (filterType === 'PENDING_VERIF') {
+      filtered = filtered.filter((c) => ['PENDING', 'REJECTED'].includes(c.entreprise?.verification_status));
     }
 
-    try {
-      const response = await fetch(`/api/admin/clients/${clientId}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ est_actif: !currentStatus }),
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      filtered = filtered.filter((c) => {
+        const name = (c.entreprise?.nom || `${c.prenom || ''} ${c.nom || ''}`).toLowerCase();
+        const email = (c.utilisateur?.email || '').toLowerCase();
+        const phone = (c.utilisateur?.telephone || '').toLowerCase();
+        const ville = (c.entreprise?.ville || c.ville || '').toLowerCase();
+        return name.includes(q) || email.includes(q) || phone.includes(q) || ville.includes(q);
       });
+    }
 
-      if (response.ok) {
-        loadClients();
+    setFilteredClients(filtered);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clients, filterType, search]);
+
+  // Télécharge le VRAI document via l'API admin (fichier original, nom d'origine)
+  const downloadDocument = async (docIndex, docName) => {
+    if (!reviewClient) return;
+    try {
+      const response = await fetch(`/api/admin/clients/${reviewClient.id}/documents/${docIndex}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || 'Téléchargement impossible');
       }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = docName || `document-${docIndex + 1}`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Erreur changement statut:', error);
-      alert('Erreur lors du changement de statut');
+      console.error('Erreur téléchargement document:', error);
+      alert(error.message || 'Erreur lors du téléchargement du document');
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((current) => ({ ...current, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormError('');
-    setFormSuccess('');
-
-    // Vérifier que le mot de passe est fourni
-    if (!formData.password) {
-      setFormError('Le mot de passe est obligatoire.');
-      return;
-    }
-
-    // Vérifier que les mots de passe correspondent
-    if (formData.password !== formData.confirmPassword) {
-      setFormError('Les mots de passe ne correspondent pas.');
-      return;
-    }
-
-    // Vérifier que la ville est fournie
-    if (!formData.city?.trim()) {
-      setFormError('La ville est obligatoire.');
-      return;
-    }
-
-    setSubmitting(true);
+  const reviewClientAction = async (status) => {
+    if (!reviewClient) return;
+    setReviewBusy(true);
 
     try {
-      const response = await fetch('/api/admin/clients', {
+      const response = await fetch(`/api/admin/clients/${reviewClient.id}/verification`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ status, note: reviewNote }),
       });
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || data.error?.message || 'Erreur lors de la création du client');
+      if (response.ok) {
+        setReviewClient(null);
+        setReviewNote('');
+        loadClients();
+      } else {
+        const data = await response.json().catch(() => ({}));
+        alert(data.message || 'Erreur lors de la validation');
       }
-
-      setFormSuccess('✅ Entreprise client créée avec succès !');
-      setFormData({
-        companyName: '',
-        responsibleName: '',
-        email: '',
-        phone: '',
-        address: '',
-        city: '',
-        identificationNumber: '',
-        password: '',
-        confirmPassword: '',
-        delaiBlocageJours: '',
-        delaiBlocageUnite: 'jours',
-      });
-      loadClients();
-      setTimeout(() => {
-        setShowModal(false);
-        setFormSuccess('');
-      }, 1500);
     } catch (error) {
-      setFormError(error.message || 'Erreur lors de la création du client');
+      console.error('Erreur examen entreprise:', error);
+      alert('Erreur lors de la validation');
     } finally {
-      setSubmitting(false);
+      setReviewBusy(false);
     }
   };
 
-  useEffect(() => {
-    loadClients();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Écouter la recherche globale du header admin
-  useEffect(() => {
-    const handleAdminSearch = (event) => {
-      if (event.detail) {
-        setSearch(event.detail);
-        setFilterType('ALL');
+  const submitConversion = async () => {
+    if (!convertClient) return;
+    let delai = null;
+    if (convertMode === 'days') {
+      delai = Number(convertDays);
+      if (!Number.isInteger(delai) || delai <= 0) {
+        alert('Indiquez un nombre de jours valide, ou choisissez « Sans durée de blocage ».');
+        return;
       }
-    };
-    window.addEventListener('soutarah-admin-search', handleAdminSearch);
-    return () => window.removeEventListener('soutarah-admin-search', handleAdminSearch);
-  }, []);
-
-  useEffect(() => {
-    let filtered = clients;
-    if (filterType !== 'ALL') {
-      filtered = filtered.filter((c) => c.type_client === filterType);
     }
-    if (search) {
-      const searchLower = search.toLowerCase();
-      filtered = filtered.filter((c) => {
-        const matchName = (
-          (c.nom && c.nom.toLowerCase().includes(searchLower)) ||
-          (c.prenom && c.prenom.toLowerCase().includes(searchLower))
-        );
-        const matchContact = (
-          (c.utilisateur && c.utilisateur.email && c.utilisateur.email.toLowerCase().includes(searchLower)) ||
-          (c.utilisateur && c.utilisateur.telephone && c.utilisateur.telephone.includes(search))
-        );
-        const matchEnterprise = (
-          c.entreprise && c.entreprise.nom && c.entreprise.nom.toLowerCase().includes(searchLower)
-        );
-        return matchName || matchContact || matchEnterprise;
+
+    setConvertBusy(true);
+    try {
+      const response = await fetch(`/api/admin/clients/${convertClient.id}/convert-entreprise`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ delai_blocage_jours: delai }),
       });
-    }
-    setFilteredClients(filtered);
-  }, [search, filterType, clients]);
 
-  const getColorClass = (color) => {
-    const colors = {
-      blue: 'bg-blue-500', green: 'bg-green-500', purple: 'bg-purple-500',
-      orange: 'bg-orange-500', teal: 'bg-teal-500', yellow: 'bg-yellow-500',
-      pink: 'bg-pink-500', indigo: 'bg-indigo-500',
-    };
-    return colors[color] || 'bg-gray-500';
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        alert(data.message || 'Conversion effectuée');
+        setConvertClient(null);
+        loadClients();
+      } else {
+        alert(data.message || 'Erreur lors de la conversion');
+      }
+    } catch (error) {
+      console.error('Erreur conversion entreprise:', error);
+      alert('Erreur lors de la conversion');
+    } finally {
+      setConvertBusy(false);
+    }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-      </div>
-    );
-  }
+  const typeLabel = (type) =>
+    type === 'ENTREPRISE_CLIENT' ? 'Entreprise Client' : type === 'ENTREPRISE' ? 'Entreprise' : 'Particulier';
 
+  // Bloquer / débloquer un compte (particuliers) : un compte bloqué ne peut plus se connecter
+  const toggleBlock = async (client) => {
+    const userId = client.utilisateur?.id;
+    const name = client.entreprise?.nom || `${client.prenom || ''} ${client.nom || ''}`.trim() || 'ce client';
+    if (!userId) {
+      alert('Compte utilisateur introuvable pour ce client.');
+      return;
+    }
+    const currentlyActive = client.utilisateur?.est_actif !== false;
+    const confirmMsg = currentlyActive
+      ? `Bloquer le compte de ${name} ?\n\nIl ne pourra plus se connecter à son espace jusqu'au déblocage.`
+      : `Débloquer le compte de ${name} ?\n\nIl retrouvera l'accès à son espace client.`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setBusyUserId(userId);
+    try {
+      const response = await fetch(`/api/admin/clients/${userId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ est_actif: !currentlyActive }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        loadClients();
+      } else {
+        alert(data.message || 'Erreur lors du changement de statut');
+      }
+    } catch (error) {
+      console.error('Erreur changement statut client:', error);
+      alert('Erreur lors du changement de statut');
+    } finally {
+      setBusyUserId(null);
+    }
+  };
+
+  const typeBadge = (type) =>
+    type === 'ENTREPRISE_CLIENT'
+      ? 'bg-blue-100 text-blue-700'
+      : type === 'ENTREPRISE'
+        ? 'bg-indigo-100 text-indigo-700'
+        : 'bg-green-100 text-green-700';
+
+  const filterButton = (value, label, count, activeClasses) => (
+    <button
+      key={value}
+      onClick={() => setFilterType(value)}
+      className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+        filterType === value ? activeClasses : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+      }`}
+    >
+      {label}
+      <span className={`ml-1.5 px-1.5 py-0.5 rounded text-xs ${filterType === value ? 'bg-white/25' : 'bg-gray-100'}`}>
+        {count}
+      </span>
+    </button>
+  );
+  const showEntrepriseCols = filterType !== 'PARTICULIER';
   return (
-    <div className="space-y-4 min-w-0">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
-        <p className="text-sm text-gray-500 mt-1">Gérez et consultez tous vos clients</p>
-      </div>
-
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <div className="flex flex-wrap items-center gap-2">
+    <div className="p-6 max-w-7xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
+          <p className="text-sm text-gray-500">Gestion des particuliers et des entreprises</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Rechercher nom, email, téléphone, ville..."
+            className="w-72 px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
           <button
-            onClick={() => setFilterType('ALL')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
-              filterType === 'ALL' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            onClick={loadClients}
+            className="px-3 py-2 rounded-lg bg-gray-100 text-gray-600 text-sm font-semibold hover:bg-gray-200"
+            title="Rafraîchir"
           >
-            <span>Tous</span>
-            <span className={`px-1.5 py-0.5 rounded text-xs ${filterType === 'ALL' ? 'bg-white/20' : 'bg-white'}`}>
-              {clients.length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setFilterType('PARTICULIER')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
-              filterType === 'PARTICULIER' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            <span>Particuliers</span>
-            <span className={`px-1.5 py-0.5 rounded text-xs ${filterType === 'PARTICULIER' ? 'bg-white/20' : 'bg-white'}`}>
-              {clients.filter((c) => c.type_client === 'PARTICULIER').length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setFilterType('ENTREPRISE')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
-              filterType === 'ENTREPRISE' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            <span>Entreprise</span>
-            <span className={`px-1.5 py-0.5 rounded text-xs ${filterType === 'ENTREPRISE' ? 'bg-white/20' : 'bg-white'}`}>
-              {clients.filter((c) => c.type_client === 'ENTREPRISE').length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setFilterType('ENTREPRISE_CLIENT')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
-              filterType === 'ENTREPRISE_CLIENT' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            <span>Entreprise Client</span>
-            <span className={`px-1.5 py-0.5 rounded text-xs ${filterType === 'ENTREPRISE_CLIENT' ? 'bg-white/20' : 'bg-white'}`}>
-              {clients.filter((c) => c.type_client === 'ENTREPRISE_CLIENT').length}
-            </span>
-          </button>
-
-          <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
-              search
-            </span>
-            <input
-              type="text"
-              placeholder="Rechercher..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-48 pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-            />
-          </div>
-
-          <button 
-            onClick={() => { setFormError(''); setFormSuccess(''); setShowModal(true); }}
-            className="flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-[#1b4c00] text-white rounded-lg text-sm font-semibold transition-colors whitespace-nowrap ml-auto"
-          >
-            <span className="material-symbols-outlined text-base">add</span>
-            Nouvelle entreprise client
+            <span className="material-symbols-outlined text-sm align-middle">refresh</span>
           </button>
         </div>
       </div>
 
-      {/* Modal Nouvelle entreprise client */}
-      {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/50 p-4 backdrop-blur-sm">
-          <div className="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-              <div>
-                <h2 className="text-lg font-bold text-gray-900">Nouvelle entreprise client</h2>
-                <p className="text-xs text-gray-500 mt-0.5">Créez un compte entreprise pour votre client</p>
-              </div>
-              <button
-                onClick={() => setShowModal(false)}
-                className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
+      {/* Filtres : entreprises simples et entreprises clientes distinctes */}
+      <div className="flex flex-wrap items-center gap-2 mb-6">
+        {filterButton('ALL', 'Tous', clients.length, 'bg-blue-600 text-white')}
+        {filterButton('PARTICULIER', 'Particuliers', clients.filter((c) => !isEntrepriseAccount(c)).length, 'bg-green-600 text-white')}
+        {filterButton('ENTREPRISE', 'Entreprises', clients.filter((c) => c.type_client === 'ENTREPRISE').length, 'bg-indigo-600 text-white')}
+        {filterButton('ENTREPRISE_CLIENT', 'Entreprises Clientes', clients.filter((c) => c.type_client === 'ENTREPRISE_CLIENT').length, 'bg-sky-600 text-white')}
+        {filterButton(
+          'PENDING_VERIF',
+          'À valider',
+          clients.filter((c) => ['PENDING', 'REJECTED'].includes(c.entreprise?.verification_status)).length,
+          'bg-amber-500 text-white'
+        )}
+      </div>
 
-            <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <label className="mb-1 block text-xs font-bold text-gray-700">Nom de l'entreprise *</label>
-                  <input
-                    type="text"
-                    name="companyName"
-                    required
-                    value={formData.companyName}
-                    onChange={handleChange}
-                    placeholder="Ex: SOUTARAH GROUP SARL"
-                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="mb-1 block text-xs font-bold text-gray-700">Responsable</label>
-                    <input
-                      type="text"
-                      name="responsibleName"
-                      value={formData.responsibleName}
-                      onChange={handleChange}
-                      placeholder="Nom du responsable"
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs font-bold text-gray-700">N° Identification</label>
-                    <input
-                      type="text"
-                      name="identificationNumber"
-                      value={formData.identificationNumber}
-                      onChange={handleChange}
-                      placeholder="N°CC / RCCM"
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="mb-1 block text-xs font-bold text-gray-700">Email *</label>
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="contact@entreprise.com"
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs font-bold text-gray-700">Téléphone *</label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      required
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="+225 00 00 00 00"
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="mb-1 block text-xs font-bold text-gray-700">Adresse</label>
-                    <input
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleChange}
-                      placeholder="Cocody, Riviera..."
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs font-bold text-gray-700">Ville *</label>
-                    <input
-                      type="text"
-                      name="city"
-                      required
-                      value={formData.city}
-                      onChange={handleChange}
-                      placeholder="Abidjan, Bouaké..."
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="mb-1 block text-xs font-bold text-gray-700">Délai de blocage automatique</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      name="delaiBlocageJours"
-                      min="1"
-                      value={formData.delaiBlocageJours}
-                      onChange={handleChange}
-                      placeholder="Ex: 30"
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
-                    />
-                    <select
-                      name="delaiBlocageUnite"
-                      value={formData.delaiBlocageUnite}
-                      onChange={handleChange}
-                      className="w-32 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
-                    >
-                      <option value="jours">Jours</option>
-                      <option value="mois">Mois</option>
-                      <option value="annees">Années</option>
-                    </select>
-                  </div>
-                  <p className="mt-1 text-[11px] text-gray-500">Après ce délai, le compte entreprise client sera bloqué automatiquement. Laissez vide pour aucun blocage.</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="mb-1 block text-xs font-bold text-gray-700">Mot de passe *</label>
-                    <input
-                      type="password"
-                      name="password"
-                      required
-                      value={formData.password}
-                      onChange={handleChange}
-                      placeholder="Choisissez un mot de passe"
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs font-bold text-gray-700">Confirmer mot de passe *</label>
-                    <input
-                      type="password"
-                      name="confirmPassword"
-                      required
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      placeholder="Confirmez le mot de passe"
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {formError && (
-                <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm font-semibold text-red-700">
-                  {formError}
-                </div>
-              )}
-              {formSuccess && (
-                <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm font-semibold text-emerald-700">
-                  {formSuccess}
-                </div>
-              )}
-
-              <div className="flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-[#1b4c00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {submitting ? (
-                    <>
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                      Création...
-                    </>
-                  ) : (
-                    <>
-                      <span className="material-symbols-outlined text-base">person_add</span>
-                      Créer le client
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
+      {loading ? (
+        <div className="p-12 text-center text-gray-500">Chargement des clients...</div>
+      ) : (
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
@@ -495,6 +298,12 @@ export default function AdminClients() {
                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Téléphone</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Ville</th>
                 <th className="px-4 py-3 text-center text-xs font-bold text-gray-600 uppercase">Statut</th>
+                {showEntrepriseCols && (
+                  <>
+                    <th className="px-4 py-3 text-center text-xs font-bold text-gray-600 uppercase">Verification</th>
+                    <th className="px-4 py-3 text-center text-xs font-bold text-gray-600 uppercase">Action</th>
+                  </>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -503,8 +312,8 @@ export default function AdminClients() {
                 const email = client.utilisateur?.email || '';
                 const telephone = client.utilisateur?.telephone || '';
                 const ville = client.entreprise?.ville || client.ville || '-';
-                const isActive = client.utilisateur?.est_actif !== false;
-                
+                const estEntreprise = isEntrepriseAccount(client);
+
                 return (
                   <tr key={client.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3">
@@ -516,31 +325,113 @@ export default function AdminClients() {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
-                        client.type_client === 'ENTREPRISE' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
-                      }`}>
-                        {client.type_client === 'ENTREPRISE_CLIENT' ? 'Entreprise Client' : client.type_client === 'ENTREPRISE' ? 'Entreprise' : 'Particulier'}
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${typeBadge(client.type_client)}`}>
+                        {typeLabel(client.type_client)}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600 break-all">{email}</td>
                     <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{telephone}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{ville}</td>
                     <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => toggleClientStatus(client.utilisateur_id, isActive)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all shadow-sm hover:shadow ${
-                          isActive 
-                            ? 'bg-green-100 text-green-700 hover:bg-green-200 border border-green-200' 
-                            : 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-200'
-                        }`}
-                        title={isActive ? 'Cliquer pour bloquer ce compte' : 'Cliquer pour débloquer ce compte'}
-                      >
-                        <span className="material-symbols-outlined text-sm">
-                          {isActive ? 'check_circle' : 'block'}
-                        </span>
-                        {isActive ? 'Actif' : 'Bloqué'}
-                      </button>
+                      {/* Info délai (entreprises clientes uniquement) */}
+                      {client.type_client === 'ENTREPRISE_CLIENT' && (
+                        <div className="mb-1.5">
+                          {client.bloque_le ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap bg-red-100 text-red-700 mb-1">
+                              <span className="material-symbols-outlined text-sm">schedule</span>
+                              Blocage auto
+                            </span>
+                          ) : client.delai_blocage_jours ? (
+                            <span className="text-[10px] font-semibold text-gray-700 whitespace-nowrap">
+                              Délai : après {client.delai_blocage_jours} j
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-gray-500 whitespace-nowrap">Sans durée</span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Bouton de statut : Actif / Bloqué (un clic bascule) */}
+                      <div className="flex flex-col items-center gap-1">
+                        <button
+                          onClick={() => toggleBlock(client)}
+                          disabled={busyUserId === client.utilisateur?.id}
+                          className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors disabled:opacity-50 ${
+                            client.utilisateur?.est_actif === false
+                              ? 'bg-red-600 text-white hover:bg-red-700'
+                              : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                          }`}
+                          title={client.utilisateur?.est_actif === false
+                            ? 'Réactiver l\'accès au compte'
+                            : 'Empêcher l\'accès au compte (le client ne pourra plus se connecter)'}
+                        >
+                          <span className="material-symbols-outlined text-sm">
+                            {client.utilisateur?.est_actif === false ? 'lock' : 'check_circle'}
+                          </span>
+                          {busyUserId === client.utilisateur?.id
+                            ? '...'
+                            : client.utilisateur?.est_actif === false ? 'Bloqué' : 'Actif'}
+                        </button>
+                      </div>
                     </td>
+                    {showEntrepriseCols && (
+                    <>
+                    <td className="px-4 py-3 text-center">
+                      {client.entreprise ? (
+                        client.entreprise.verification_status === 'PENDING' || client.entreprise.verification_status === 'REJECTED' ? (
+                          <div className="flex flex-col items-center gap-1.5">
+                            {client.entreprise.verification_status === 'REJECTED' && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap bg-red-100 text-red-700">
+                                <span className="material-symbols-outlined text-sm">block</span>
+                                Refusée
+                              </span>
+                            )}
+                            <button
+                              onClick={() => { setReviewNote(''); setReviewClient(client); }}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors border border-amber-200 bg-amber-100 text-amber-700 hover:bg-amber-200"
+                            >
+                              <span className="material-symbols-outlined text-sm">assignment_turned_in</span>
+                              {client.entreprise.verification_status === 'REJECTED' ? 'Réexaminer' : 'Examiner les documents'}
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap bg-emerald-100 text-emerald-700">
+                            <span className="material-symbols-outlined text-sm">verified</span>
+                            Validée
+                          </span>
+                        )
+                      ) : (
+                        <span className="text-xs text-gray-400">-</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {estEntreprise && client.type_client === 'ENTREPRISE' ? (
+                        <button
+                          onClick={() => { setConvertMode('none'); setConvertDays('30'); setConvertClient(client); }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors bg-blue-600 text-white hover:bg-blue-700"
+                          title="Convertir ce compte en entreprise cliente (tarifs dedies)"
+                        >
+                          <span className="material-symbols-outlined text-sm">swap_horiz</span>
+                          Passer en entreprise cliente
+                        </button>
+                      ) : client.type_client === 'ENTREPRISE_CLIENT' ? (
+                        <button
+                          onClick={() => {
+                            setConvertMode(client.delai_blocage_jours ? 'days' : 'none');
+                            setConvertDays(String(client.delai_blocage_jours || 30));
+                            setConvertClient(client);
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                        >
+                          <span className="material-symbols-outlined text-sm">timer</span>
+                          Modifier le délai
+                        </button>
+                      ) : (
+                        <span className="text-xs text-gray-400">-</span>
+                      )}
+                    </td>
+                    </>
+                    )}
                   </tr>
                 );
               })}
@@ -554,6 +445,178 @@ export default function AdminClients() {
           </div>
         )}
       </div>
+      )}
+      {/* Modale : examen des documents d'entreprise */}
+      {reviewClient && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">{reviewClient.entreprise?.nom}</h2>
+                <p className="text-sm text-gray-500">Examen des documents justificatifs</p>
+              </div>
+              <button
+                onClick={() => setReviewClient(null)}
+                className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="mb-4 p-3 rounded-lg bg-gray-50 border border-gray-200 text-sm space-y-1">
+              <p><span className="font-semibold text-gray-700">Responsable :</span> {reviewClient.entreprise?.nom_responsable || reviewClient.prenom || '-'}</p>
+              <p><span className="font-semibold text-gray-700">N° identification :</span> {reviewClient.entreprise?.numero_identification || '-'}</p>
+              <p><span className="font-semibold text-gray-700">Email :</span> {reviewClient.utilisateur?.email || '-'}</p>
+              <p><span className="font-semibold text-gray-700">Téléphone :</span> {reviewClient.utilisateur?.telephone || '-'}</p>
+              {reviewClient.entreprise?.verification_status === 'REJECTED' && reviewClient.entreprise?.note_verification && (
+                <p><span className="font-semibold text-red-700">Motif du refus :</span> {reviewClient.entreprise.note_verification}</p>
+              )}
+            </div>
+
+            <p className="text-sm font-semibold text-gray-700 mb-2">
+              Documents téléversés ({(reviewClient.entreprise?.documents || []).length})
+            </p>
+            <div className="mb-4 space-y-2">
+              {(reviewClient.entreprise?.documents || []).map((doc, index) => (
+                <div key={index} className="flex items-center justify-between gap-2 p-2.5 rounded-lg border border-gray-200">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">{doc.originalname || doc.filename}</p>
+                    <p className="text-xs text-gray-500">
+                      {doc.mimetype || 'fichier'} - {doc.size ? `${Math.round(doc.size / 1024)} Ko` : '-'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => downloadDocument(index, doc.originalname)}
+                    className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white hover:bg-blue-700"
+                    title="Télécharger le vrai fichier"
+                  >
+                    <span className="material-symbols-outlined text-sm">download</span>
+                    Télécharger
+                  </button>
+                </div>
+              ))}
+              {(reviewClient.entreprise?.documents || []).length === 0 && (
+                <p className="text-sm text-gray-500">Aucun document enregistré pour cette entreprise.</p>
+              )}
+            </div>
+
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Note (motif du refus, message...)</label>
+            <textarea
+              value={reviewNote}
+              onChange={(e) => setReviewNote(e.target.value)}
+              rows={3}
+              placeholder="Optionnel - ex. : documents illisibles, RCCM expiré..."
+              className="w-full mb-4 px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+
+            <div className="flex items-center justify-end gap-2">
+              <button
+                onClick={() => reviewClientAction('REJECTED')}
+                disabled={reviewBusy}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-sm">block</span>
+                Refuser
+              </button>
+              <button
+                onClick={() => reviewClientAction('APPROVED')}
+                disabled={reviewBusy}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-sm">check_circle</span>
+                Valider le compte
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modale : conversion en entreprise cliente + delai de blocage */}
+      {convertClient && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">
+                  {convertClient.type_client === 'ENTREPRISE' ? 'Passer en entreprise cliente' : 'Modifier le délai de blocage'}
+                </h2>
+                <p className="text-sm text-gray-500">{convertClient.entreprise?.nom || convertClient.utilisateur?.email}</p>
+              </div>
+              <button
+                onClick={() => setConvertClient(null)}
+                className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-600 mb-4">
+              Une entreprise cliente bénéficie de tarifs dédiés. Vous pouvez definir une duree d'acces apres
+              laquelle le compte sera bloque automatiquement, ou laisser le compte actif sans limite de duree.
+            </p>
+
+            <div className="space-y-2 mb-4">
+              <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                convertMode === 'none' ? 'border-blue-300 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'
+              }`}>
+                <input
+                  type="radio"
+                  checked={convertMode === 'none'}
+                  onChange={() => setConvertMode('none')}
+                  className="accent-blue-600"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">Sans durée de blocage</p>
+                  <p className="text-xs text-gray-500">Le compte reste actif indéfiniment</p>
+                </div>
+              </label>
+
+              <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                convertMode === 'days' ? 'border-blue-300 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'
+              }`}>
+                <input
+                  type="radio"
+                  checked={convertMode === 'days'}
+                  onChange={() => setConvertMode('days')}
+                  className="accent-blue-600"
+                />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-gray-900">Bloquer après un délai</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <input
+                      type="number"
+                      min="1"
+                      value={convertDays}
+                      onChange={(e) => { setConvertDays(e.target.value); setConvertMode('days'); }}
+                      disabled={convertMode !== 'days'}
+                      className="w-24 px-2 py-1.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    />
+                    <span className="text-sm text-gray-600">jours</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">À l'expiration du délai, le compte est bloque automatiquement a la prochaine connexion.</p>
+                </div>
+              </label>
+            </div>
+
+            <div className="flex items-center justify-end gap-2">
+              <button
+                onClick={() => setConvertClient(null)}
+                className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={submitConversion}
+                disabled={convertBusy}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-sm">swap_horiz</span>
+                {convertClient.type_client === 'ENTREPRISE' ? 'Convertir' : 'Enregistrer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

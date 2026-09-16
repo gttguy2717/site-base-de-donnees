@@ -1,0 +1,38 @@
+@startuml
+title Diagramme de séquence : Demande et traitement d'un devis sur mesure
+
+scale 0.95
+
+actor "Client" as C
+participant "Interface Web" as UI
+participant "Serveur API" as API
+participant "Base de données" as DB
+participant "Messagerie Brevo" as MAIL
+actor "Administrateur" as ADM
+
+C -> UI : Remplir et envoyer demande de devis
+UI -> API : Enregistrer demande (POST /quote-requests)
+API -> DB : INSERT quote_request (statut: PENDING)
+API -> MAIL : Alerter l'administrateur par email
+MAIL -> ADM : Email nouvelle demande
+UI --> C : Confirmation de prise en compte
+
+ADM -> UI : Consulter la demande et étudier le besoin
+
+alt Demande approuvée et chiffrée
+    ADM -> UI : Téléverser le devis PDF signé
+    UI -> API : Transmettre devis signé (POST /upload-signed)
+    API -> DB : Mettre à jour devis (statut: SENT, fichier PDF)
+    API -> MAIL : Envoyer notification au client
+    MAIL -> C : Email « Devis signé disponible »
+    C -> UI : Accéder à « Mes devis » et télécharger le PDF signé
+
+else Demande refusée ou non réalisable
+    ADM -> UI : Rejeter la demande (saisir motif)
+    UI -> API : Mettre à jour devis (statut: REJECTED)
+    API -> DB : UPDATE quote_requests SET statut = 'REJECTED'
+    API -> MAIL : Notifier le client du refus
+    MAIL -> C : Email notification motif de refus
+end
+
+@enduml

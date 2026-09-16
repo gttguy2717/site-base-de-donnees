@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 const TYPE_CONFIG = {
   ALL: { label: 'Tous', color: 'bg-gray-600', icon: 'apps' },
   VEHICLE_REQUEST: { label: 'Demandes véhicules', color: 'bg-orange-500', icon: 'directions_car' },
+  PRODUCT_REQUEST_CREATED: { label: 'Demandes produits', color: 'bg-indigo-500', icon: 'inventory_2' },
   CART_ITEM_ADDED: { label: 'Ajouts panier', color: 'bg-green-500', icon: 'shopping_cart' },
   CART_VALIDATED: { label: 'Panier validé', color: 'bg-teal-500', icon: 'check_circle' },
   QUOTE_REQUEST_CREATED: { label: 'Devis créés', color: 'bg-blue-500', icon: 'description' },
@@ -14,7 +15,7 @@ const TYPE_CONFIG = {
   OTHER: { label: 'Autres', color: 'bg-gray-400', icon: 'notifications' },
 };
 
-export default function AdminNotifications() {
+export default function AdminNotifications({ onNavigate }) {
   const { token } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +45,33 @@ export default function AdminNotifications() {
       console.error('Erreur chargement notifications:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Cibler l'onglet admin selon le type de notification
+  const getNotificationTarget = (type) => {
+    const targets = {
+      PRODUCT_REQUEST_CREATED: 'product-requests',
+      VEHICLE_REQUEST: 'reservations',
+      QUOTE_REQUEST_CREATED: 'quotes',
+      QUOTE_APPROVED: 'quotes',
+      CART_VALIDATED: 'quotes',
+      CART_ITEM_ADDED: 'catalog',
+      NEW_CLIENT: 'clients',
+      NEW_ACCOUNT: 'clients',
+      RESERVATION: 'reservations',
+      NEW_RESERVATION: 'reservations',
+      LOW_STOCK: 'catalog',
+    };
+    return targets[type] || 'notifications';
+  };
+
+  const openNotification = async (notif) => {
+    const unread = !notif.est_lu;
+    if (unread) await markAsRead(notif.id);
+    // Naviguer vers l'onglet correspondant (ex. demandes produits, devis, clients...)
+    if (onNavigate) {
+      onNavigate(getNotificationTarget(notif.type));
     }
   };
 
@@ -107,6 +135,7 @@ export default function AdminNotifications() {
   const getNotificationColor = (type) => {
     switch (type) {
       case 'VEHICLE_REQUEST': return 'bg-orange-50 text-orange-600 border-orange-200';
+      case 'PRODUCT_REQUEST_CREATED': return 'bg-indigo-50 text-indigo-600 border-indigo-200';
       case 'CART_ITEM_ADDED': return 'bg-green-50 text-green-600 border-green-200';
       case 'QUOTE_REQUEST_CREATED': return 'bg-blue-50 text-blue-600 border-blue-200';
       case 'QUOTE_APPROVED': return 'bg-purple-50 text-purple-600 border-purple-200';
@@ -202,10 +231,10 @@ export default function AdminNotifications() {
           {filteredNotifications.map((notif) => (
             <div
               key={notif.id}
-              onClick={() => !notif.est_lu && markAsRead(notif.id)}
+              onClick={() => openNotification(notif)}
               className={`rounded-xl border p-5 transition-all ${
                 notif.est_lu 
-                  ? 'bg-white border-gray-200 hover:shadow-sm cursor-default' 
+                  ? 'bg-white border-gray-200 hover:shadow-sm cursor-pointer' 
                   : 'bg-blue-50/50 border-blue-200 hover:shadow-md cursor-pointer'
               }`}
             >

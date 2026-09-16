@@ -2,7 +2,11 @@ const path = require('node:path');
 const dotenv = require('dotenv');
 
 // override: true force dotenvx (dotenv@17+) à remplacer les variables existantes
-dotenv.config({ path: path.resolve(process.cwd(), '.env'), override: true });
+// On charge d'abord le .env racine du projet (là où sont DB_*, JWT_*, GENIUSPAY_*),
+// puis le .env local du dossier server/ (s'il existe) en complément.
+dotenv.config({ path: path.resolve(process.cwd(), '../.env'), override: false });
+dotenv.config({ path: path.resolve(process.cwd(), '.env'), override: false });
+dotenv.config({ path: path.resolve(__dirname, '../../../.env'), override: false });
 
 
 const requiredInProduction = ['DB_NAME', 'DB_USER', 'DB_PASSWORD'];
@@ -59,5 +63,13 @@ module.exports = {
     openaiApiKey: process.env.OPENAI_API_KEY,
     openaiBaseUrl: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
     openaiModel: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+  },
+  geniusPay: {
+    enabled: process.env.GENIUSPAY_ENABLED === 'true' || process.env.GENIUSPAY_ENABLED === '1',
+    baseUrl: process.env.GENIUSPAY_BASE_URL || 'https://geniuspay.ci/api/v1/merchant',
+    apiKey: process.env.GENIUSPAY_API_KEY,
+    merchantKey: process.env.GENIUSPAY_MERCHANT_KEY,
+    callbackUrl: process.env.GENIUSPAY_CALLBACK_URL || 'http://localhost:5000/api/payments/geniuspay/callback',
+    returnUrl: process.env.GENIUSPAY_RETURN_URL || 'http://localhost:5173/commande',
   },
 };

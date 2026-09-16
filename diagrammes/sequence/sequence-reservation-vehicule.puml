@@ -1,0 +1,42 @@
+@startuml
+title Diagramme de séquence : Réservation d'un véhicule
+
+scale 0.95
+
+actor "Client" as C
+participant "Interface Web" as UI
+participant "Serveur API" as API
+participant "Base de données" as DB
+participant "Messagerie Brevo" as MAIL
+actor "Administrateur" as ADM
+
+C -> UI : Sélectionner un véhicule et les dates
+UI -> API : Vérifier disponibilité
+API -> DB : Contrôler réservations existantes
+
+alt Véhicule disponible (aucun conflit)
+    DB --> API : Disponibilité confirmée
+    API --> UI : Véhicule disponible
+    UI --> C : Confirmation et ajout au panier
+
+    C -> UI : Valider le panier et choisir le paiement
+    UI -> API : Confirmer réservation et devis
+    API -> DB : Enregistrer commande, devis et réservation
+    API -> MAIL : Déclencher les emails de confirmation
+    MAIL -> C : Email confirmation de réservation
+    MAIL -> ADM : Email notification nouvelle commande
+    API --> UI : Confirmation enregistrée
+    UI --> C : Afficher confirmation de commande
+
+    ADM -> UI : Consulter la commande reçue
+    ADM -> UI : Marquer le devis comme lu
+    UI -> API : Mettre à jour statut (lu_le)
+    API -> DB : Enregistrer marquage comme lu
+
+else Véhicule indisponible (période occupée)
+    DB --> API : Conflit de dates détecté
+    API --> UI : Véhicule indisponible
+    UI --> C : Afficher message d'indisponibilité (modifier dates)
+end
+
+@enduml

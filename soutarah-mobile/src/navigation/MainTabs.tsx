@@ -6,6 +6,7 @@ import HomeScreen from '../screens/HomeScreen';
 import VehiclesScreen from '../screens/VehiclesScreen';
 import CartScreen from '../screens/CartScreen';
 import MyReservationsScreen from '../screens/MyReservationsScreen';
+import AiAssistantScreen from '../screens/AiAssistantScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import AdminDashboardScreen from '../screens/AdminDashboardScreen';
 import { useAuth } from '../contexts/AuthContext';
@@ -17,6 +18,7 @@ export type MainTabsParamList = {
   Vehicles: undefined;
   Cart: undefined;
   Reservations: undefined;
+  Assistant: undefined;
   Profile: undefined;
 };
 
@@ -27,17 +29,18 @@ const TAB_ICONS: Record<string, [keyof typeof Ionicons.glyphMap, keyof typeof Io
   Vehicles: ['car-sport', 'car-sport-outline'],
   Cart: ['cart', 'cart-outline'],
   Reservations: ['document-text', 'document-text-outline'],
+  Assistant: ['chatbubble', 'chatbubble-outline'],
   Profile: ['person', 'person-outline'],
 };
 
-export default function MainTabs() {
+export default function MainTabs({ navigation }: { navigation: any }) {
   const { user } = useAuth();
   const { cartCount } = useCart();
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'MANAGER';
 
   // Pour les administrateurs : afficher directement le dashboard admin avec sidebar
   if (isAdmin) {
-    return <AdminDashboardScreen />;
+    return <AdminDashboardScreen navigation={navigation} />;
   }
 
   return (
@@ -88,6 +91,7 @@ export default function MainTabs() {
       <Tab.Screen name="Vehicles" component={VehiclesScreen} options={{ title: 'Catalogue' }} />
       <Tab.Screen name="Cart" component={CartScreen} options={{ title: 'Panier' }} />
       <Tab.Screen name="Reservations" component={MyReservationsScreen} options={{ title: 'Mes devis' }} />
+      <Tab.Screen name="Assistant" component={AiAssistantScreen} options={{ title: 'Assistant' }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profil' }} />
     </Tab.Navigator>
   );

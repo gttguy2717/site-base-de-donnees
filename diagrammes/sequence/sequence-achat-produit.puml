@@ -1,0 +1,51 @@
+@startuml
+title Diagramme de séquence : Achat d'un produit (Négoce)
+
+scale 0.95
+
+actor "Client" as C
+participant "Interface Web" as UI
+participant "Serveur API" as API
+participant "Base de données" as DB
+participant "Messagerie Brevo" as MAIL
+actor "Administrateur" as ADM
+
+C -> UI : Sélectionner un produit et l'ajouter au panier
+UI -> API : Transmettre l'article au panier
+API -> API : Calculer les montants (HT, TVA, TTC)
+API --> UI : Retourner les totaux calculés
+UI --> C : Afficher le panier avec les montants (HT, TVA, TTC)
+
+C -> UI : Passer la commande
+
+alt Paiement en ligne immédiat (Carte ou Mobile Money)
+    C -> UI : Régler la commande en ligne
+    UI -> API : Traiter le paiement
+    API -> DB : Enregistrer paiement et confirmer commande
+    API -> MAIL : Déclencher les emails de commande
+    MAIL -> C : Email confirmation d'achat et reçu
+    MAIL -> ADM : Email notification nouvelle commande payée
+    API --> UI : Paiement accepté et commande confirmée
+    UI --> C : Afficher confirmation d'achat immédiate
+
+else Paiement en espèces (règlement à la livraison)
+    C -> UI : Choisir paiement en espèces
+    UI -> API : Enregistrer commande (en attente de règlement)
+    API -> DB : Enregistrer commande (Statut: EN ATTENTE)
+    API --> UI : Commande enregistrée
+    UI --> C : Afficher récapitulatif (à solder à la livraison)
+
+    C -> ADM : Régler le montant en espèces à la livraison
+    ADM -> UI : Solder la commande (valider encaissement)
+    UI -> API : Confirmer le règlement
+    API -> DB : Mettre à jour statut (CONFIRMÉE / SOLDÉE)
+    API -> MAIL : Envoyer confirmation au client
+    MAIL -> C : Email confirmation de commande soldée
+end
+
+ADM -> UI : Consulter les détails de la commande
+ADM -> UI : Marquer le devis comme lu
+UI -> API : Mettre à jour statut (lu_le)
+API -> DB : Enregistrer marquage comme lu
+
+@enduml

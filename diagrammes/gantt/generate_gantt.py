@@ -1,0 +1,659 @@
+import os
+import subprocess
+
+html_gantt = """<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Diagramme de GANTT - Soutarah Group</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    width: 1550px;
+    height: 820px;
+    background: #ffffff;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #1e293b;
+    padding: 30px 45px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Header Banner */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+  }
+
+  .header-left h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-left h1 span.highlight {
+    color: #144627;
+  }
+
+  .header-left p {
+    font-size: 13.5px;
+    color: #64748b;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  .project-badge {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 8px 16px;
+    text-align: right;
+    max-width: 580px;
+  }
+
+  .project-badge .badge-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #166534;
+  }
+
+  .project-badge .badge-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: #14532d;
+    line-height: 1.35;
+    margin-top: 2px;
+  }
+
+  /* Main Gantt Grid Layout */
+  .gantt-wrapper {
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Timeline Grid Header */
+  .gantt-header-row {
+    display: grid;
+    grid-template-columns: 540px 1fr;
+    background: #f8fafc;
+    border-bottom: 2px solid #cbd5e1;
+  }
+
+  .table-head {
+    display: grid;
+    grid-template-columns: 45px 1fr 95px 65px 95px;
+    align-items: center;
+    padding: 10px 16px;
+    font-size: 11.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #475569;
+    border-right: 2px solid #cbd5e1;
+  }
+
+  .timeline-head {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .months-row {
+    display: grid;
+    grid-template-columns: 52.7% 47.3%;
+    border-bottom: 1px solid #cbd5e1;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .month-cell {
+    padding: 6px 0;
+    background: #f1f5f9;
+  }
+  .month-cell.aout {
+    border-right: 2px solid #cbd5e1;
+  }
+
+  .weeks-row {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+  }
+
+  .week-cell {
+    padding: 5px 0;
+    border-right: 1px solid #e2e8f0;
+    background: #f8fafc;
+  }
+  .week-cell:last-child {
+    border-right: none;
+  }
+
+  /* Task Rows */
+  .task-row {
+    display: grid;
+    grid-template-columns: 540px 1fr;
+    border-bottom: 1px solid #e2e8f0;
+    height: 52px;
+    align-items: center;
+    position: relative;
+  }
+
+  .task-row:last-child {
+    border-bottom: none;
+  }
+
+  .task-row:nth-child(even) {
+    background: #fbfcfd;
+  }
+
+  /* Left Table Columns */
+  .table-data {
+    display: grid;
+    grid-template-columns: 45px 1fr 95px 65px 95px;
+    align-items: center;
+    padding: 8px 16px;
+    font-size: 12.5px;
+    border-right: 2px solid #cbd5e1;
+    height: 100%;
+  }
+
+  .task-num {
+    font-weight: 800;
+    color: #144627;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  .task-name {
+    font-weight: 700;
+    color: #0f172a;
+    padding-right: 12px;
+    line-height: 1.35;
+    font-size: 12.5px;
+  }
+
+  .tag-mobile {
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    display: inline-block;
+    border: 1px solid #bbf7d0;
+  }
+
+  .task-date {
+    font-size: 12px;
+    color: #334155;
+    font-weight: 600;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .task-duration {
+    font-weight: 800;
+    color: #0369a1;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    padding: 3px 6px;
+    border-radius: 5px;
+    font-size: 11px;
+    text-align: center;
+    width: fit-content;
+    margin: 0 auto;
+  }
+
+  /* Right Timeline Bar Container */
+  .timeline-area {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Background Vertical Week Lines */
+  .timeline-grid-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    pointer-events: none;
+  }
+
+  .grid-column {
+    border-right: 1px solid #f1f5f9;
+    height: 100%;
+  }
+  .grid-column:nth-child(4) {
+    border-right: 2px dashed #cbd5e1;
+  }
+
+  /* Gantt Bar Styles */
+  .gantt-bar {
+    position: absolute;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    z-index: 2;
+    letter-spacing: 0.3px;
+    gap: 6px;
+  }
+
+  /* Exact calendar offsets on 55 days timeline (03/08 to 26/09) */
+  /* Day 0 = 03/08, Day 55 = 26/09 */
+  .bar-1 {
+    left: 0.0%;
+    width: 9.09%; /* 5 days */
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  }
+
+  .bar-2 {
+    left: 9.09%;
+    width: 7.27%; /* 4 days */
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  }
+
+  .bar-3 {
+    left: 16.36%;
+    width: 10.91%; /* 6 days */
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  }
+
+  .bar-4 {
+    left: 27.27%;
+    width: 18.18%; /* 10 days */
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  }
+
+  .bar-5 {
+    left: 45.45%;
+    width: 21.82%; /* 12 days */
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  }
+
+  .bar-6 {
+    left: 67.27%;
+    width: 21.82%; /* 12 days */
+    background: linear-gradient(135deg, #16a34a 0%, #144627 100%);
+    border: 1.5px solid #86efac;
+  }
+
+  .bar-7 {
+    left: 89.09%;
+    width: 10.91%; /* 6 days */
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  }
+
+  .bar-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .milestone-badge {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fef2f2;
+    border: 1.5px solid #ef4444;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #b91c1c;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+
+  /* Footer Legend & Summary */
+  .gantt-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 14px;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .legend-items {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: #475569;
+    font-weight: 600;
+  }
+
+  .legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+  }
+
+  .c-prep { background: #0284c7; }
+  .c-cdc  { background: #2563eb; }
+  .c-uml  { background: #6366f1; }
+  .c-back { background: #059669; }
+  .c-web  { background: #0ea5e9; }
+  .c-mob  { background: #144627; }
+  .c-rec  { background: #8b5cf6; }
+
+  .summary-stats {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .stat-pill {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #334155;
+    font-weight: 600;
+  }
+
+  .stat-pill strong {
+    color: #144627;
+    font-weight: 800;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1><span class="highlight">Diagramme de GANTT</span> &bull; Planning d'Exécution du Projet</h1>
+      <p>Calendrier chronologique des tâches du 03 Août au 26 Septembre 2026 (55 jours calendaires)</p>
+    </div>
+    <div class="project-badge">
+      <div class="badge-title">SOUTARAH GROUP &bull; STAGE TS STIC 2</div>
+      <div class="badge-text">Conception &amp; Développement d'une Plateforme Numérique de Gestion intégrant une Application Mobile de Réservation</div>
+    </div>
+  </div>
+
+  <!-- Gantt Wrapper -->
+  <div class="gantt-wrapper">
+
+    <!-- Header Row -->
+    <div class="gantt-header-row">
+      <div class="table-head">
+        <div>N°</div>
+        <div>Désignation de la tâche</div>
+        <div style="text-align: center;">Début</div>
+        <div style="text-align: center;">Durée</div>
+        <div style="text-align: center;">Fin</div>
+      </div>
+
+      <div class="timeline-head">
+        <div class="months-row">
+          <div class="month-cell aout">AOÛT 2026 (29 jours calendaires)</div>
+          <div class="month-cell">SEPTEMBRE 2026 (26 jours calendaires)</div>
+        </div>
+        <div class="weeks-row">
+          <div class="week-cell">S32 (03-09/08)</div>
+          <div class="week-cell">S33 (10-16/08)</div>
+          <div class="week-cell">S34 (17-23/08)</div>
+          <div class="week-cell">S35 (24-30/08)</div>
+          <div class="week-cell">S36 (31/08-06/09)</div>
+          <div class="week-cell">S37 (07-13/09)</div>
+          <div class="week-cell">S38 (14-20/09)</div>
+          <div class="week-cell">S39 (21-26/09)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task 1 -->
+    <div class="task-row">
+      <div class="table-data">
+        <div class="task-num">1</div>
+        <div class="task-name">Prise de contact, immersion et compréhension du projet</div>
+        <div class="task-date">03/08/2026</div>
+        <div class="task-duration">5 j</div>
+        <div class="task-date">07/08/2026</div>
+      </div>
+      <div class="timeline-area">
+        <div class="timeline-grid-bg">
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+        </div>
+        <div class="gantt-bar bar-1">
+          <span class="bar-text">5 j</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task 2 -->
+    <div class="task-row">
+      <div class="table-data">
+        <div class="task-num">2</div>
+        <div class="task-name">Étude de l'existant et rédaction du cahier des charges</div>
+        <div class="task-date">08/08/2026</div>
+        <div class="task-duration">4 j</div>
+        <div class="task-date">11/08/2026</div>
+      </div>
+      <div class="timeline-area">
+        <div class="timeline-grid-bg">
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+        </div>
+        <div class="gantt-bar bar-2">
+          <span class="bar-text">4 j</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task 3 -->
+    <div class="task-row">
+      <div class="table-data">
+        <div class="task-num">3</div>
+        <div class="task-name">Modélisation conceptuelle PU/UML et conception de la base</div>
+        <div class="task-date">12/08/2026</div>
+        <div class="task-duration">6 j</div>
+        <div class="task-date">17/08/2026</div>
+      </div>
+      <div class="timeline-area">
+        <div class="timeline-grid-bg">
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+        </div>
+        <div class="gantt-bar bar-3">
+          <span class="bar-text">6 j</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task 4 -->
+    <div class="task-row">
+      <div class="table-data">
+        <div class="task-num">4</div>
+        <div class="task-name">Développement de l'API Backend Node.js / Express &amp; MySQL</div>
+        <div class="task-date">18/08/2026</div>
+        <div class="task-duration">10 j</div>
+        <div class="task-date">27/08/2026</div>
+      </div>
+      <div class="timeline-area">
+        <div class="timeline-grid-bg">
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+        </div>
+        <div class="gantt-bar bar-4">
+          <span class="bar-text">API Backend (10 j)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task 5 -->
+    <div class="task-row">
+      <div class="table-data">
+        <div class="task-num">5</div>
+        <div class="task-name">Développement de la Plateforme Web React.js &amp; CSS</div>
+        <div class="task-date">28/08/2026</div>
+        <div class="task-duration">12 j</div>
+        <div class="task-date">08/09/2026</div>
+      </div>
+      <div class="timeline-area">
+        <div class="timeline-grid-bg">
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+        </div>
+        <div class="gantt-bar bar-5">
+          <span class="bar-text">Plateforme Web (12 j)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task 6 -->
+    <div class="task-row" style="background: #fbfdfc;">
+      <div class="table-data">
+        <div class="task-num" style="background: #144627; color: #ffffff; border-color: #144627;">6</div>
+        <div class="task-name">
+          Développement de l'Application Mobile React Native / Expo
+          <span class="tag-mobile">APPLICATION MOBILE</span>
+        </div>
+        <div class="task-date">09/09/2026</div>
+        <div class="task-duration">12 j</div>
+        <div class="task-date">20/09/2026</div>
+      </div>
+      <div class="timeline-area">
+        <div class="timeline-grid-bg">
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+        </div>
+        <div class="gantt-bar bar-6">
+          <span class="bar-text">App Mobile Réservation (12 j)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task 7 -->
+    <div class="task-row">
+      <div class="table-data">
+        <div class="task-num">7</div>
+        <div class="task-name">Tests d'intégration, recette logicielle et corrections</div>
+        <div class="task-date">21/09/2026</div>
+        <div class="task-duration">6 j</div>
+        <div class="task-date">26/09/2026</div>
+      </div>
+      <div class="timeline-area">
+        <div class="timeline-grid-bg">
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+          <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
+        </div>
+        <div class="gantt-bar bar-7">
+          <span class="bar-text">Recette (6 j)</span>
+        </div>
+        <div class="milestone-badge">
+          <span>🏁</span>
+          <span>LIVRAISON 26/09</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer Legend -->
+  <div class="gantt-footer">
+    <div class="legend-items">
+      <div class="legend-item">
+        <div class="legend-color c-prep"></div>
+        <span>Immersion &amp; Cadrage</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color c-cdc"></div>
+        <span>Cahier des charges</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color c-uml"></div>
+        <span>Modélisation UML &amp; BDD</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color c-back"></div>
+        <span>API Backend (Node/MySQL)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color c-web"></div>
+        <span>Plateforme Web (React)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color c-mob"></div>
+        <span>Application Mobile (Expo)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color c-rec"></div>
+        <span>Recette &amp; Tests</span>
+      </div>
+    </div>
+
+    <div class="summary-stats">
+      <div class="stat-pill">Période : <strong>03/08 au 26/09/2026</strong></div>
+      <div class="stat-pill">Durée totale : <strong>55 jours</strong></div>
+      <div class="stat-pill">Avancement : <strong>100% Réalisé</strong></div>
+    </div>
+  </div>
+
+</body>
+</html>
+"""
+
+with open("diagrammes/gantt/diagramme-gantt.html", "w", encoding="utf-8") as f:
+    f.write(html_gantt)
+
+print("diagramme-gantt.html updated!")

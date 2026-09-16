@@ -1,0 +1,52 @@
+@startuml
+title Activité : réservation d'un véhicule
+
+scale 0.95
+
+|Client|
+start
+:Choisir un véhicule et saisir les dates de location;
+:Valider la demande de réservation;
+
+|Système / API|
+:Vérifier la disponibilité;
+
+if (Véhicule disponible ?) then (Oui)
+    :Ajouter le véhicule au panier;
+
+    |Client|
+    :Valider le panier et passer commande;
+
+    |Système / API|
+    :Générer le devis officiel (snapshot et référence);
+    :Afficher la page de commande et les modes de paiement;
+
+    |Client|
+    if (Mode de paiement ?) then (En ligne)
+        :Payer en ligne (Carte / Mobile Money);
+    else (À la livraison)
+        :Choisir le paiement à la livraison (Espèces);
+    endif
+    :Confirmer la commande;
+
+    |Système / API|
+    :Enregistrer la commande et la réservation dans MySQL;
+    :Valider automatiquement le devis;
+    :Notifier le client et transmettre le devis à l'administrateur;
+
+    |Administrateur|
+    :Recevoir le devis de la commande;
+    :Consulter les détails de la commande;
+    :Marquer le devis comme lu;
+    :Prendre en charge la mise à disposition du véhicule;
+
+    |Client|
+    :Recevoir la confirmation de réservation;
+    stop
+else (Non)
+    |Client|
+    :Modifier les dates ou choisir un autre véhicule;
+    stop
+endif
+
+@enduml

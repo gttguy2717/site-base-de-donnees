@@ -1,12 +1,17 @@
 const { Router } = require('express');
 const { body } = require('express-validator');
-const { authenticate, optionalAuthenticate } = require('../middlewares/authenticate.cjs');
+const { authenticate, optionalAuthenticate, authenticateWithTokenQuery } = require('../middlewares/authenticate.cjs');
 const validateRequest = require('../middlewares/validate-request.cjs');
-const { createQuoteRequest, getMyQuoteRequests, deleteQuoteRequest } = require('../controllers/quote-request.controller.cjs');
+const { createQuoteRequest, getMyQuoteRequests, deleteQuoteRequest, confirmQuoteRequest, downloadQuotePdf } = require('../controllers/quote-request.controller.cjs');
 
 const router = Router();
 
 router.get('/my', authenticate, getMyQuoteRequests);
+
+router.post('/confirm', optionalAuthenticate, [
+  body('reference').isString().trim().isLength({ min: 3, max: 60 }),
+  validateRequest,
+], confirmQuoteRequest);
 
 router.post('/', optionalAuthenticate, [
   body('service').isString().trim().isLength({ min: 2, max: 80 }),
@@ -21,6 +26,9 @@ router.post('/', optionalAuthenticate, [
   body('location').isString().trim().isLength({ min: 2, max: 180 }),
   validateRequest,
 ], createQuoteRequest);
+
+// PDF officiel d'un devis (propriétaire ou staff)
+router.get('/pdf/:reference', authenticateWithTokenQuery, downloadQuotePdf);
 
 router.delete('/:id', authenticate, deleteQuoteRequest);
 

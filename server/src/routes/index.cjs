@@ -10,11 +10,14 @@ const adminRouter = require('./admin.routes.cjs');
 const vehicleRequestRouter = require('./vehicle-request.routes.cjs');
 const reservationRouter = require('./reservation.routes.cjs');
 const aiAssistantRouter = require('./ai-assistant.routes.cjs');
+const paymentRouter = require('./payment.routes.cjs');
 const { authenticate } = require('../middlewares/authenticate.cjs');
 
 const { Setting } = require('../models/index.cjs');
 
 const apiRouter = Router();
+
+const { repairRecursive } = require('../utilities/text-encoding.cjs');
 
 async function getPublicAnnouncements(_request, response, next) {
   try {
@@ -23,12 +26,12 @@ async function getPublicAnnouncements(_request, response, next) {
 
     // Ancien format : tableau simple d'annonces
     if (Array.isArray(raw)) {
-      return response.json({ announcements: raw, barHeight: 34 });
+      return response.json({ announcements: repairRecursive(raw), barHeight: 34 });
     }
 
     // Nouveau format : { items: [...], barHeight: 34 }
     return response.json({
-      announcements: raw?.items || [],
+      announcements: repairRecursive(raw?.items || []),
       barHeight: Number(raw?.barHeight) || 34,
     });
   } catch (error) {
@@ -46,6 +49,7 @@ apiRouter.use('/vehicle-requests', vehicleRequestRouter);
 apiRouter.use('/reservations', reservationRouter);
 apiRouter.use('/notifications', notificationRouter);
 apiRouter.use('/ai-assistant', aiAssistantRouter);
+apiRouter.use('/payments', paymentRouter);
 apiRouter.use('/admin', authenticate, adminRouter); // Routes admin protégées
 apiRouter.use('/', catalogRouter);
 

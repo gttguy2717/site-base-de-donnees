@@ -64,6 +64,8 @@ export default function NotificationToast({ notifications, onDismiss, onViewAll,
     switch (type) {
       case 'VEHICLE_REQUEST':
         return 'reservations';
+      case 'PRODUCT_REQUEST_CREATED':
+        return 'product-requests';
       case 'CART_ITEM_ADDED':
         return 'catalog';
       case 'QUOTE_REQUEST':
@@ -89,6 +91,8 @@ export default function NotificationToast({ notifications, onDismiss, onViewAll,
     switch (type) {
       case 'VEHICLE_REQUEST':
         return 'directions_car';
+      case 'PRODUCT_REQUEST_CREATED':
+        return 'inventory_2';
       case 'CART_ITEM_ADDED':
         return 'shopping_cart';
       case 'QUOTE_REQUEST':

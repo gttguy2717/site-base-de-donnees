@@ -5,6 +5,8 @@ import Footer from '../components/Footer';
 import DevisModal from '../components/DevisModal';
 import FadeInSection from '../components/FadeInSection';
 import { PROJECT_PRINCIPLES, REALIZED_PROJECTS } from '../data/companyData';
+import { useAuth } from '../hooks/useAuth';
+import { openDevisByAuth } from '../lib/quoteGate';
 
 const PROJECT_HERO_IMAGE = 'https://soutarahgroup.ci/img/project.jpeg';
 const TECHNICIAN_IMAGE = 'https://soutarahgroup.ci/img/tecg.jpeg';
@@ -69,6 +71,7 @@ const PROJECT_REALIZATIONS = [
 ];
 
 export default function ProjectsPage({ navigateTo, onRequestQuote }) {
+const { user } = useAuth();
   const [isDevisOpen, setIsDevisOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('Tous');
   const [selectedRealizedProject, setSelectedRealizedProject] = useState(null);
@@ -94,7 +97,7 @@ export default function ProjectsPage({ navigateTo, onRequestQuote }) {
 
   return (
     <div className="min-h-screen bg-[#eef3ec] text-[#1a1c1c] flex flex-col font-sans selection:bg-primary selection:text-white">
-      <Navbar onOpenDevis={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))} activeTab="projects" navigateTo={navigateTo} />
+      <Navbar onOpenDevis={() => openDevisByAuth({ user, navigateTo, onAuthed: () => setIsDevisOpen(true) })} activeTab="projects" navigateTo={navigateTo} />
 
       <main className="flex-grow pt-28">
         <section className="relative isolate flex min-h-[calc(100svh-5rem)] flex-col justify-center overflow-hidden bg-[#143e22] pb-14 pt-10 text-white sm:pb-16 sm:pt-12 lg:pb-20 lg:pt-14">
@@ -401,7 +404,7 @@ export default function ProjectsPage({ navigateTo, onRequestQuote }) {
           </div>
         </FadeInSection>
 
-        <CtaBanner onOpenDevis={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))} />
+        <CtaBanner onOpenDevis={() => openDevisByAuth({ user, navigateTo, onAuthed: () => setIsDevisOpen(true) })} />
       </main>
 
       <Footer onNavClick={handleFooterNavigation} />

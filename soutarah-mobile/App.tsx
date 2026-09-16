@@ -1,16 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import {
-  useFonts,
-  PlusJakartaSans_400Regular,
-  PlusJakartaSans_500Medium,
-  PlusJakartaSans_600SemiBold,
-  PlusJakartaSans_700Bold,
-  PlusJakartaSans_800ExtraBold,
-} from '@expo-google-fonts/plus-jakarta-sans';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 import { CartProvider } from './src/contexts/CartContext';
 import SplashScreen from './src/screens/SplashScreen';
@@ -18,6 +10,8 @@ import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import VehicleDetailScreen from './src/screens/VehicleDetailScreen';
 import ReservationScreen from './src/screens/ReservationScreen';
+import PasserCommandeScreen from './src/screens/PasserCommandeScreen';
+import AiAssistantScreen from './src/screens/AiAssistantScreen';
 import MainTabs from './src/navigation/MainTabs';
 
 export type RootStackParamList = {
@@ -27,6 +21,8 @@ export type RootStackParamList = {
   Main: undefined;
   VehicleDetail: { vehicleId: string };
   Reservation: { vehicleId: string };
+  PasserCommande: undefined;
+  Assistant: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -56,6 +52,8 @@ function AppContent() {
             <Stack.Screen name="Main" component={MainTabs} />
             <Stack.Screen name="VehicleDetail" component={VehicleDetailScreen} />
             <Stack.Screen name="Reservation" component={ReservationScreen} />
+            <Stack.Screen name="PasserCommande" component={PasserCommandeScreen} />
+            <Stack.Screen name="Assistant" component={AiAssistantScreen} />
           </>
         )}
       </Stack.Navigator>
@@ -64,15 +62,16 @@ function AppContent() {
 }
 
 export default function App() {
-  const [fontsLoaded] = useFonts({
-    PlusJakartaSans_400Regular,
-    PlusJakartaSans_500Medium,
-    PlusJakartaSans_600SemiBold,
-    PlusJakartaSans_700Bold,
-    PlusJakartaSans_800ExtraBold,
-  });
+  // Garde anti-blocage : si les polices custom mettent trop longtemps à se
+  // charger (pas d'internet / réseau), on continue quand même après 1,5 s.
+  const [splashDone, setSplashDone] = useState(false);
 
-  if (!fontsLoaded) {
+  useEffect(() => {
+    const timer = setTimeout(() => setSplashDone(true), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!splashDone) {
     return <SplashScreen />;
   }
 

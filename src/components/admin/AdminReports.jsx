@@ -489,7 +489,7 @@ export default function AdminReports() {
               value={s.devis?.total || 0}
               icon="description"
               gradient={['#3b82f6', '#2563eb']}
-              sub={`${s.devis?.enAttente || 0} en attente`}
+              sub={`${s.devis?.nonLus || 0} non lu${(s.devis?.nonLus || 0) > 1 ? 's' : ''}`}
               subColor="text-amber-600"
             />
             <KpiCard
@@ -706,7 +706,7 @@ export default function AdminReports() {
         <div className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard label="Devis total" value={s.devis?.total || 0} icon="description" gradient={['#3b82f6', '#2563eb']} sub="Toutes périodes" subColor="text-gray-500" />
-            <KpiCard label="Devis en attente" value={s.devis?.enAttente || 0} icon="hourglass_top" gradient={['#f59e0b', '#d97706']} sub="PRÊT À TRAITER" subColor="text-amber-600" />
+            <KpiCard label="Devis non lus" value={s.devis?.nonLus || 0} icon="mark_email_unread" gradient={['#f59e0b', '#d97706']} sub="À CONSULTER" subColor="text-amber-600" />
             <KpiCard label="Réservations" value={reservationsList.length} icon="event" gradient={['#10b981', '#059669']} sub={`${s.reservations?.enCours || 0} en cours`} subColor="text-emerald-600" />
             <KpiCard label="Taux conversion" value={`${conversionRate}%`} icon="verified" gradient={['#8b5cf6', '#7c3aed']} sub={`${approvedQuotes} approuvés`} subColor="text-purple-600" />
           </div>
@@ -791,9 +791,9 @@ export default function AdminReports() {
                 <div className="rounded-xl border border-amber-100 bg-amber-50/50 p-3.5">
                   <p className="text-xs font-bold text-amber-800">⚠️ À surveiller</p>
                   <p className="mt-1 text-xs leading-5 text-amber-700">
-                    {s.devis?.enAttente > 0
-                      ? `${s.devis.enAttente} devis sont en attente. Un traitement rapide augmente les chances de conversion.`
-                      : 'Aucun devis en attente. Tous vos devis sont traités.'}
+                    {s.devis?.nonLus > 0
+                      ? `${s.devis.nonLus} devis non lus. Consultez les nouvelles demandes.`
+                      : 'Aucun devis non lu. Toutes les demandes sont traitées.'}
                   </p>
                 </div>
               </div>

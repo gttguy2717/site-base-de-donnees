@@ -3,8 +3,11 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import DevisModal from '../components/DevisModal';
 import FadeInSection from '../components/FadeInSection';
+import { useAuth } from '../hooks/useAuth';
+import { openDevisByAuth } from '../lib/quoteGate';
 
 export default function AboutPage({ navigateTo, onRequestQuote }) {
+  const { user } = useAuth();
   const [isDevisOpen, setIsDevisOpen] = useState(false);
 
   useEffect(() => {
@@ -27,7 +30,7 @@ export default function AboutPage({ navigateTo, onRequestQuote }) {
     navigateTo('home', { section: tab });
   };
 
-  const handleOpenDevis = () => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true));
+  const handleOpenDevis = () => openDevisByAuth({ user, navigateTo, onAuthed: () => setIsDevisOpen(true) });
   const handleCloseDevis = () => setIsDevisOpen(false);
 
   return (

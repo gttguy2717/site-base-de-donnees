@@ -34,7 +34,28 @@ export function AuthProvider({ children }) {
       return result;
     },
     async register(data) {
-      const result = await apiRequest('/auth/register', { method: 'POST', body: JSON.stringify(data) });
+      // Pour les entreprises, l'inscription s'envoie en multipart (documents obligatoires)
+      const isFormData = typeof FormData !== 'undefined' && data instanceof FormData;
+      let result;
+      if (isFormData) {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          body: data,
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(payload.error?.message || payload.message || 'Une erreur est survenue.');
+        }
+        result = payload;
+      } else {
+        result = await apiRequest('/auth/register', { method: 'POST', body: JSON.stringify(data) });
+      }
+
+      // Entreprise en attente de validation : pas de token, on ne connecte pas
+      if (result.requiresVerification) {
+        return result;
+      }
+
       localStorage.setItem(TOKEN_KEY, result.token);
       setState({ user: result.user, client: result.client, token: result.token, ready: true });
       return result;

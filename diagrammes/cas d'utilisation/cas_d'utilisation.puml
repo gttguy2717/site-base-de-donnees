@@ -1,0 +1,77 @@
+@startuml
+
+title Cas d'utilisation principal - SOUTARAH GROUP
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Visiteur" as V
+actor "Client (Web / Mobile)" as C
+actor "Administrateur" as A
+
+rectangle "Plateforme SOUTARAH GROUP" {
+
+  package "Site public" {
+    usecase "Consulter le site et les services" as UC1
+    usecase "Consulter les catalogues" as UC2
+    usecase "Contacter l'entreprise" as UC3
+    usecase "Utiliser l'assistant IA" as UC4
+    usecase "S'inscrire" as UC5
+    usecase "Se connecter" as UC6
+  }
+
+  package "Espace client" {
+    usecase "Gérer son profil" as UC7
+    usecase "Gérer le panier" as UC8
+    usecase "Demander un devis" as UC9
+    usecase "Réserver un véhicule" as UC10
+    usecase "Vérifier la disponibilité" as UC11
+    usecase "Payer une commande" as UC12
+    usecase "Consulter ses demandes et devis" as UC13
+    usecase "Consulter ses notifications" as UC14
+  }
+
+  package "Back-office" {
+    usecase "Consulter le tableau de bord" as UC15
+    usecase "Gérer les clients" as UC16
+    usecase "Gérer les produits et tarifs" as UC17
+    usecase "Gérer les véhicules" as UC18
+    usecase "Gérer les stocks et annonces" as UC19
+    usecase "Traiter les réservations" as UC20
+    usecase "Recevoir les devis et\nmarquer comme lu" as UC21
+  }
+}
+
+V --> UC1
+V --> UC2
+V --> UC3
+V --> UC4
+V --> UC5
+V --> UC6
+
+C --> UC7
+C --> UC8
+C --> UC9
+C --> UC4
+C --> UC10
+C --> UC12
+C --> UC13
+C --> UC14
+
+A --> UC15
+A --> UC4
+A --> UC16
+A --> UC17
+A --> UC18
+A --> UC19
+A --> UC20
+A --> UC21
+
+UC8 ..> UC6 : <<include>>
+UC9 ..> UC6 : <<include>>
+UC10 ..> UC6 : <<include>>
+UC10 ..> UC11 : <<include>>
+UC12 ..> UC8 : <<extend>>
+UC21 ..> UC13 : <<include>>
+
+@enduml

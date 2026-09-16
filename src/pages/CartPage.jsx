@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Car, CheckCircle2, Download, Minus, PackageCheck, Plus, ShoppingCart, Trash2 } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Car, CheckCircle2, Minus, PackageCheck, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { apiRequest } from '../lib/api';
 import { computeQuoteTotals } from '../lib/quoteTotals';
+import { generateQuotePdf } from '../lib/quotePdf';
+
 import { getZoneLabel } from '../lib/vehiclePricing';
 import { useAuth } from '../hooks/useAuth';
 
@@ -26,323 +28,38 @@ function customerPhone(user, client) {
     || '';
 }
 
-async function generateCartQuotePdf(combinedCart, user, client, existingReference, totals) {
-  const { jsPDF } = await import('jspdf');
-  const reference = existingReference || `04-26/UFO/LOC/${Math.floor(1000 + Math.random() * 9000).toString().padStart(3, '0')}`;
-  const doc = new jsPDF();
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const items = combinedCart.items || [];
-  const now = new Date();
-
-  // Header avec informations société (matching PDF example exactly)
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(60, 60, 60);
-  doc.text('Société à Responsabilité limitée SARL, Capital : 10 000 000 FCFA • Abidjan, Palmeraie Saint Viateur', 15, 12);
-  doc.text('25 BP 1032 Abidjan 25 • Tél : 27 22 30 11 27 / 07 18 88 88 89 / 07 18 40 40 40 / 07 06 91 91 91 / 07 69 38 66 50', 15, 17);
-  doc.text('N°RCCM : CI-ABJ-03-2022-B12-03750 • N°CC : 2242663 T • Compte Bancaire BNI : CI092 01021 000108230000 36', 15, 22);
-  doc.text('Email: infosoutarahgroup@gmail.com - info@soutarahgroup.ci • Web: www.soutarah-group.ci', 15, 27);
-
-  // Devis number and date (matching PDF layout exactly)
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0);
-  doc.text(`Devis N° ${reference}`, 15, 42);
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  const dateFormatted = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  doc.text(dateFormatted.charAt(0).toUpperCase() + dateFormatted.slice(1), 15, 48);
-
-  // Main title
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.setTextColor(0, 0, 0);
-  doc.text('LOCATION DE VEHICULE AVEC CHAUFFEUR', 15, 58);
-
-  // Client info section (in upper right, matching PDF)
-  const clientInfo = customerName(user, client) || 'UFOA';
-  const clientLocation = client?.adresse || client?.address || 'ABIDJAN';
-  const clientPhone = customerPhone(user, client) || '+225 00 00 00 00 00';
-  
-  // Client info box (top right)
-  doc.setDrawColor(0, 100, 0);
-  doc.setLineWidth(1);
-  doc.roundedRect(pageWidth - 65, 32, 50, 20, 3, 3);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(0, 100, 0);
-  doc.text(clientInfo, pageWidth - 60, 40);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.text(clientLocation, pageWidth - 60, 45);
-  doc.setFontSize(8);
-  doc.text(clientPhone, pageWidth - 60, 50);
-
-  // Table header with proper styling
-  let y = 70;
-  doc.setFillColor(128, 128, 128);
-  doc.rect(15, y - 3, pageWidth - 30, 8, 'F');
-  
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
-  doc.setTextColor(255, 255, 255);
-  doc.text('Désignation', 17, y + 2);
-  doc.text('Type de véhicule', 70, y + 2);
-  doc.text('Destination', 110, y + 2);
-  doc.text('Coût journalier', 140, y + 2);
-  doc.text('Quantité', 165, y + 2);
-  doc.text('Nbre de jours', 175, y + 2);
-  doc.text('Total', 190, y + 2);
-  
-  y += 12;
-
-  // Items section with alternating row colors like in PDF
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(0, 0, 0);
-
-  items.forEach((item, index) => {
-    if (y > 250) {
-      doc.addPage();
-      y = 24;
-    }
-
-    // Alternating row background
-    if (index % 2 === 1) {
-      doc.setFillColor(240, 240, 240);
-      doc.rect(15, y - 3, pageWidth - 30, 10, 'F');
-    }
-
-    const isVehicle = item.type === 'vehicle_rental';
-    if (isVehicle) {
-      const designation = `LOCATION DE VEHICULE\nDu ${item.startDate?.split('-').reverse().join('/')} AU ${item.endDate?.split('-').reverse().join('/')}`;
-      const vehicleType = `${item.vehicle?.name || 'Véhicule'}\n${item.withDriver ? 'Climatisé et confortable' : 'Sans chauffeur'}`;
-      const destination = item.destination || getZoneLabel(item.zoneId) || 'ABIDJAN';
-      const unitPrice = Number(item.unitPrice);
-      const quantity = '1';
-      const days = Number(item.days || 1);
-      const total = Number(item.totalPrice);
-
-      doc.text(designation, 17, y + 2);
-      doc.text(vehicleType, 70, y + 2);
-      doc.text(destination, 110, y + 2);
-      doc.text(money(unitPrice), 140, y + 2);
-      doc.text(quantity, 165, y + 2);
-      doc.text(String(days), 175, y + 2);
-      doc.text(money(total), 190, y + 2);
-    } else {
-      // Négoce products
-      const productName = item.product?.nom || item.product?.name || item.produit?.nom || 'Article SOUTARAH';
-      const quantity = Number((item.quantite ?? item.quantity) || 1);
-      const unitPrice = Number(item.prix_unitaire ?? item.unitPrice);
-      const total = Number(item.total);
-
-      doc.text(productName, 17, y + 2);
-      doc.text('Article de négoce', 70, y + 2);
-      doc.text('Négoce', 110, y + 2);
-      doc.text(money(unitPrice), 140, y + 2);
-      doc.text(String(quantity), 165, y + 2);
-      doc.text('1', 175, y + 2);
-      doc.text(money(total), 190, y + 2);
-    }
-    
-    y += 12;
+/**
+ * Génère le PDF du devis panier via le générateur officiel SOUTARAH
+ * (identique aux devis téléchargeables depuis « Mes Devis »).
+ * On passe explicitement le nom / email / téléphone / lieu du client pour que
+ * le bloc client du devis soit TOUJOURS rempli (même pour un admin ou une
+ * entreprise sans profil client détaillé).
+ */
+async function generateCartQuotePdf(combinedCart, user, client, existingReference) {
+  return generateQuotePdf({
+    quote: {
+      reference: existingReference,
+      nom: customerName(user, client),
+      email: user?.email || '',
+      telephone: customerPhone(user, client),
+      lieu: client?.adresse || client?.address || 'ABIDJAN',
+    },
+    items: combinedCart.items,
+    user,
+    client,
   });
-
-  // Totals section matching PDF exactly
-  y += 10;
-  
-  // Fonction pour estimer la consommation de carburant par type de véhicule
-  const estimerFraisCarburant = (vehicleName, days) => {
-    const name = vehicleName.toLowerCase();
-    const prixEssence = 650; // Prix moyen du litre d'essence en FCFA
-    const prixGazole = 600; // Prix moyen du litre de gazole en FCFA
-    const kmParJour = 100; // Estimation de km parcourus par jour
-    
-    let consommationPour100km = 8;
-    let typeCarburant = prixEssence;
-    
-    if (name.includes('dzire') || name.includes('vitz') || name.includes('micra') || name.includes('swift')) {
-      consommationPour100km = 6;
-    } else if (name.includes('kicks') || name.includes('vitara') || name.includes('fronx') || name.includes('duster')) {
-      consommationPour100km = 8;
-    } else if (name.includes('kadjar') || name.includes('koleos') || name.includes('rush')) {
-      consommationPour100km = 9;
-    } else if (name.includes('pajero') || name.includes('highlander') || name.includes('montero') || name.includes('fortuner')) {
-      consommationPour100km = 12;
-    } else if (name.includes('d-max') || name.includes('dmax') || name.includes('l200') || name.includes('tacoma') || name.includes('friday')) {
-      consommationPour100km = 10;
-      typeCarburant = prixGazole;
-    } else if (name.includes('land cruiser') || name.includes('cruiser')) {
-      consommationPour100km = 15;
-    } else if (name.includes('jumper') || name.includes('dokker') || name.includes('express') || name.includes('transit') || name.includes('oroch')) {
-      consommationPour100km = 9;
-      typeCarburant = prixGazole;
-    } else if (name.includes('urvan') || name.includes('hiace') || name.includes('hyundai')) {
-      consommationPour100km = 11;
-      typeCarburant = prixGazole;
-    }
-    
-    const litresConsommes = (kmParJour * days * consommationPour100km) / 100;
-    return Math.round(litresConsommes * typeCarburant);
-  };
-  
-  // Calculer les frais de carburant et péage basés sur les locations de véhicules
-  let fraisCarburant = 0;
-  let fraisPeage = 0;
-  let hasVehicles = false;
-  
-  items.forEach((item) => {
-    if (item.type === 'vehicle_rental') {
-      hasVehicles = true;
-      const days = Number(item.days || 1);
-      const vehicleName = item.vehicle?.name || '';
-      fraisCarburant += estimerFraisCarburant(vehicleName, days);
-    }
-  });
-  
-  if (hasVehicles) {
-    fraisPeage = 5500; // Frais fixe de péage
-  }
-  
-  const totalsData = [
-    ['MONTANT HT', money(totals.ht)],
-    ['TVA 18%', money(totals.tva)],
-    ['TDT 2.5%', money(totals.tdt)],
-  ];
-  
-  const totalFinal = totals.ttc;
-  totalsData.push(['MONTANT TTC', money(totalFinal)]);
-
-  totalsData.forEach(([label, value], index) => {
-    const isTotal = index === totalsData.length - 1;
-    doc.setFont('helvetica', isTotal ? 'bold' : 'normal');
-    doc.setFontSize(isTotal ? 11 : 9);
-    doc.setTextColor(0, 0, 0);
-    
-    doc.text(label, 120, y);
-    doc.text(value, 180, y);
-    y += isTotal ? 8 : 6;
-  });
-
-  // Total in words (matching PDF)
-  y += 5;
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.text(`Arrêtée la présente à la somme de : ${convertNumberToFrenchWords(totalFinal)} francs CFA`, 15, y);
-
-  // Notes section (matching PDF exactly)
-  y += 15;
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
-  doc.text('NB :', 15, y);
-  doc.setFont('helvetica', 'normal');
-  doc.text('- Le chauffeur est à votre disposition de 7h à 21h', 25, y + 5);
-
-  // Footer information (matching PDF layout)
-  y += 20;
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(12);
-  doc.text('SOUTARAH GROUP', pageWidth - 60, y);
-
-  // Footer table with conditions (matching PDF)
-  y += 15;
-  doc.setDrawColor(0, 0, 0);
-  doc.setLineWidth(0.5);
-  
-  // Table structure
-  const tableY = y;
-  doc.rect(15, tableY, 60, 15); // VALIDITE cell
-  doc.rect(75, tableY, 60, 15); // DELAI cell  
-  doc.rect(135, tableY, 60, 15); // REGLEMENT cell
-  
-  doc.rect(15, tableY + 15, 60, 15); // 02 SEMAINES cell
-  doc.rect(75, tableY + 15, 60, 15); // DISPONIBLE SAUF LOCATION cell
-  doc.rect(135, tableY + 15, 60, 15); // SELON CONTRAT cell
-
-  // Table headers
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
-  doc.text('VALIDITE', 17, tableY + 8);
-  doc.text('DELAI', 77, tableY + 8);
-  doc.text('REGLEMENT', 137, tableY + 8);
-
-  // Table content
-  doc.setFont('helvetica', 'normal');
-  doc.text('02 SEMAINES', 17, tableY + 23);
-  doc.text('DISPONIBLE SAUF LOCATION', 77, tableY + 23);
-  doc.text('SELON CONTRAT', 137, tableY + 23);
-
-  doc.save(`devis-soutarah-${reference}.pdf`);
-  return reference;
-}
-
-// Helper function to convert numbers to French words
-function convertNumberToFrenchWords(num) {
-  if (num === 0) return 'zéro';
-  
-  const units = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
-  const teens = ['dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'];
-  const tens = ['', 'dix', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante-dix', 'quatre-vingt', 'quatre-vingt-dix'];
-  
-  function convertLessThanThousand(n) {
-    if (n === 0) return '';
-    if (n < 10) return units[n];
-    if (n < 20) return teens[n - 10];
-    if (n < 100) {
-      const ten = Math.floor(n / 10);
-      const unit = n % 10;
-      if (ten === 7 || ten === 9) {
-        return tens[ten - 1] + '-' + teens[unit];
-      }
-      return tens[ten] + (unit > 0 ? '-' + units[unit] : '');
-    }
-    
-    const hundred = Math.floor(n / 100);
-    const rest = n % 100;
-    let result = hundred === 1 ? 'cent' : units[hundred] + ' cent';
-    if (hundred > 1 && rest === 0) result += 's';
-    if (rest > 0) result += ' ' + convertLessThanThousand(rest);
-    return result;
-  }
-  
-  if (num < 1000) {
-    return convertLessThanThousand(num);
-  }
-  
-  if (num < 1000000) {
-    const thousands = Math.floor(num / 1000);
-    const rest = num % 1000;
-    let result = thousands === 1 ? 'mille' : convertLessThanThousand(thousands) + ' mille';
-    if (rest > 0) result += ' ' + convertLessThanThousand(rest);
-    return result;
-  }
-  
-  const millions = Math.floor(num / 1000000);
-  const rest = num % 1000000;
-  let result = millions === 1 ? 'un million' : convertLessThanThousand(millions) + ' millions';
-  if (rest > 0) {
-    if (rest >= 1000) {
-      const thousands = Math.floor(rest / 1000);
-      const finalRest = rest % 1000;
-      result += ' ' + (thousands === 1 ? 'mille' : convertLessThanThousand(thousands) + ' mille');
-      if (finalRest > 0) result += ' ' + convertLessThanThousand(finalRest);
-    } else {
-      result += ' ' + convertLessThanThousand(rest);
-    }
-  }
-  return result;
 }
 
 export default function CartPage({ navigateTo }) {
   const { token, user, client } = useAuth();
   const [productCart, setProductCart] = useState(null);
   const [vehicleCartItems, setVehicleCartItems] = useState([]);
+  const [negoceLocalItems, setNegoceLocalItems] = useState([]);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [busyItem, setBusyItem] = useState(null);
   const [lastQuoteRef, setLastQuoteRef] = useState('');
+  const validatingRef = useRef(false);
 
   const loadVehicleCart = useCallback(() => {
     try {
@@ -355,7 +72,23 @@ export default function CartPage({ navigateTo }) {
     }
   }, [user]);
 
+  const loadNegoceCart = useCallback(() => {
+    try {
+      const userId = user?.id || user?.userId || 'guest';
+      const stored = JSON.parse(localStorage.getItem(`soutarah_negoce_cart_${userId}`) || '[]');
+      setNegoceLocalItems(Array.isArray(stored) ? stored : []);
+    } catch (e) {
+      setNegoceLocalItems([]);
+    }
+  }, [user]);
+
   const loadCart = useCallback(async () => {
+    // Invité : panier 100 % localStorage (clé « guest ») — pas d'appel API
+    // (l'endpoint /cart est protégé et renverrait une erreur 401).
+    if (!token) {
+      setProductCart(null);
+      return;
+    }
     try {
       setError('');
       const result = await apiRequest('/cart', { token });
@@ -368,15 +101,17 @@ export default function CartPage({ navigateTo }) {
   useEffect(() => {
     loadCart();
     loadVehicleCart();
+    loadNegoceCart();
 
     const handleCartUpdated = () => {
       loadCart();
       loadVehicleCart();
+      loadNegoceCart();
     };
 
     window.addEventListener('soutarah-cart-updated', handleCartUpdated);
     return () => window.removeEventListener('soutarah-cart-updated', handleCartUpdated);
-  }, [loadCart, loadVehicleCart]);
+  }, [loadCart, loadVehicleCart, loadNegoceCart]);
 
   const changeQuantity = async (item, quantity) => {
     setBusyItem(item.id);
@@ -420,86 +155,61 @@ export default function CartPage({ navigateTo }) {
     }
   };
 
+  const removeNegoceItem = (id) => {
+    try {
+      const userId = user?.id || user?.userId || 'guest';
+      const updated = negoceLocalItems.filter((item) => item.id !== id);
+      localStorage.setItem(`soutarah_negoce_cart_${userId}`, JSON.stringify(updated));
+      setNegoceLocalItems(updated);
+      setLastQuoteRef('');
+      window.dispatchEvent(new Event('soutarah-cart-updated'));
+    } catch (e) {
+      console.error('Erreur retrait produit négoce', e);
+    }
+  };
+
+  const updateNegoceQuantity = (id, newQuantity) => {
+    try {
+      const userId = user?.id || user?.userId || 'guest';
+      const updated = negoceLocalItems.map((item) => {
+        if (item.id === id) {
+          return { ...item, quantity: Math.max(1, newQuantity) };
+        }
+        return item;
+      });
+      localStorage.setItem(`soutarah_negoce_cart_${userId}`, JSON.stringify(updated));
+      setNegoceLocalItems(updated);
+      setLastQuoteRef('');
+      window.dispatchEvent(new Event('soutarah-cart-updated'));
+    } catch (e) {
+      console.error('Erreur modification qte negoce', e);
+    }
+  };
+
+
   const productItems = productCart?.items || [];
-  const productTotal = Number(productCart?.total || 0);
+  const allNegoceItems = [...productItems, ...negoceLocalItems.filter((n) => !productItems.some((p) => p.produit?.ref === n.ref || p.product?.ref === n.ref))];
+
+  // Total produits de négoce : items serveur (prix_total) + items locaux (unitPrice × quantité)
+  const numOrZero = (v) => Number(v) || 0;
+  const negoceItemTotal = (item) => {
+    const unit = numOrZero(item.prix_unitaire ?? item.unitPrice ?? item.price);
+    const qty = numOrZero(item.quantite ?? item.quantity) || 1;
+    return numOrZero(item.total ?? item.prix_total ?? item.totalPrice ?? (unit * qty));
+  };
+  const productTotal = allNegoceItems.reduce((sum, item) => sum + negoceItemTotal(item), 0);
   const vehicleTotal = vehicleCartItems.reduce((sum, item) => sum + Number(item.totalPrice || 0), 0);
   const hasVehicles = vehicleCartItems.length > 0;
   const amountHT = productTotal + vehicleTotal;
-  const quoteTotals = computeQuoteTotals(amountHT);
-  const totalItemCount = productItems.length + vehicleCartItems.length;
 
-  // Calculer les frais pour les véhicules
-  let fraisCarburant = 0;
-  const fraisPeage = hasVehicles ? 5500 : 0; // Frais fixe de péage si il y a des véhicules
-  
-  // Fonction pour estimer la consommation de carburant par type de véhicule
-  const estimerFraisCarburant = (vehicleName, days) => {
-    const name = vehicleName.toLowerCase();
-    const prixEssence = 650; // Prix moyen du litre d'essence en FCFA
-    const prixGazole = 600; // Prix moyen du litre de gazole en FCFA
-    const kmParJour = 100; // Estimation de km parcourus par jour
-    
-    // Consommation moyenne en L/100km selon le type de véhicule
-    let consommationPour100km = 8; // Par défaut
-    let typeCarburant = prixEssence;
-    
-    // Citadines et petits véhicules
-    if (name.includes('dzire') || name.includes('vitz') || name.includes('micra') || name.includes('swift')) {
-      consommationPour100km = 6;
-      typeCarburant = prixEssence;
-    }
-    // SUV légers
-    else if (name.includes('kicks') || name.includes('vitara') || name.includes('fronx') || name.includes('duster')) {
-      consommationPour100km = 8;
-      typeCarburant = prixEssence;
-    }
-    // SUV moyens
-    else if (name.includes('kadjar') || name.includes('koleos') || name.includes('rush')) {
-      consommationPour100km = 9;
-      typeCarburant = prixEssence;
-    }
-    // 4x4 et véhicules lourds
-    else if (name.includes('pajero') || name.includes('highlander') || name.includes('montero') || name.includes('fortuner')) {
-      consommationPour100km = 12;
-      typeCarburant = prixEssence;
-    }
-    // Pick-up diesel
-    else if (name.includes('d-max') || name.includes('dmax') || name.includes('l200') || name.includes('tacoma') || name.includes('friday')) {
-      consommationPour100km = 10;
-      typeCarburant = prixGazole;
-    }
-    // Land Cruiser (très gourmand)
-    else if (name.includes('land cruiser') || name.includes('cruiser')) {
-      consommationPour100km = 15;
-      typeCarburant = prixEssence;
-    }
-    // Utilitaires
-    else if (name.includes('jumper') || name.includes('dokker') || name.includes('express') || name.includes('transit') || name.includes('oroch')) {
-      consommationPour100km = 9;
-      typeCarburant = prixGazole;
-    }
-    // Minibus
-    else if (name.includes('urvan') || name.includes('hiace') || name.includes('hyundai')) {
-      consommationPour100km = 11;
-      typeCarburant = prixGazole;
-    }
-    
-    // Calcul: (km par jour * jours * consommation / 100) * prix du carburant
-    const litresConsommes = (kmParJour * days * consommationPour100km) / 100;
-    return Math.round(litresConsommes * typeCarburant);
-  };
-  
-  vehicleCartItems.forEach((item) => {
-    const days = Number(item.days || 1);
-    const vehicleName = item.vehicle?.name || item.vehicleName || '';
-    fraisCarburant += estimerFraisCarburant(vehicleName, days);
-  });
-
+  // La TDT s'applique UNIQUEMENT aux véhicules, pas aux articles négoce
+  const quoteTotals = computeQuoteTotals(amountHT, vehicleTotal);
+  const totalItemCount = allNegoceItems.length + vehicleCartItems.length;
   const totalAvecFrais = quoteTotals.ttc;
 
   const combinedCart = {
     items: [
-      ...productItems.map((pi) => ({ ...pi, type: 'product' })),
+      ...allNegoceItems.map((pi) => ({ ...pi, type: 'product' })),
       ...vehicleCartItems,
     ],
     total: quoteTotals.ttc,
@@ -508,11 +218,23 @@ export default function CartPage({ navigateTo }) {
 
   const validateCart = async () => {
     if (!totalItemCount) return;
+    // Garde anti double-clic : évite de créer 2 devis et de télécharger 2 fois.
+    if (validatingRef.current) return;
+    validatingRef.current = true;
+    try {
+
+    // La création du devis en base exige un compte : on redirige l'invité vers
+    // le login, avec retour automatique sur le panier après connexion.
+    if (!token || !user) {
+      window.sessionStorage.setItem('soutarah_return_route', JSON.stringify({ page: 'cart' }));
+      if (navigateTo) navigateTo('login');
+      return;
+    }
 
     // 1. Snapshot du panier AVANT de le vider (pour le PDF)
     const cartSnapshot = {
       items: [
-        ...productItems.map((pi) => ({ ...pi, type: 'product' })),
+        ...allNegoceItems.map((pi) => ({ ...pi, type: 'product' })),
         ...vehicleCartItems,
       ],
       total: quoteTotals.ttc,
@@ -522,18 +244,32 @@ export default function CartPage({ navigateTo }) {
     // 2. Créer la demande de devis en BDD + notifications via /quote-requests
     let serverRef = '';
     try {
-      const productLines = productItems.map((i) => `${i.product?.name || 'Article'} (x${Number(i.quantity)})`);
+      const productLines = allNegoceItems.map((i) => `${i.product?.name || i.name || 'Article'}${i.ref ? ` [${i.ref}]` : ''} (x${Number(i.quantity || 1)})`);
       const vehicleLines = vehicleCartItems.map((v) => `Location ${v.vehicleName || v.vehicle?.model || 'Véhicule'} (${v.duration || v.days || 1}j)`);
       const description = [...productLines, ...vehicleLines].join(' | ');
 
+      const hasNegoce = allNegoceItems.length > 0;
+      const hasVehicles = vehicleCartItems.length > 0;
+      let serviceLabel = 'Négoce et Location';
+      let titleLabel = 'Devis Panier SOUTARAH';
+
+      if (hasNegoce && !hasVehicles) {
+        serviceLabel = 'Fourniture de matériels et Négoce';
+        titleLabel = `Devis Fourniture et Négoce (${allNegoceItems.length} article${allNegoceItems.length > 1 ? 's' : ''})`;
+      } else if (hasVehicles && !hasNegoce) {
+        serviceLabel = 'Location de véhicules';
+        titleLabel = `Devis Location de véhicules (${vehicleCartItems.length} véhicule${vehicleCartItems.length > 1 ? 's' : ''})`;
+      }
+
       const payload = {
-        service: 'Négoce et Location',
-        title: `Devis Panier SOUTARAH`,
+        service: serviceLabel,
+        title: titleLabel,
         name: customerName(user, client),
         email: user?.email || 'client@soutarah.ci',
         phone: customerPhone(user, client) || '0700000000',
         location: client?.adresse || client?.address || 'Abidjan',
         description: description.slice(0, 3000) || 'Devis panier client',
+        items: cartSnapshot.items,
       };
 
       const result = await apiRequest('/quote-requests', {
@@ -555,27 +291,35 @@ export default function CartPage({ navigateTo }) {
       setLastQuoteRef(serverRef);
     } catch (pdfError) {
       console.error('Erreur génération PDF', pdfError);
+      setError(`Erreur lors de la génération du PDF : ${pdfError?.message || 'erreur inconnue'}. Votre commande est bien enregistrée (${serverRef}) ; vous pourrez retélécharger le devis depuis « Mes Devis ».`);
     }
 
-    // 4. Vider le panier produits côté serveur
-    try {
-      await apiRequest('/cart', { token, method: 'DELETE' });
-    } catch (e) {
-      console.error('Erreur vidage panier', e);
-    }
-
-    // 5. Vider les locations de véhicules dans le localStorage
-    const userId = user?.id || user?.userId || 'guest';
-    const cartKey = `soutarah_vehicle_cart_${userId}`;
-    localStorage.removeItem(cartKey);
-    setVehicleCartItems([]);
-
-    // 6. Recharger le panier et mettre à jour le badge
-    await loadCart();
-    window.dispatchEvent(new Event('soutarah-cart-updated'));
-    window.dispatchEvent(new Event('soutarah-notifications-updated'));
-
+    // 4. NE PAS vider le panier : les articles restent si le client revient sans payer
     setNotice(`✅ Devis ${serverRef} créé ! Consultez "Mes Devis".`);
+
+    // 7. Enregistrer la commande puis rediriger le client vers la page "Passer commande"
+    const orderData = {
+      reference: serverRef,
+      name: customerName(user, client),
+      phone: customerPhone(user, client),
+      ht: quoteTotals.ht,
+      tva: quoteTotals.tva,
+      tdt: quoteTotals.tdt,
+      carburant: quoteTotals.carburant,
+      peage: quoteTotals.peage,
+      ttc: quoteTotals.ttc,
+      itemCount: totalItemCount,
+      summaryTitle: `${productItems.length} produit(s) de négoce · ${vehicleCartItems.length} location(s) de véhicule`,
+    };
+    try {
+      window.localStorage.setItem('soutarah_last_order', JSON.stringify(orderData));
+    } catch (e) {
+      console.error('Erreur enregistrement commande', e);
+    }
+    if (navigateTo) navigateTo('commande');
+    } finally {
+      validatingRef.current = false;
+    }
   };
 
   const downloadLastQuote = async () => {
@@ -692,16 +436,50 @@ export default function CartPage({ navigateTo }) {
                 )}
 
                 {/* SECTION PRODUITS NEGOCE */}
-                {productItems.length > 0 && (
+                {(productItems.length > 0 || negoceLocalItems.length > 0) && (
                   <section className="overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-primary/10">
                     <div className="border-b border-gray-100 bg-[#f8faf7] px-6 py-4">
                       <h2 className="flex items-center gap-2 font-display text-lg font-extrabold text-[#173d23]">
                         <PackageCheck size={20} className="text-primary" />
-                        Produits de négoce ({productItems.length})
+                        Produits de négoce ({allNegoceItems.length})
                       </h2>
                     </div>
 
                     <div className="divide-y divide-gray-100">
+                      {negoceLocalItems.map((item) => (
+                          <article key={item.id} className="grid gap-4 px-5 py-5 md:grid-cols-[1fr_120px_120px] md:items-center">
+                            <div className="flex min-w-0 gap-4">
+                              <div className="h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-primary/10">
+                                {item.image ? (
+                                  <img src={item.image} alt={item.name} className="h-full w-full object-contain p-1" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                                ) : (
+                                  <div className="grid h-full place-items-center text-primary"><PackageCheck size={22} /></div>
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-xs font-bold uppercase tracking-wider text-primary">{item.category || 'Négoce'}</p>
+                                <h3 className="mt-1 truncate font-display text-lg font-extrabold">{item.name}</h3>
+                                <p className="mt-1 text-sm text-gray-500">{item.ref ? `Réf. ${item.ref} · ` : ''}{numOrZero(item.unitPrice ?? item.price) > 0 ? currency(numOrZero(item.unitPrice ?? item.price)) + ' / unité' : 'Prix sur devis'}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between gap-3 md:justify-center">
+                              <span className="text-xs font-bold uppercase tracking-wider text-gray-400 md:hidden">Quantité</span>
+                              <div className="flex items-center gap-2">
+                                <button onClick={() => updateNegoceQuantity(item.id, Math.max(1, Number(item.quantity || 1) - 1))} className="grid h-8 w-8 place-items-center rounded-full border border-gray-200 bg-white text-gray-600 transition hover:border-primary hover:text-primary"><Minus size={14} /></button>
+                                <span className="min-w-[2rem] text-center text-sm font-extrabold">{Number(item.quantity || 1)}</span>
+                                <button onClick={() => updateNegoceQuantity(item.id, Number(item.quantity || 1) + 1)} className="grid h-8 w-8 place-items-center rounded-full border border-gray-200 bg-white text-gray-600 transition hover:border-primary hover:text-primary"><Plus size={14} /></button>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between gap-4 md:block md:text-right">
+                              <p className="font-display text-lg font-extrabold text-primary">{negoceItemTotal(item) > 0 ? currency(negoceItemTotal(item)) : 'Sur devis'}</p>
+                              <button onClick={() => removeNegoceItem(item.id)} className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-red-600">
+                                <Trash2 size={14} /> Retirer
+                              </button>
+                            </div>
+                          </article>
+                        ))}
                       {productItems.map((item) => {
                         const product = item.produit || item.product;
                         const categoryName = product?.categorie?.nom || product?.category?.nom || product?.category?.name || 'Négoce';
@@ -766,9 +544,9 @@ export default function CartPage({ navigateTo }) {
                     </div>
                   )}
 
-                  {productItems.length > 0 && (
+                  {allNegoceItems.length > 0 && (
                     <div className="flex justify-between text-xs text-gray-500">
-                      <span>Produits négoce ({productItems.length})</span>
+                      <span>Produits négoce ({allNegoceItems.length})</span>
                       <span className="font-bold text-gray-800">{currency(productTotal)}</span>
                     </div>
                   )}
@@ -781,22 +559,19 @@ export default function CartPage({ navigateTo }) {
                     <span>TVA 18%</span>
                     <span className="font-bold text-gray-700">{currency(quoteTotals.tva)}</span>
                   </div>
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>TDT 2.5%</span>
-                    <span className="font-bold text-gray-700">{currency(quoteTotals.tdt)}</span>
-                  </div>
-                  
+                  {quoteTotals.tdt > 0 && (
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>TDT 2.5%</span>
+                      <span className="font-bold text-gray-700">{currency(quoteTotals.tdt)}</span>
+                    </div>
+                  )}
+
                 </div>
 
                 <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-4">
                   <span className="text-base font-extrabold text-[#173d23]">Montant TTC</span>
                   <span className="text-xl font-extrabold text-primary">{currency(totalAvecFrais)}</span>
                 </div>
-                {hasVehicles && (
-                  <p className="mt-2 text-[10px] text-gray-500 italic">
-                    * Frais de carburant, péage et infraction à la charge du client
-                  </p>
-                )}
                 <button onClick={validateCart} className="mt-6 w-full rounded-full bg-primary px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-primary/20 transition hover:bg-[#1b4c00]">
                   Valider
                 </button>

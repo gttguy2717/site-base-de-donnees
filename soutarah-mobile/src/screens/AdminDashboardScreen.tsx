@@ -103,6 +103,8 @@ interface QuoteItem {
   cree_le?: string;
   date?: string;
   fichier_devis_url?: string | null;
+  lu_le?: string | null;
+  mode_paiement?: string | null;
   client?: {
     id?: string;
     prenom?: string;
@@ -237,7 +239,7 @@ const SECTION_TITLES: Record<AdminSection, string> = {
 };
 
 // ─── Main Component ───────────────────────────────────────────────────────
-export default function AdminDashboardScreen() {
+export default function AdminDashboardScreen({ navigation }: { navigation?: any }) {
   const insets = useSafeAreaInsets();
   const { user, logout, refreshProfile } = useAuth();
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
@@ -258,7 +260,7 @@ export default function AdminDashboardScreen() {
   // UI / Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [clientFilter, setClientFilter] = useState<'ALL' | 'PARTICULIER' | 'ENTREPRISE'>('ALL');
-  const [quoteFilter, setQuoteFilter] = useState<'ALL' | 'PENDING' | 'SENT'>('ALL');
+  const [quoteFilter, setQuoteFilter] = useState<'ALL' | 'UNREAD' | 'READ'>('ALL');
   const [resTabFilter, setResTabFilter] = useState<ReservationFilterTab>('ALL');
   const [resViewMode, setResViewMode] = useState<'CALENDAR' | 'LIST'>('CALENDAR');
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date>(new Date());
@@ -305,7 +307,7 @@ export default function AdminDashboardScreen() {
   });
   const [companyForm, setCompanyForm] = useState({
     name: 'SOUTARAH GROUP',
-    address: 'Abidjan, Riviera-Palmeraie SIPIM 4',
+    address: 'Riviera Palmeraie Saint Viateur, Cité Kimi',
     phone: '+225 07 18 38 38 38',
     email: 'contact@soutarah.com',
     website: 'www.soutarah.com',
@@ -506,6 +508,17 @@ export default function AdminDashboardScreen() {
     }
   };
 
+  // Marquer un devis comme lu (indicateur « lu / non lu » comme sur le site)
+  const handleMarkQuoteAsRead = async (quote: QuoteItem) => {
+    try {
+      const now = new Date().toISOString();
+      await api.put(`/admin/quotes/${quote.id}/read`, {});
+      setQuotes(prev => prev.map(q => (q.id === quote.id ? { ...q, lu_le: now } : q)));
+    } catch {
+      Alert.alert('Erreur', "Impossible de marquer le devis comme lu.");
+    }
+  };
+
   const handleOpenSignedDoc = (docUrl?: string | null) => {
     const fullUrl = getFullDocumentUrl(docUrl);
     if (!fullUrl) {
@@ -694,10 +707,8 @@ export default function AdminDashboardScreen() {
 
   // ─── Filtered Data ──────────────────────────────────────────────────────
   const unreadNotifCount = useMemo(() => notifications.filter(n => !n.est_lu).length, [notifications]);
-  const pendingQuotesCount = useMemo(
-    () => quotes.filter(q => ['PENDING', 'ISSUED', 'CONTACTED'].includes((q.statut || '').toUpperCase())).length,
-    [quotes]
-  );
+  // Devis non lus : l'indicateur « lu / non lu » est basé sur la colonne lu_le (comme le site)
+  const unreadQuotesCount = useMemo(() => quotes.filter(q => !Boolean(q.lu_le)).length, [quotes]);
   const pendingResCount = useMemo(
     () => reservations.filter(r => (r.statut || '').toUpperCase() === 'PENDING').length,
     [reservations]
@@ -744,8 +755,8 @@ export default function AdminDashboardScreen() {
 
       const matchesFilter =
         quoteFilter === 'ALL' ||
-        (quoteFilter === 'PENDING' && isPending) ||
-        (quoteFilter === 'SENT' && isSent);
+        (quoteFilter === 'UNREAD' && !Boolean(item.lu_le)) ||
+        (quoteFilter === 'READ' && Boolean(item.lu_le));
 
       return matchesSearch && matchesFilter;
     });
@@ -843,7 +854,7 @@ export default function AdminDashboardScreen() {
   // ─── Render: Sidebar ────────────────────────────────────────────────────
   const renderSidebar = () => {
     const getBadgeCount = (badgeKey?: 'quotes' | 'notifications' | 'reservations') => {
-      if (badgeKey === 'quotes') return pendingQuotesCount;
+      if (badgeKey === 'quotes') return unreadQuotesCount;
       if (badgeKey === 'notifications') return unreadNotifCount;
       if (badgeKey === 'reservations') return pendingResCount;
       return 0;
@@ -906,6 +917,25 @@ export default function AdminDashboardScreen() {
               </TouchableOpacity>
             );
           })}
+
+          <Text style={styles.sidebarSectionHeader}>OUTILS</Text>
+          <TouchableOpacity
+            style={styles.sidebarItem}
+            onPress={() => {
+              setSidebarOpen(false);
+              try {
+                navigation?.navigate?.('Assistant');
+              } catch {
+                // route indisponible
+              }
+            }}
+            activeOpacity={0.75}
+          >
+            <View style={styles.sidebarIconWrap}>
+              <Ionicons name="chatbubble" size={19} color="#86efac" />
+            </View>
+            <Text style={styles.sidebarItemText}>Assistant IA</Text>
+          </TouchableOpacity>
         </ScrollView>
 
         <View style={styles.sidebarDivider} />
@@ -1060,7 +1090,7 @@ export default function AdminDashboardScreen() {
       {
         title: 'Demandes de devis',
         value: String(quotes.length || stats?.devis?.total || 0),
-        sub: `${pendingQuotesCount} en attente`,
+        sub: `${unreadQuotesCount} non lu(s)`,
         icon: 'document-text' as const,
         color: '#d97706',
         bg: '#fef3c7',
@@ -1701,8 +1731,8 @@ export default function AdminDashboardScreen() {
       <View style={styles.filterPillsRow}>
         {[
           { id: 'ALL' as const, label: `Tous (${quotes.length})` },
-          { id: 'PENDING' as const, label: `En attente (${pendingQuotesCount})` },
-          { id: 'SENT' as const, label: `Envoyé (${quotes.length - pendingQuotesCount})` },
+          { id: 'UNREAD' as const, label: `Non lus (${unreadQuotesCount})` },
+          { id: 'READ' as const, label: `Lus (${quotes.length - unreadQuotesCount})` },
         ].map(f => (
           <TouchableOpacity
             key={f.id}
@@ -1735,20 +1765,27 @@ export default function AdminDashboardScreen() {
                     {q.client ? `${q.client.prenom || ''} ${q.client.nom || ''}`.trim() : q.nom || 'Client'}
                   </Text>
                 </View>
-                <View
-                  style={[
-                    styles.badgePill,
-                    { backgroundColor: isSent ? '#dcfce7' : '#fef3c7' },
-                  ]}
-                >
-                  <Text
+                <View style={styles.dataCardHeaderRight}>
+                  {!Boolean(q.lu_le) && (
+                    <View style={[styles.badgePill, { backgroundColor: '#fee2e2' }]}>
+                      <Text style={[styles.badgePillText, { color: '#b91c1c' }]}>Non lu</Text>
+                    </View>
+                  )}
+                  <View
                     style={[
-                      styles.badgePillText,
-                      { color: isSent ? '#15803d' : '#b45309' },
+                      styles.badgePill,
+                      { backgroundColor: isSent ? '#dcfce7' : '#fef3c7' },
                     ]}
                   >
-                    {isSent ? 'Envoyé' : 'En attente'}
-                  </Text>
+                    <Text
+                      style={[
+                        styles.badgePillText,
+                        { color: isSent ? '#15803d' : '#b45309' },
+                      ]}
+                    >
+                      {isSent ? 'Envoyé' : 'En attente'}
+                    </Text>
+                  </View>
                 </View>
               </View>
 
@@ -1789,8 +1826,26 @@ export default function AdminDashboardScreen() {
                 </View>
               </View>
 
-              {/* Action Buttons: Upload Devis Signé & Envoyer */}
+              {/* Action Buttons: Marquer lu + Upload Devis Signé & Envoyer */}
               <View style={styles.dataCardFooter}>
+                {Boolean(q.lu_le) ? (
+                  <TouchableOpacity
+                    style={[styles.actionBtnSecondary, { borderColor: '#cbd5e1', backgroundColor: '#f1f5f9' }]}
+                    disabled
+                  >
+                    <Ionicons name="checkmark-done-outline" size={16} color="#64748b" />
+                    <Text style={{ color: '#64748b', fontWeight: '700', fontSize: 12 }}>Déjà lu</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={[styles.actionBtnSecondary, { borderColor: '#fca5a5', backgroundColor: '#fee2e2' }]}
+                    onPress={() => handleMarkQuoteAsRead(q)}
+                  >
+                    <Ionicons name="mail-unread-outline" size={16} color="#b91c1c" />
+                    <Text style={{ color: '#b91c1c', fontWeight: '700', fontSize: 12 }}>Marquer comme lu</Text>
+                  </TouchableOpacity>
+                )}
+
                 <TouchableOpacity
                   style={[
                     styles.actionBtnPrimary,
@@ -2455,6 +2510,21 @@ export default function AdminDashboardScreen() {
           <View style={styles.sidebarContainer}>{renderSidebar()}</View>
         </View>
       )}
+
+      {/* Floating AI Assistant Button */}
+      <TouchableOpacity
+        style={styles.aiAssistantFab}
+        onPress={() => {
+          try {
+            navigation?.navigate?.('Assistant');
+          } catch {
+            // route indisponible
+          }
+        }}
+        activeOpacity={0.85}
+      >
+        <Ionicons name="chatbubble" size={26} color="#ffffff" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -3081,6 +3151,11 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 8,
   },
+  dataCardHeaderRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   avatarPill: {
     width: 38,
     height: 38,
@@ -3651,5 +3726,22 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: '800',
     fontSize: 14,
+  },
+  aiAssistantFab: {
+    position: 'absolute',
+    right: 18,
+    bottom: 18,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    zIndex: 50,
   },
 });

@@ -8,7 +8,7 @@ const { authenticate } = require('../middlewares/authenticate.cjs');
 const router = Router();
 const upload = multer({ dest: 'uploads/' });
 
-router.post('/register', [
+router.post('/register', upload.array('documents', 8), [
   body('customerType').isString().trim(),
   body('email').isEmail().withMessage('Un email valide est requis.').normalizeEmail(),
   body('phone').isString().trim().isLength({ min: 8, max: 32 }).withMessage('Un numéro de téléphone valide est requis.'),

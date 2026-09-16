@@ -73,9 +73,9 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
   const categories = [
     { id: 'SUV', label: 'SUVs & 4x4', icon: 'car-sport' as const, bg: '#dcfce7', color: '#15803d' },
-    { id: 'Berline', label: 'Berlines', icon: 'car' as const, bg: '#e0f2fe', color: '#0284c7' },
-    { id: 'Pick-up', label: 'Pick-ups BTP', icon: 'construct' as const, bg: '#fef3c7', color: '#d97706' },
-    { id: 'Minibus', label: 'Minibus', icon: 'bus' as const, bg: '#ede9fe', color: '#7c3aed' },
+    { id: 'Économiques', label: 'Économiques', icon: 'car' as const, bg: '#e0f2fe', color: '#0284c7' },
+    { id: 'Luxe', label: 'Berlines & Luxe', icon: 'business' as const, bg: '#fef3c7', color: '#d97706' },
+    { id: 'Minibus', label: 'Minibus & Autocar', icon: 'bus' as const, bg: '#ede9fe', color: '#7c3aed' },
   ];
 
   return (

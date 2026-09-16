@@ -6,7 +6,11 @@ import DevisModal from '../components/DevisModal';
 import FadeInSection from '../components/FadeInSection';
 import { SERVICES_DATA } from '../data/servicesData';
 
+import { useAuth } from '../hooks/useAuth';
+import { openDevisByAuth } from '../lib/quoteGate';
+
 export default function ServicesPage({ navigateTo, onRequestQuote }) {
+  const { user } = useAuth();
   const [isDevisOpen, setIsDevisOpen] = useState(false);
 
   useEffect(() => {
@@ -35,7 +39,7 @@ export default function ServicesPage({ navigateTo, onRequestQuote }) {
   return (
     <div className="min-h-screen bg-[#f9f9f9] text-[#1a1c1c] flex flex-col font-sans selection:bg-primary selection:text-white">
       <Navbar
-        onOpenDevis={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))}
+        onOpenDevis={() => openDevisByAuth({ user, navigateTo, onAuthed: () => setIsDevisOpen(true) })}
         activeTab="services"
         navigateTo={navigateTo}
       />
@@ -75,7 +79,7 @@ export default function ServicesPage({ navigateTo, onRequestQuote }) {
                     <span className="material-symbols-outlined text-base">arrow_downward</span>
                   </button>
                   <button
-                    onClick={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))}
+                    onClick={() => openDevisByAuth({ user, navigateTo, onAuthed: () => setIsDevisOpen(true) })}
                     className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[#1b4d2e]/25 bg-white/70 px-6 py-3 text-sm font-bold text-[#1b4d2e] transition-colors hover:bg-white"
                   >
                     Parler de mon projet
@@ -207,7 +211,7 @@ export default function ServicesPage({ navigateTo, onRequestQuote }) {
           </div>
         </FadeInSection>
 
-        <CtaBanner onOpenDevis={() => (onRequestQuote || ((openModal) => openModal()))(() => setIsDevisOpen(true))} />
+        <CtaBanner onOpenDevis={() => openDevisByAuth({ user, navigateTo, onAuthed: () => setIsDevisOpen(true) })} />
       </main>
 
       <Footer onNavClick={handleFooterNavigation} />

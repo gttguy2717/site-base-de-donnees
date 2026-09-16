@@ -4,12 +4,13 @@
     "slug": "soutarah-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo-soutarah.png",
     "userInterfaceStyle": "light",
+    "backgroundColor": "#0d3b1e",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/logo-soutarah.png",
       "resizeMode": "contain",
-      "backgroundColor": "#143e22"
+      "backgroundColor": "#0d3b1e"
     },
     "ios": {
       "supportsTablet": true,
@@ -18,10 +19,9 @@
     "android": {
       "package": "ci.soutarahgroup.mobile",
       "adaptiveIcon": {
-        "backgroundColor": "#143e22",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#0d3b1e",
+        "foregroundImage": "./assets/logo-soutarah.png",
+        "monochromeImage": "./assets/logo-soutarah.png"
       },
       "predictiveBackGestureEnabled": false
     },
@@ -30,7 +30,9 @@
     },
     "plugins": [
       "@react-native-community/datetimepicker",
-      "expo-font"
+      "expo-font",
+      "expo-sharing",
+      "expo-status-bar"
     ]
   }
 }

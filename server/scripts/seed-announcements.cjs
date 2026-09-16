@@ -27,7 +27,7 @@ const DEFAULT_ANNOUNCEMENTS = [
   },
   {
     id: null,
-    text: 'Abidjan, Riviera-Palmeraie SIPIM 4 — +225 07 18 38 38 38',
+    text: 'Riviera Palmeraie Saint Viateur, Cité Kimi — +225 07 18 38 38 38',
     color: '#173d23',
     fontStyle: 'font-bold',
     textSize: 'text-[11px]',

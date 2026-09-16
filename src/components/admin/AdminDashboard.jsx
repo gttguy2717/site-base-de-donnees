@@ -5,16 +5,26 @@ export default function AdminDashboard({ onNavigate }) {
   const { token } = useAuth();
   const [stats, setStats] = useState({
     clients: { total: 0, nouveau: 0 },
-    devis: { total: 0, enAttente: 0 },
+    devis: { total: 0, enAttente: 0, nonLus: 0 },
     reservations: { total: 0, enCours: 0 },
   });
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState('7');
+  const [salesData, setSalesData] = useState([]);
+  const [salesTotals, setSalesTotals] = useState({ ventes: 0, reservations: 0, devis: 0, ca: 0 });
+  const [salesLoading, setSalesLoading] = useState(true);
 
   useEffect(() => {
     loadDashboardData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Recharger le graphe quand la période change
+  useEffect(() => {
+    loadSalesEvolution();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [period]);
 
   const loadDashboardData = async () => {
     try {
@@ -30,7 +40,7 @@ export default function AdminDashboard({ onNavigate }) {
         // S'assurer que la structure est complète
         setStats({
           clients: data.stats?.clients || { total: 0, nouveau: 0 },
-          devis: data.stats?.devis || { total: 0, enAttente: 0 },
+          devis: data.stats?.devis || { total: 0, enAttente: 0, nonLus: 0 },
           reservations: data.stats?.reservations || { total: 0, enCours: 0 },
         });
       }
@@ -60,6 +70,33 @@ export default function AdminDashboard({ onNavigate }) {
       setLoading(false);
     }
   };
+
+  // Charger l'évolution réelle des ventes (réservations confirmées + devis convertis)
+  const loadSalesEvolution = async () => {
+    try {
+      setSalesLoading(true);
+      const response = await fetch(`/api/admin/dashboard/sales-evolution?period=${period}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSalesData(Array.isArray(data.buckets) ? data.buckets : []);
+        setSalesTotals(data.total || { ventes: 0, reservations: 0, devis: 0, ca: 0 });
+      } else {
+        setSalesData([]);
+        setSalesTotals({ ventes: 0, reservations: 0, devis: 0, ca: 0 });
+      }
+    } catch (error) {
+      console.error('Erreur chargement évolution des ventes:', error);
+      setSalesData([]);
+      setSalesTotals({ ventes: 0, reservations: 0, devis: 0, ca: 0 });
+    } finally {
+      setSalesLoading(false);
+    }
+  };
+
+  const formatFCFA = (value) => `${new Intl.NumberFormat('fr-FR').format(Math.round(Number(value) || 0))} FCFA`;
 
   const formatTimeAgo = (dateString) => {
     const now = new Date();
@@ -109,6 +146,8 @@ export default function AdminDashboard({ onNavigate }) {
       'NEW_ORDER': 'quotes',
       'NEW_CLIENT': 'clients',
       'QUOTE_APPROVED': 'quotes',
+      'CART_VALIDATED': 'quotes',
+      'CART_ITEM_ADDED_PRODUCT': 'catalog',
     };
     return tabs[type] || 'dashboard';
   };
@@ -150,10 +189,9 @@ export default function AdminDashboard({ onNavigate }) {
               <p className="text-sm font-semibold text-gray-600 uppercase tracking-wider">Devis</p>
               <p className="mt-3 font-display text-4xl font-extrabold text-gray-900">{stats.devis.total}</p>
               <div className="mt-3 flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold bg-orange-100 text-orange-800">
-                  {stats.devis.enAttente}
+                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold bg-amber-100 text-amber-800">
+                  {stats.devis.nonLus} non lu{stats.devis.nonLus > 1 ? 's' : ''}
                 </span>
-                <span className="text-xs text-gray-500">en attente</span>
               </div>
             </div>
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100">
@@ -240,8 +278,8 @@ export default function AdminDashboard({ onNavigate }) {
                 onClick={() => onNavigate && onNavigate('quotes')}
                 className="w-full rounded-xl bg-white p-3 text-sm text-left hover:bg-orange-100 transition-colors cursor-pointer"
               >
-                <p className="font-bold text-orange-900">{stats.devis.enAttente} devis</p>
-                <p className="text-xs text-orange-700 mt-1">En attente de traitement</p>
+                <p className="font-bold text-orange-900">{stats.devis.nonLus} devis</p>
+                <p className="text-xs text-orange-700 mt-1">Non lus - à consulter</p>
               </button>
               <button
                 onClick={() => onNavigate && onNavigate('reservations')}
@@ -283,30 +321,70 @@ export default function AdminDashboard({ onNavigate }) {
         </div>
       </div>
 
-      {/* Graphique de ventes */}
+      {/* Graphique de ventes (données réelles) */}
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="mb-5 flex items-center justify-between">
-          <h3 className="font-display text-xl font-extrabold text-gray-900">Évolution des ventes</h3>
-          <select className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700">
-            <option>7 derniers jours</option>
-            <option>30 derniers jours</option>
-            <option>3 derniers mois</option>
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 className="font-display text-xl font-extrabold text-gray-900">Évolution des ventes</h3>
+            <p className="mt-0.5 text-sm text-gray-500">
+              {`${salesTotals.ventes} vente${salesTotals.ventes > 1 ? 's' : ''} sur la période${salesTotals.ca > 0 ? ` · CA : ${formatFCFA(salesTotals.ca)}` : ''}`}
+            </p>
+          </div>
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700"
+          >
+            <option value="7">7 derniers jours</option>
+            <option value="30">30 derniers jours</option>
+            <option value="90">3 derniers mois</option>
           </select>
         </div>
-        <div className="flex h-64 items-end justify-around gap-2 border-b border-gray-200 pb-4">
-          {[45, 78, 52, 89, 67, 95, 72].map((height, index) => (
-            <div key={index} className="flex-1 flex flex-col items-center gap-2">
-              <div
-                className="w-full rounded-t-lg bg-primary hover:bg-[#1b4c00] transition-colors cursor-pointer"
-                style={{ height: `${height}%` }}
-                title={`${height}% de l'objectif`}
-              />
-              <span className="text-xs font-semibold text-gray-500">
-                {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'][index]}
-              </span>
-            </div>
-          ))}
-        </div>
+
+        {salesLoading ? (
+          <div className="flex h-64 items-center justify-center text-sm font-semibold text-gray-400">
+            <span className="material-symbols-outlined mr-2 animate-spin">progress_activity</span>
+            Chargement des données…
+          </div>
+        ) : Math.max(...salesData.map((b) => b.ventes), 0) === 0 ? (
+          <div className="flex h-64 flex-col items-center justify-center gap-2 text-sm font-semibold text-gray-400">
+            <span className="material-symbols-outlined text-4xl text-gray-300">bar_chart</span>
+            Aucune vente enregistrée sur cette période.
+          </div>
+        ) : (
+          <div className="flex h-64 items-end justify-around gap-2 border-b border-gray-200 pb-4">
+            {salesData.map((bucket, index) => {
+              const maxVentes = Math.max(...salesData.map((b) => b.ventes), 1);
+              const heightPercent = bucket.ventes > 0
+                ? Math.max((bucket.ventes / maxVentes) * 72, 3)
+                : 0;
+              const tooltipParts = [
+                `${bucket.ventes} vente${bucket.ventes > 1 ? 's' : ''}`,
+                bucket.reservations > 0 ? `${bucket.reservations} réservation${bucket.reservations > 1 ? 's' : ''} confirmée${bucket.reservations > 1 ? 's' : ''}` : null,
+                bucket.devis > 0 ? `${bucket.devis} devis converti${bucket.devis > 1 ? 's' : ''}` : null,
+                bucket.ca > 0 ? `CA : ${formatFCFA(bucket.ca)}` : null,
+              ].filter(Boolean);
+
+              return (
+                <div
+                  key={index}
+                  className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2"
+                >
+                  {bucket.ventes > 0 && (
+                    <span className="text-[10px] font-bold text-gray-600">{bucket.ventes}</span>
+                  )}
+                  <div
+                    className={`w-full rounded-t-lg transition-colors ${bucket.ventes > 0 ? 'cursor-pointer bg-primary hover:bg-[#1b4c00]' : 'bg-gray-100'}`}
+                    style={{ height: `${heightPercent}%` }}
+                    title={tooltipParts.join(' · ')}
+                  />
+                  <span className="text-xs font-semibold text-gray-500">{bucket.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         <div className="mt-4 flex items-center justify-center gap-6 text-sm">
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-full bg-primary" />

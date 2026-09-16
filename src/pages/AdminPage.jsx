@@ -8,9 +8,8 @@ import AdminQuotes from '../components/admin/AdminQuotes';
 import AdminProductRequests from '../components/admin/AdminProductRequests';
 import AdminNotifications from '../components/admin/AdminNotifications';
 import AdminAnnouncements from '../components/admin/AdminPromotions';
-import AdminSettings from '../components/admin/AdminSettings';
 import AdminReports from '../components/admin/AdminReports';
-import AdminCompanyPricing from '../components/admin/AdminCompanyPricing';
+import AdminSettings from '../components/admin/AdminSettings';
 import NotificationToast from '../components/admin/NotificationToast';
 
 export default function AdminPage({ navigateTo }) {
@@ -105,7 +104,7 @@ export default function AdminPage({ navigateTo }) {
     }
   }, [unreadNotifications.length]);
 
-  // Charger le nombre de devis en attente
+  // Charger le nombre de devis non lus
   useEffect(() => {
     const fetchPendingQuotes = async () => {
       try {
@@ -114,11 +113,11 @@ export default function AdminPage({ navigateTo }) {
         });
         if (response.ok) {
           const data = await response.json();
-          const pending = (data.quotes || []).filter(q => ['PENDING', 'ISSUED', 'CONTACTED'].includes(q.statut)).length;
-          setPendingQuotesCount(pending);
+          const unread = (data.quotes || []).filter(q => !q.lu_le).length;
+          setPendingQuotesCount(unread);
         }
       } catch (error) {
-        console.error('Erreur chargement devis en attente:', error);
+        console.error('Erreur chargement devis non lus:', error);
       }
     };
 
@@ -309,12 +308,10 @@ export default function AdminPage({ navigateTo }) {
     { id: 'dashboard', icon: 'dashboard', label: 'Tableau de bord', badge: null },
     { id: 'clients', icon: 'group', label: 'Clients', badge: null },
     { id: 'catalog', icon: 'inventory_2', label: 'Catalogue', badge: null },
-    { id: 'company-pricing', icon: 'price_change', label: 'Prix entreprises', badge: null },
     { id: 'quotes', icon: 'description', label: 'Devis', badge: pendingQuotesCount },
     { id: 'reservations', icon: 'event', label: 'Réservations', badge: null },
     { id: 'promotions', icon: 'campaign', label: 'Annonces', badge: null },
     { id: 'reports', icon: 'assessment', label: 'Rapports', badge: null },
-    { id: 'settings', icon: 'settings', label: 'Paramètres', badge: null },
   ];
 
   const renderContent = () => {
@@ -325,8 +322,6 @@ export default function AdminPage({ navigateTo }) {
         return <AdminClients />;
       case 'catalog':
         return <AdminCatalog />;
-      case 'company-pricing':
-        return <AdminCompanyPricing />;
       case 'reservations':
         return <AdminReservations />;
       case 'quotes':
@@ -336,11 +331,11 @@ export default function AdminPage({ navigateTo }) {
       case 'promotions':
         return <AdminAnnouncements />;
       case 'notifications':
-        return <AdminNotifications />;
-      case 'settings':
-        return <AdminSettings navigateTo={navigateTo} />;
+        return <AdminNotifications onNavigate={setActiveTab} />;
       case 'reports':
         return <AdminReports />;
+      case 'settings':
+        return <AdminSettings navigateTo={navigateTo} />;
       default:
         return <AdminDashboard />;
     }
@@ -541,7 +536,7 @@ export default function AdminPage({ navigateTo }) {
                 {/* Dropdown Menu - SIMPLIFIÉ */}
                 {showUserMenu && (
                   <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
-                    {/* Profil */}
+                    {/* Profil / Paramètres */}
                     <button
                       onClick={() => {
                         setActiveTab('settings');
