@@ -31,6 +31,8 @@ __pycache__/
 .expo/
 _build*.txt
 # Dossiers locaux volumineux / artefacts (ancre a la racine)
+/public/img/Web_Plan*.png
+/dist/img/Web_Plan*.png
 /mobile/
 /tmp/
 /out/
