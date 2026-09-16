@@ -31,12 +31,15 @@ def on_white(img, size):
 logo = Image.open(LOGO_SRC).convert('RGBA')
 
 # 1) Favicon ICO (16/32/48) + PNG basse resolution (fond blanc)
+# Regle Google Search : image carree dont la taille est un multiple de 48px
 ico_sizes = [16, 32, 48]
 logo_rgbs = [on_white(logo, s) for s in ico_sizes]
 logo_rgbs[0].save('public/favicon.ico', sizes=[(s, s) for s in ico_sizes])
 on_white(logo, 32).save('public/favicon-32x32.png')
 on_white(logo, 16).save('public/favicon-16x16.png')
-print('favicon.ico + 32/16 png OK')
+on_white(logo, 48).save('public/favicon-48x48.png')   # taille requise par Google Search
+on_white(logo, 96).save('public/favicon-96x96.png')   # multiple de 48 (haute densite)
+print('favicon.ico + 16/32/48/96 png OK')
 
 # 2) Apple touch icon 180x180 (fond blanc)
 on_white(logo, 180).save('public/apple-touch-icon.png')
