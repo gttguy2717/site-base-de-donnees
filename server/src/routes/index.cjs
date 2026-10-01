@@ -11,7 +11,7 @@ const vehicleRequestRouter = require('./vehicle-request.routes.cjs');
 const reservationRouter = require('./reservation.routes.cjs');
 const aiAssistantRouter = require('./ai-assistant.routes.cjs');
 const paymentRouter = require('./payment.routes.cjs');
-const { authenticate } = require('../middlewares/authenticate.cjs');
+const { authenticate, authorize } = require('../middlewares/authenticate.cjs');
 
 const { Setting } = require('../models/index.cjs');
 
@@ -50,7 +50,10 @@ apiRouter.use('/reservations', reservationRouter);
 apiRouter.use('/notifications', notificationRouter);
 apiRouter.use('/ai-assistant', aiAssistantRouter);
 apiRouter.use('/payments', paymentRouter);
-apiRouter.use('/admin', authenticate, adminRouter); // Routes admin protégées
+// Routes admin : authentification + contrôle du rôle (ADMIN / MANAGER uniquement).
+// Sans ce contrôle, n'importe quel client inscrit pourrait modifier le catalogue,
+// les annonces de la page d'accueil ou lire les données des autres clients.
+apiRouter.use('/admin', authenticate, authorize('ADMIN', 'MANAGER'), adminRouter);
 apiRouter.use('/', catalogRouter);
 
 module.exports = apiRouter;

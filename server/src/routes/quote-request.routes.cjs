@@ -2,11 +2,14 @@ const { Router } = require('express');
 const { body } = require('express-validator');
 const { authenticate, optionalAuthenticate, authenticateWithTokenQuery } = require('../middlewares/authenticate.cjs');
 const validateRequest = require('../middlewares/validate-request.cjs');
-const { createQuoteRequest, getMyQuoteRequests, deleteQuoteRequest, confirmQuoteRequest, downloadQuotePdf } = require('../controllers/quote-request.controller.cjs');
+const { createQuoteRequest, getMyQuoteRequests, deleteQuoteRequest, confirmQuoteRequest, downloadQuotePdf, findQuoteByReference } = require('../controllers/quote-request.controller.cjs');
 
 const router = Router();
 
 router.get('/my', authenticate, getMyQuoteRequests);
+
+// Recherche d'un devis par référence (PDF téléchargé) pour reprendre « Passer commande »
+router.get('/lookup', authenticate, findQuoteByReference);
 
 router.post('/confirm', optionalAuthenticate, [
   body('reference').isString().trim().isLength({ min: 3, max: 60 }),

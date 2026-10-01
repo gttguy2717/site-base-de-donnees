@@ -1,0 +1,222 @@
+[
+  {
+    "idx": 399,
+    "style": "Heading 1",
+    "text": "PARTIE III"
+  },
+  {
+    "idx": 400,
+    "style": "Heading 1",
+    "text": "ÉTUDE TECHNIQUE"
+  },
+  {
+    "idx": 418,
+    "style": "Heading 3",
+    "text": "I. ANALYSE ET JUSTIFICATION DES CHOIX TECHNOLOGIQUES"
+  },
+  {
+    "idx": 419,
+    "style": "Normal",
+    "text": "Le choix des technologies et des outils représente une étape déterminante dans la mise en œuvre d’un projet. Afin de garantir la pertinence et l’efficacité des décisions prises, une analyse approfondie des solutions disponibles sur le marché a été réalisée, en tenant compte des spécificités du projet, de nos compétences et des objectifs à long terme. Cette démarche s’est appuyée sur plusieurs critères de sélection essentiels : performance et scalabilité, coût et conditions de licence, sécurité, flexibilité d’intégration, ainsi que la qualité de la documentation et l’accessibilité du support technique. Ces éléments ont permis d’orienter les choix technologiques vers des solutions à la fois robustes, adaptées et pérennes."
+  },
+  {
+    "idx": 421,
+    "style": "Heading 4",
+    "text": "Environnement de développement (IDE)"
+  },
+  {
+    "idx": 424,
+    "style": "Normal",
+    "text": "Visual Studio Code a été sélectionné pour sa légèreté, son support natif de l'écosystème JavaScript/TypeScript, ses extensions pour React, React Native et MySQL, ainsi que son terminal intégré."
+  },
+  {
+    "idx": 428,
+    "style": "Heading 4",
+    "text": "Maquette"
+  },
+  {
+    "idx": 432,
+    "style": "Normal",
+    "text": "Figma est un outil de conception d'interface (UI/UX) en ligne, utilisé pour créer des maquettes interactives et collaboratives. Accessible depuis un simple navigateur, il permet aux équipes de concevoir et partager des prototypes visuellement clairs. Dans le cadre d’un projet web, il facilite la visualisation de l’interface avant le développement "
+  },
+  {
+    "idx": 435,
+    "style": "Heading 4",
+    "text": "3. Technologies Frontend Web"
+  },
+  {
+    "idx": 438,
+    "style": "Normal",
+    "text": "Pour la plateforme web, le framework React.js couplé à CSS a été choisi. Son architecture basée sur le DOM virtuel et les composants réutilisables permet d'offrir une interface réactive et modulaire, facilitant la navigation fluide entre le catalogue, le panier interactif et le tableau de bord administrateur."
+  },
+  {
+    "idx": 441,
+    "style": "Heading 4",
+    "text": "4. Technologies Mobile"
+  },
+  {
+    "idx": 443,
+    "style": "Normal",
+    "text": "Pour le volet mobile, React Native associé à l'écosystème Expo a été retenu. Cette technologie offre un code unique en TypeScript/JavaScript compilé nativement pour Android et iOS, garantissant des performances élevées, un accès aisé aux fonctionnalités matérielles (système de fichiers, partage PDF) et une réduction substantielle des coûts de développement."
+  },
+  {
+    "idx": 445,
+    "style": "Heading 4",
+    "text": "5. Technologies Backend et API"
+  },
+  {
+    "idx": 447,
+    "style": "Normal",
+    "text": "Le serveur applicatif repose sur Node.js et le framework Express.js. Ce choix permet de conserver le même langage (JavaScript/TypeScript) sur toute la chaîne logicielle. L'architecture REST sans état (Stateless) basée sur des échanges JSON et sécurisée par des jetons JWT garantit une parfaite scalabilité et alimente indifféremment l'application Web et l’application Mobile."
+  },
+  {
+    "idx": 449,
+    "style": "Heading 4",
+    "text": "6. Technologies de notifications et messagerie"
+  },
+  {
+    "idx": 450,
+    "style": "Normal",
+    "text": "Pour assurer l'envoi des notifications et des messages électroniques, Brevo a été retenu. Il permet d'automatiser l'envoi d'e-mails liés aux différentes actions de la plateforme, notamment les confirmations de réservation, notifications de commande et messages destinés aux clients."
+  },
+  {
+    "idx": 451,
+    "style": "Normal",
+    "text": "Son intégration via API permet de centraliser et d'automatiser les      communications avec les utilisateurs, tout en facilitant son utilisation avec les applications web et mobiles."
+  },
+  {
+    "idx": 453,
+    "style": "Heading 4",
+    "text": "7. Technologies de déploiement"
+  },
+  {
+    "idx": 455,
+    "style": "Normal",
+    "text": "Pour assurer la mise en ligne de la plateforme, Hostinger a été retenu."
+  },
+  {
+    "idx": 456,
+    "style": "Normal",
+    "text": "Le choix de Hostinger s'explique notamment par sa facilité de déploiement, son coût accessible et sa compatibilité avec les technologies utilisées dans le projet."
+  },
+  {
+    "idx": 459,
+    "style": "Heading 3",
+    "text": "II. SYSTÈME DE GESTION DE BASE DE DONNÉES (SGBD) "
+  },
+  {
+    "idx": 460,
+    "style": "Normal",
+    "text": "Le choix du système de gestion de base de données (SGBD) constitue une étape importante dans la conception et le déploiement d'une application. Il doit notamment répondre aux besoins du système en matière de performance, sécurité, fiabilité, évolutivité et facilité de maintenance. Dans le cadre du projet de SOUTARAH GROUP, plusieurs solutions ont été "
+  },
+  {
+    "idx": 461,
+    "style": "Normal",
+    "text": "étudiées, notamment MySQL, PostgreSQL, SQL Server, Oracle et MongoDB. L'analyse a porté sur leur modèle de données, leurs performances, leur coût, leur facilité d'intégration."
+  },
+  {
+    "idx": 463,
+    "style": "Heading 4",
+    "text": "Comparaison des principaux SGBD"
+  },
+  {
+    "idx": 466,
+    "style": "Heading 4",
+    "text": "2. Choix du SGBD "
+  },
+  {
+    "idx": 467,
+    "style": "Normal",
+    "text": "Après comparaison des différentes solutions, MySQL a été retenu comme système de gestion de base de données pour notre projet."
+  },
+  {
+    "idx": 468,
+    "style": "Normal",
+    "text": "Ce choix s'explique tout d'abord par la nature des données manipulées par la plateforme. L'application doit gérer plusieurs informations structurées telles que les clients, les véhicules, les réservations, les produits, les commandes, les devis. "
+  },
+  {
+    "idx": 469,
+    "style": "Normal",
+    "text": "Un autre élément déterminant dans ce choix concerne l'environnement de développement. L'offre d'hébergement acheté par SOUTARAH GROUP ne prend en charge que MySQL. Le choix de ce SGBD permet ainsi d'assurer une meilleure compatibilité entre l'application développée et l'infrastructure d'hébergement."
+  },
+  {
+    "idx": 470,
+    "style": "Normal",
+    "text": "Enfin, MySQL dispose d'un écosystème largement utilisé dans le développement web et s'intègre facilement aux différentes technologies utilisées dans le projet. Il constitue ainsi une solution fiable, performante, accessible et adaptée."
+  },
+  {
+    "idx": 473,
+    "style": "Heading 3",
+    "text": "III. ARCHITECTURE GÉNÉRALE DU SYSTÈME"
+  },
+  {
+    "idx": 474,
+    "style": "Normal",
+    "text": "Notre solution repose sur une architecture distribuée en trois niveaux (3-tiers) :"
+  },
+  {
+    "idx": 475,
+    "style": "Normal",
+    "text": "Niveau Présentation (Clients) : Les utilisateurs interagissent avec le système via deux canaux complémentaires :"
+  },
+  {
+    "idx": 476,
+    "style": "Normal",
+    "text": "Une application mobile (React Native / Expo) dédiée spécifiquement aux clients pour consulter la flotte des véhicules et effectuer des réservations en ligne ;"
+  },
+  {
+    "idx": 477,
+    "style": "Normal",
+    "text": "Une plateforme web (React / Vite) permettant la gestion globale des services, la demande de devis et le suivi administratif (Back-Office)."
+  },
+  {
+    "idx": 478,
+    "style": "Normal",
+    "text": "Niveau Réseau (Internet) : Assure la liaison sécurisée entre les clients et le serveur à travers le protocole HTTPS et des requêtes API REST échangeant des données au format JSON."
+  },
+  {
+    "idx": 479,
+    "style": "Normal",
+    "text": "Niveau Métier et Données (Serveur & BDD) : Un serveur d'application Node.js / Express gère la logique métier (vérification automatique de disponibilité anti-double réservation, calcul des devis, sécurité JWT) et communique avec une base de données MySQL pour la persistance des données."
+  },
+  {
+    "idx": 481,
+    "style": "Normal",
+    "text": "Figure 18 : Schéma de l’architecture générale du système \n"
+  },
+  {
+    "idx": 491,
+    "style": "Heading 1",
+    "text": "PARTIE IV"
+  },
+  {
+    "idx": 492,
+    "style": "Heading 1",
+    "text": "RÉALISATION ET MISE EN ŒUVRE"
+  },
+  {
+    "idx": 509,
+    "style": "Heading 3",
+    "text": "I. MISE EN PLACE DE LA BASE DE DONNÉES MySQL"
+  },
+  {
+    "idx": 510,
+    "style": "Normal",
+    "text": "La base de données MySQL a été conçue pour garantir la cohérence des flux transactionnels. Elle regroupe les tables principales suivantes :\n• Utilisateurs & Clients : gestion des identifiants (email, mot de passe hashé, rôle 'CLIENT' ou 'ADMIN') et liaisons vers les profils particuliers ou entreprises ;\n• Véhicules : marque, modèle, catégorie, tarif journalier, statut, photographies ;\n• Réservations : dates de début et de fin, option avec/sans chauffeur, montant total, statut ;\n• Services & Produits : catalogue général des 6 pôles avec caractéristiques techniques et tarifs ;\n• Devis : référence unique (ex: DMD-2026-XXXX), date de création, montant HT/TTC ;\n• Notifications : alertes émises à destination des clients et administrateurs."
+  },
+  {
+    "idx": 512,
+    "style": "Normal",
+    "text": "Figure 19 : Structure et schéma relationnel de la base de données MySQL"
+  },
+  {
+    "idx": 514,
+    "style": "Normal",
+    "text": "II. IMPLÉMENTATION DE L’ASSISTANT IA ET DU SERVICE DES NOTIFICATIONS TRANSACTIONNELLES (BREVO / SMTP)"
+  },
+  {
+    "idx": 515,
+    "style": "Normal",
+    "text": "Pour moderniser la relation client et fluidifier la communication opérationnelle de SOUTARAH GROUP, nous avons enrichi la plateforme de deux modules : un agent conversationnel intelligent et un service d’e-mails transactionnels automatisés."
+  }
+]

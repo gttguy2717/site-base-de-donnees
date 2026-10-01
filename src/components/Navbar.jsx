@@ -3,6 +3,7 @@ import SoutarahLogo from './SoutarahLogo';
 import { SERVICES_DATA } from '../data/servicesData';
 import { useAuth } from '../hooks/useAuth';
 import { apiRequest } from '../lib/api';
+import { isNavbarHidden, resetBarMode, subscribe } from '../lib/stickyBarMode';
 
 function AccountButton({ icon, label, onClick, badge }) {
   return (
@@ -181,19 +182,23 @@ export default function Navbar({ onOpenDevis, activeTab = 'home', setActiveTab, 
       } else {
         setIsScrolled(false);
       }
-      // Bascule navbar / barre sticky (pages négoce & location) :
-      // - swipe vers le bas (descente)  → navbar masquée (la barre recherche+onglets prend le relais)
-      // - swipe vers le haut (remontée) → navbar réaffichée (la barre sticky se masque)
-      // Seuil de 3px pour éviter le frémissement sur les micro-scrolls.
-      if (y > 160 && y > lastScrollY + 3) {
-        setNavbarHidden(true);
-      } else if (y < lastScrollY - 3 || y <= 120) {
-        setNavbarHidden(false);
-      }
       lastScrollY = y;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // La navbar se masque quand les onglets de catégorie ont pris le relais
+  // (pages négoce & location). Elle ne revient plus tout seule au scroll :
+  // c'est le bouton « Menu » de la barre, qui décide de l'affichage.
+  useEffect(() => {
+    // Chaque page monte son propre Navbar : sans cette remise à zéro, arriver
+    // d'une page négoce/location (barre épinglée, navbar masquée) affiche
+    // une page sans navbar.
+    resetBarMode();
+    const apply = () => setNavbarHidden(isNavbarHidden());
+    apply();
+    return subscribe(apply);
   }, []);
 
   // Prévenir les autres composants (ex. la barre de recherche du catalogue) que la navbar est masquée.

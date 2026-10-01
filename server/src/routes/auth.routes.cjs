@@ -1,12 +1,11 @@
 const { Router } = require('express');
 const { body } = require('express-validator');
-const multer = require('multer');
 const { register, login, me, updateProfile, uploadAvatar } = require('../controllers/auth.controller.cjs');
 const validateRequest = require('../middlewares/validate-request.cjs');
 const { authenticate } = require('../middlewares/authenticate.cjs');
+const { upload } = require('../middlewares/upload.cjs');
 
 const router = Router();
-const upload = multer({ dest: 'uploads/' });
 
 router.post('/register', upload.array('documents', 8), [
   body('customerType').isString().trim(),

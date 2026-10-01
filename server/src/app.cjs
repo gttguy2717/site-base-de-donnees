@@ -11,6 +11,17 @@ const repairJson = require('./middlewares/repair-json.cjs');
 
 const app = express();
 
+// ── Redirection canonique : www.soutarahgroup.com -> soutarahgroup.com ──
+// Le certificat couvre déjà les deux noms, mais un seul doit servir les pages
+// (contenu dupliqué pour Google, et une adresse unique pour l'utilisateur).
+app.use((req, res, next) => {
+  const hote = (req.headers.host || '').split(':')[0].toLowerCase();
+  const officiel = environment.canonicalHost.toLowerCase();
+  if (hote !== `www.${officiel}`) return next();
+  const protocole = req.headers['x-forwarded-proto'] || 'https';
+  return res.redirect(301, `${protocole}://${officiel}${req.originalUrl}`);
+});
+
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));

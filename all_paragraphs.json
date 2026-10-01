@@ -1,0 +1,2372 @@
+[
+  {
+    "idx": 1,
+    "style": "Normal",
+    "text": "DÉDICACE"
+  },
+  {
+    "idx": 2,
+    "style": "Normal",
+    "text": "Je dédie ce modeste travail à toute ma famille ainsi qu’à tous ceux qui m’ont soutenu de près et de loin tout au long de mon cursus académique.\n\nDédicaces toutes particulières à :\n\n•  Mon père, Monsieur SORHO YETIENA, pour son encadrement bienveillant, sa sagesse et ses précieux conseils ;\n•  Ma mère, Madame SORHO SANABA, pour son amour inconditionnel, ses prières constantes et son soutien indéfectible ;\n•  Ma sœur, SORHO ESLIE, pour ses encouragements permanents et son dynamisme réconfortant.\n\nÀ tous ceux qui ont contribué à faire de moi la personne que je suis aujourd'hui, trouvez ici l’expression de ma profonde gratitude."
+  },
+  {
+    "idx": 5,
+    "style": "Heading 1",
+    "text": "REMERCIEMENTS"
+  },
+  {
+    "idx": 6,
+    "style": "Normal",
+    "text": "Je tiens à adresser mes sincères remerciements à Monsieur Kologo Harouna, Directeur de Soutarah Group, ainsi qu’à mon maître de stage, pour leur accueil, leur accompagnement, leurs conseils et leur disponibilité tout au long de mon stage. Aussi, ce rapport a lieu grâce à l’implication de plusieurs personnes, ainsi je tiens à adresser mes remerciements à : \n\n• Mes parents, Monsieur Yetiena SORHO et Madame Sanaba COULIBALY, pour tous les sacrifices consentis, leur accompagnement financier et moral inestimable depuis le premier jour de mes études ;\n•  La République de Côte d'Ivoire, pour l'ensemble des infrastructures universitaires et le cadre d’excellence offert à la jeunesse estudiantine ;\n• L'Institut National Polytechnique Félix Houphouët-Boigny (INP-HB) de Yamoussoukro, pour m'avoir ouvert ses portes et m'avoir prodigué une formation technique d'élite ;\n• Dr Moussa DIABY Abdoul Kader, Directeur Général de l’INP-HB, pour son leadership inspirant et son engagement constant pour le rayonnement de l'institut ;\n• Dr Adama OUATTARA, Directeur de l’École Supérieure d’Industrie (ESI), pour les réformes et la rigueur insufflées au sein de notre école ;\n• Monsieur Siriky KONE, Sous-Directeur des Études à l'ESI, pour son écoute attentive, sa disponibilité et ses conseils avisés ;\n•  Monsieur Louagbeu Loua KPO, Directeur de l’Unité Pédagogique Sciences et Technologies de l’Information et de la Communication (STIC), pour la qualité exceptionnelle du programme de formation et son encadrement stratégique ;\n• Tout le corps professoral et administratif de l’ESI et du département STIC pour leur dévouement et leur transmission passionnée du savoir ;\n• La Direction Générale et à l’ensemble du personnel de l’entreprise SOUTARAH GROUP, pour leur accueil chaleureux, leur accompagnement technique au quotidien et la confiance accordée lors de ce stage d'immersion professionnelle.\n"
+  },
+  {
+    "idx": 7,
+    "style": "Normal",
+    "text": "\nAVANT-PROPOS"
+  },
+  {
+    "idx": 8,
+    "style": "Normal",
+    "text": "L’Institut National Polytechnique Félix HOUPHOUËT-BOIGNY (INP-HB) de Yamoussoukro a été créé par le décret n° 96-678 du 4 septembre 1996, modifié par le décret n° 2016-747 du 27 septembre 2016. L’INP-HB résulte de la fusion de quatre grandes écoles, que sont :  "
+  },
+  {
+    "idx": 9,
+    "style": "List Paragraph",
+    "text": "INSET : Institut National Supérieur de l’Enseignement Technique ; "
+  },
+  {
+    "idx": 10,
+    "style": "List Paragraph",
+    "text": "ENSTP : Ecole Nationale Supérieure des Travaux Publics ;"
+  },
+  {
+    "idx": 11,
+    "style": "List Paragraph",
+    "text": "ENSA : Ecole Nationale Supérieure d’Agronomie ;"
+  },
+  {
+    "idx": 12,
+    "style": "List Paragraph",
+    "text": "IAB : Institut Agricole de Bouaké. "
+  },
+  {
+    "idx": 13,
+    "style": "Normal",
+    "text": "À présent, l’INP-HB compte onze (11) grandes écoles responsables de la formation qualifiante des étudiants. On note, entre autres :"
+  },
+  {
+    "idx": 14,
+    "style": "List Paragraph",
+    "text": "ESI : Ecole Supérieure d’Industrie ;"
+  },
+  {
+    "idx": 15,
+    "style": "List Paragraph",
+    "text": "ESMG : Ecole Supérieure des Mines et Géologie ;"
+  },
+  {
+    "idx": 16,
+    "style": "List Paragraph",
+    "text": "ESA : Ecole Supérieure d’Agronomie ;"
+  },
+  {
+    "idx": 17,
+    "style": "List Paragraph",
+    "text": "ESCAE : Ecole Supérieure de Commerce et d’Administration des Entreprises ;"
+  },
+  {
+    "idx": 18,
+    "style": "List Paragraph",
+    "text": "ESTP : Ecole Supérieure des Travaux Publics ;"
+  },
+  {
+    "idx": 19,
+    "style": "List Paragraph",
+    "text": "EFSPC : Ecole des Formations Spécialisées et du Perfectionnement des Cadres ;"
+  },
+  {
+    "idx": 20,
+    "style": "List Paragraph",
+    "text": "EDPSAPT : Ecole Doctorale Science Agronomique et Procédés de Transformation ;"
+  },
+  {
+    "idx": 21,
+    "style": "List Paragraph",
+    "text": "ESCPE : Ecole Supérieure de Chimie Pétrole et de l’Energie ;"
+  },
+  {
+    "idx": 22,
+    "style": "List Paragraph",
+    "text": "EPGE : Ecole Préparatoires aux Grandes Ecoles ;"
+  },
+  {
+    "idx": 23,
+    "style": "List Paragraph",
+    "text": "EDPSTI : Ecole Doctorale des Sciences et Techniques de l’Ingénieur ;"
+  },
+  {
+    "idx": 24,
+    "style": "List Paragraph",
+    "text": "ESAS : Ecole Supérieure de l’Aéronautique et du Spatiale. "
+  },
+  {
+    "idx": 25,
+    "style": "Normal",
+    "text": "L’INP-HB est un label de réforme qui, dans le cadre du perfectionnement des étudiants, propose des formations visant à former des techniciens supérieurs, des ingénieurs en techniques et des ingénieurs de conception dans les domaines de l’industrie, de l’aéronautique, du commerce, de l’administration, du génie civil, des travaux publics, de l’agronomie, des mines et de la géologie. En outre, l’INP-HB est également impliqué dans des activités de recherche pour contribuer à l’avancement des connaissances et des technologies dans ces domaines. "
+  },
+  {
+    "idx": 26,
+    "style": "Normal",
+    "text": "Dans le cadre de ce perfectionnement, la direction de l’ESI a mis en place une réforme en 2016 visant à amener ses étudiants à effectuer des stages d’immersion en première année, des stages d’application en deuxième année et des stages professionnels de fin d’études en troisième année dans le but que ceux-ci appliquent leurs connaissances acquises durant leurs parcours académiques. "
+  },
+  {
+    "idx": 27,
+    "style": "Normal",
+    "text": "Ainsi, j’ai pu effectuer mon stage au sein de l’entreprise Soutarah Group. Ce stage de 2 mois s’est déroulé du 03 Aout 2026 au 03 Octobre 2026. Ce présent rapport relate les activités que nous avons menées durant cette période."
+  },
+  {
+    "idx": 29,
+    "style": "Heading 1",
+    "text": "\nSOMMAIRE"
+  },
+  {
+    "idx": 30,
+    "style": "Normal",
+    "text": "DÉDICACE\t - 1 -"
+  },
+  {
+    "idx": 31,
+    "style": "Normal",
+    "text": "REMERCIEMENTS\t - 2 -"
+  },
+  {
+    "idx": 32,
+    "style": "Normal",
+    "text": "AVANT-PROPOS\t - 3 -"
+  },
+  {
+    "idx": 33,
+    "style": "Normal",
+    "text": "SOMMAIRE\t - 5 -"
+  },
+  {
+    "idx": 34,
+    "style": "Normal",
+    "text": "LISTE DES FIGURES\t - 6 -"
+  },
+  {
+    "idx": 35,
+    "style": "Normal",
+    "text": "LISTE DES TABLEAUX\t - 7 -"
+  },
+  {
+    "idx": 36,
+    "style": "Normal",
+    "text": "LISTE DES ABRÉVIATIONS\t - 8 -"
+  },
+  {
+    "idx": 37,
+    "style": "Normal",
+    "text": "RÉSUMÉ\t - 9 -"
+  },
+  {
+    "idx": 38,
+    "style": "Normal",
+    "text": "INTRODUCTION GÉNÉRALE\t - 10 -"
+  },
+  {
+    "idx": 39,
+    "style": "Normal",
+    "text": "PARTIE I : CADRE ET CONTEXTE DU PROJET\t - 11 -"
+  },
+  {
+    "idx": 40,
+    "style": "Normal",
+    "text": "    Chapitre 1 : Présentation de la structure d’accueil\t - 12 -"
+  },
+  {
+    "idx": 41,
+    "style": "Normal",
+    "text": "    Chapitre 2 : Présentation et planification du projet\t - 15 -"
+  },
+  {
+    "idx": 42,
+    "style": "Normal",
+    "text": "PARTIE II : ÉTUDE CONCEPTUELLE\t - 19 -"
+  },
+  {
+    "idx": 43,
+    "style": "Normal",
+    "text": "    Chapitre 3 : Choix de la méthode d’analyse\t - 20 -"
+  },
+  {
+    "idx": 44,
+    "style": "Normal",
+    "text": "PARTIE III : ÉTUDE TECHNIQUE\t - 37 -"
+  },
+  {
+    "idx": 45,
+    "style": "Normal",
+    "text": "    Chapitre 4 : Conception du système et choix technologiques\t - 38 -"
+  },
+  {
+    "idx": 46,
+    "style": "Normal",
+    "text": "PARTIE IV : RÉALISATION ET MISE EN ŒUVRE\t - 44 -"
+  },
+  {
+    "idx": 47,
+    "style": "Normal",
+    "text": "    Chapitre 5 : Réalisation de la plateforme web et de l'application mobile\t - 45 -"
+  },
+  {
+    "idx": 48,
+    "style": "Normal",
+    "text": "    Chapitre 6 : Mise en œuvre\t - 54 -"
+  },
+  {
+    "idx": 49,
+    "style": "Normal",
+    "text": "CONCLUSION GÉNÉRALE\t - 57 -"
+  },
+  {
+    "idx": 50,
+    "style": "Normal",
+    "text": "BIBLIOGRAPHIE \t - 58 -"
+  },
+  {
+    "idx": 51,
+    "style": "Normal",
+    "text": "WEBOGRAPHIE\t - 59 -"
+  },
+  {
+    "idx": 52,
+    "style": "Normal",
+    "text": "TABLE DES MATIÈRES\t - 60 -"
+  },
+  {
+    "idx": 54,
+    "style": "Heading 1",
+    "text": "\nLISTE DES FIGURES"
+  },
+  {
+    "idx": 55,
+    "style": "Normal",
+    "text": "Figure 1 : Diagramme de GANTT\t - 18 -"
+  },
+  {
+    "idx": 56,
+    "style": "Normal",
+    "text": "Figure 2 : Diagramme global des cas d’utilisation (Web & Mobile)\t - 23 -"
+  },
+  {
+    "idx": 57,
+    "style": "Normal",
+    "text": "Figure 3 : Diagramme d’activité de création et gestion d’un compte client\t - 27 -"
+  },
+  {
+    "idx": 58,
+    "style": "Normal",
+    "text": "Figure 4 : Diagramme d’activité de réservation d’un véhicule\t - 29 -"
+  },
+  {
+    "idx": 59,
+    "style": "Normal",
+    "text": "Figure 5 : Diagramme d’activité d'achat d’un produit\t - 31 -"
+  },
+  {
+    "idx": 60,
+    "style": "Normal",
+    "text": "Figure 6 : Diagramme de séquence de paiement en ligne sécurisé\t - 32 -"
+  },
+  {
+    "idx": 61,
+    "style": "Normal",
+    "text": "Figure 7 : Diagramme de séquence de réservation d'un véhicule\t - 33 -"
+  },
+  {
+    "idx": 62,
+    "style": "Normal",
+    "text": "Figure 8 : Diagramme de séquence d'achat produit\t - 34 -"
+  },
+  {
+    "idx": 63,
+    "style": "Normal",
+    "text": "Figure 9 : Diagramme de séquence d'inscription d'un utilisateur\t - 35 -"
+  },
+  {
+    "idx": 64,
+    "style": "Normal",
+    "text": "Figure 10 : Diagramme des classes du système\t - 36 -"
+  },
+  {
+    "idx": 65,
+    "style": "Normal",
+    "text": "Figure 11 : Logo de l’éditeur de code Visual Studio Code\t - 38 -"
+  },
+  {
+    "idx": 66,
+    "style": "Normal",
+    "text": "Figure 12 : Logo de l’outil de maquettage Figma\t - 39 -"
+  },
+  {
+    "idx": 67,
+    "style": "Normal",
+    "text": "Figure 13 : Logo du Framework Frontend React.js\t - 39 -"
+  },
+  {
+    "idx": 68,
+    "style": "Normal",
+    "text": "Figure 14 : Logo du Framework Mobile React Native & Expo\t - 39 -"
+  },
+  {
+    "idx": 69,
+    "style": "Normal",
+    "text": "Figure 15 : Logo de la technologie serveur Node.js & Express\t - 40 -"
+  },
+  {
+    "idx": 70,
+    "style": "Normal",
+    "text": "Figure 16 : Logo de la plateforme transactionnelle Brevo\t - 40 -"
+  },
+  {
+    "idx": 71,
+    "style": "Normal",
+    "text": "Figure 17 : Logo de la plateforme transactionnelle Genius Pay\t - 40 -"
+  },
+  {
+    "idx": 72,
+    "style": "Normal",
+    "text": "Figure 18 : Logo de la plateforme d'hébergement Hostinger\t - 41 -"
+  },
+  {
+    "idx": 73,
+    "style": "Normal",
+    "text": "Figure 19 : Schéma de l'architecture générale du système\t - 43 -"
+  },
+  {
+    "idx": 74,
+    "style": "Normal",
+    "text": "Figure 20 : Structure et schéma relationnel de la base de données MySQL\t - 45 -"
+  },
+  {
+    "idx": 75,
+    "style": "Normal",
+    "text": "Figure 21 : Interface Web : Page d'accueil\t - 48 -"
+  },
+  {
+    "idx": 76,
+    "style": "Normal",
+    "text": "Figure 22 : Interface Web : Page connexion et formulaire d'authentification\t - 48 -"
+  },
+  {
+    "idx": 77,
+    "style": "Normal",
+    "text": "Figure 23 : Interface Web : Catalogue des produits\t - 49 -"
+  },
+  {
+    "idx": 78,
+    "style": "Normal",
+    "text": "Figure 24 : Interface Web : Module de réservation de véhicule\t - 49 -"
+  },
+  {
+    "idx": 79,
+    "style": "Normal",
+    "text": "Figure 25 : Interface Web : Panier multi-articles et devis PDF\t - 50 -"
+  },
+  {
+    "idx": 80,
+    "style": "Normal",
+    "text": "Figure 26 : Interface Web : Espace client et historique des demandes\t - 50 -"
+  },
+  {
+    "idx": 81,
+    "style": "Normal",
+    "text": "Figure 27 : Application Mobile : Écran d'accueil et fiche détaillée du véhicule\t - 51 -"
+  },
+  {
+    "idx": 82,
+    "style": "Normal",
+    "text": "Figure 28 : Application Mobile : Panier de réservation mobile\t - 52 -"
+  },
+  {
+    "idx": 83,
+    "style": "Normal",
+    "text": "Figure 29 : Interface d’administration : Tableau de bord\t - 52 -"
+  },
+  {
+    "idx": 84,
+    "style": "Normal",
+    "text": "Figure 30 : Interface d’administration : Gestion du parc de véhicules et des réservations\t - 53 -"
+  },
+  {
+    "idx": 86,
+    "style": "Heading 1",
+    "text": "\nLISTE DES TABLEAUX"
+  },
+  {
+    "idx": 87,
+    "style": "Normal",
+    "text": "Tableau 1 : Planning prévisionnel et chronogramme des tâches\t - 17 -"
+  },
+  {
+    "idx": 88,
+    "style": "Normal",
+    "text": "Tableau 2 : Etude comparative entre la méthode MERISE et PU/UML\t - 21 -"
+  },
+  {
+    "idx": 89,
+    "style": "Normal",
+    "text": "Tableau 3 : Analyse comparative des systèmes de gestion de bases de données\t - 41 -"
+  },
+  {
+    "idx": 90,
+    "style": "Normal",
+    "text": "Tableau 4 : Cahier de recettes et validation des tests fonctionnels (Web & Mobile)\t - 54 -"
+  },
+  {
+    "idx": 91,
+    "style": "Normal",
+    "text": "Tableau 5 : Bilan financier estimatif des coûts d’infrastructure et de maintenance annuelle\t - 55 -"
+  },
+  {
+    "idx": 93,
+    "style": "Heading 1",
+    "text": "\nLISTE DES ABRÉVIATIONS"
+  },
+  {
+    "idx": 96,
+    "style": "Heading 1",
+    "text": "RÉSUMÉ"
+  },
+  {
+    "idx": 97,
+    "style": "Normal",
+    "text": "Ce projet d'application porte sur la conception et le développement d’une plateforme numérique globale de gestion des services de l’entreprise SOUTARAH GROUP intégrant une application mobile dédiée à la réservation et au suivi de véhicules. Face à une gestion jusqu'alors manuelle des devis, et à l’absence de centralisation de la relation client, l’objectif a été de mettre en place un écosystème numérique unifié.\n\nLa méthodologie adoptée repose sur le Processus Unifié associé au langage UML (PU/UML) pour la modélisation rigoureuse des besoins et des traitements. La solution logicielle s'appuie sur une architecture client-serveur moderne en trois tiers : une interface web responsive conçue en React.js et CSS pour l'ensemble des activités multisectorielles de l'entreprise (location de véhicules, négoce, services techniques, énergies renouvelables, agropastorale, immobilier) ; une application mobile native développée sous React Native et Expo spécialisée dans la réservation de véhicules en temps réel ; et un backend centralisé sous Node.js/Express couplé à une base de données MySQL gérée par l'ORM Sequelize.\n\nLes résultats obtenus concrétisent une synchronisation instantanée entre le web et le mobile : génération automatique de devis pro-forma officiels au format PDF sur 2 pages, panier multi-articles synchronisé, notifications par courrier électronique (Brevo) et tableau de bord d'administration complet. Cette solution garantit à SOUTARAH GROUP une rentabilité accrue, une réactivité commerciale optimale et une traçabilité totale des opérations.\n\n"
+  },
+  {
+    "idx": 103,
+    "style": "Heading 1",
+    "text": "INTRODUCTION GÉNÉRALE"
+  },
+  {
+    "idx": 104,
+    "style": "Normal",
+    "text": "Le secteur des prestations de services est un moteur essentiel de l'économie ivoirienne, contribuant fortement au PIB et à l'emploi, avec des activités variées allant du transport au négoce international, en passant par le génie technique et l'énergie. Cependant, ces entreprises font face à des défis organisationnels : gestion papier, lenteur dans la formulation des devis, manque de traçabilité client. Dans ce contexte, l'intégration des TIC devient un impératif stratégique de compétitivité. C'est dans cette optique que s'inscrit le projet mené au sein de SOUTARAH GROUP."
+  },
+  {
+    "idx": 105,
+    "style": "Normal",
+    "text": "Le projet a pour thème : « Conception et développement d’une plateforme numérique de gestion des services de SOUTARAH GROUP intégrant une application mobile dédiée à la réservation de véhicules ».\nLe projet s'articule autour de deux composantes complémentaires : une plateforme web et une application mobile. La plateforme web centralise les six pôles d'activités de l'entreprise (location de véhicules, négoce/import-export, services techniques BTP, énergies renouvelables, agropastorale et immobilier), ainsi que la gestion du catalogue, l'édition de devis pro-forma et le back-office d'administration. L'application mobile, quant à elle, répond aux besoins spécifiques de mobilité des clients, en offrant la consultation du parc automobile, la vérification de disponibilité et la réservation directe."
+  },
+  {
+    "idx": 106,
+    "style": "Normal",
+    "text": "Le présent rapport rend compte de l'ensemble de la démarche d'ingénierie logicielle suivie et s'articule autour de quatre grandes parties :\n•  La Première Partie expose le cadre et le contexte du projet, présentant la structure d’accueil SOUTARAH GROUP, l'analyse de l'existant, les objectifs visés, le cahier des charges ainsi que la planification des tâches ;\n• La Deuxième Partie est dédiée à l’étude conceptuelle, détaillant la démarche méthodologique PU/UML et les différents diagrammes de conception (cas d'utilisation, activité, séquence et classes) ;\n•  La Troisième Partie développe l’étude technique, justifiant les choix technologiques (React, React Native, Node.js, MySQL) et explicitant l'architecture logicielle globale ;\n•  La Quatrième Partie décrit la mise en œuvre pratique de la plateforme web et de l'application mobile, détaillant les fonctionnalités développées, les tests de validation, les résultats obtenus et l'analyse financière du projet."
+  },
+  {
+    "idx": 113,
+    "style": "Heading 1",
+    "text": "PARTIE I"
+  },
+  {
+    "idx": 114,
+    "style": "Heading 1",
+    "text": "CADRE ET CONTEXTE DU PROJET"
+  },
+  {
+    "idx": 131,
+    "style": "Heading 3",
+    "text": "I. PRÉSENTATION DE SOUTARAH GROUP"
+  },
+  {
+    "idx": 132,
+    "style": "Heading 4",
+    "text": "1. Présentation générale"
+  },
+  {
+    "idx": 133,
+    "style": "Normal",
+    "text": "SOUTARAH GROUP est une entreprise polyvalente proposant une gamme diversifiée de services destinés aussi bien aux professionnels qu'aux particuliers. Grâce à son expertise multisectorielle, l'entreprise met à la disposition de sa clientèle des solutions intégrées et adaptées à différents besoins, tout en veillant à maintenir un niveau de qualité uniforme auprès d'un même prestataire."
+  },
+  {
+    "idx": 134,
+    "style": "Normal",
+    "text": "Les activités de SOUTARAH GROUP couvrent plusieurs domaines, notamment des services liés à la location de véhicules, au négoce et à l’import-export ainsi qu’à l’accompagnement et à la réalisation de projets. Cette diversité constitue l'une des principales forces de SOUTARAH GROUP. Elle lui permet d'accompagner ses clients dans différents projets et de leur proposer des solutions correspondant à leurs besoins spécifiques."
+  },
+  {
+    "idx": 135,
+    "style": "Normal",
+    "text": "Dans un environnement marqué par l'évolution constante des besoins des clients et le développement des technologies numériques, SOUTARAH GROUP ambitionne de révolutionner le domaine de la prestation de services. L'entreprise souhaite ainsi renforcer son positionnement grâce à son expertise multisectorielle, son innovation constante et son engagement envers la satisfaction de sa clientèle."
+  },
+  {
+    "idx": 137,
+    "style": "Heading 4",
+    "text": "2. Mission, Vision et Valeurs"
+  },
+  {
+    "idx": 138,
+    "style": "Normal",
+    "text": "❖ Mission "
+  },
+  {
+    "idx": 139,
+    "style": "Normal",
+    "text": "La mission de SOUTARAH GROUP est de réinventer des services de qualité, fiables et adaptés. Cette mission traduit la volonté de l'entreprise de proposer à ses clients des solutions adaptées à leurs besoins, tout en recherchant constamment l'amélioration de la qualité et de la fiabilité de ses prestations.\n\n❖ Vision "
+  },
+  {
+    "idx": 140,
+    "style": "Normal",
+    "text": "La vision de SOUTARAH GROUP est d’être le partenaire privilégié de nos clients avec des solutions innovantes, une réactivité exceptionnelle et des services de qualité.\n\n❖ Valeurs (S.A.P.E) \n  Les valeurs de SOUTARAH GROUP sont regroupées autour de l'acronyme S.A.P.E :"
+  },
+  {
+    "idx": 141,
+    "style": "Normal",
+    "text": "S — Solution pérenne et innovante\nL'entreprise privilégie la mise en œuvre de solutions durables et innovantes permettant de répondre efficacement aux besoins de ses clients."
+  },
+  {
+    "idx": 142,
+    "style": "Normal",
+    "text": "A — Adaptabilité\nSOUTARAH GROUP s'adapte aux différents besoins de ses clients ainsi qu'aux évolutions de son environnement professionnel."
+  },
+  {
+    "idx": 143,
+    "style": "Normal",
+    "text": "P — Priorité client\nLa satisfaction du client constitue un élément essentiel dans la conception et la réalisation des prestations proposées3. Domaines d'activités"
+  },
+  {
+    "idx": 144,
+    "style": "Normal",
+    "text": "E — Efficacité du personnel\nL'entreprise valorise les compétences et l'efficacité de ses collaborateurs afin de garantir la qualité des prestations réalisées."
+  },
+  {
+    "idx": 146,
+    "style": "Normal",
+    "text": "3. Services "
+  },
+  {
+    "idx": 147,
+    "style": "Normal",
+    "text": "SOUTARAH GROUP intervient dans plusieurs domaines d'activités."
+  },
+  {
+    "idx": 148,
+    "style": "Normal",
+    "text": "➢ Location de véhicules : Le service de location de véhicules propose des solutions de mobilité adaptées aux différents besoins des clients, que ce soit pour des déplacements ponctuels ou pour des périodes plus longues."
+  },
+  {
+    "idx": 149,
+    "style": "Normal",
+    "text": "➢ Négoce / Import-Export : Faciliter l'approvisionnement et la distribution de différents biens."
+  },
+  {
+    "idx": 150,
+    "style": "Normal",
+    "text": "➢ Technique : L'installation, la maintenance et le support des équipements et installations."
+  },
+  {
+    "idx": 151,
+    "style": "Normal",
+    "text": "➢ Énergies renouvelables : Optimiser la consommation énergétique et favoriser l'utilisation des énergies renouvelables."
+  },
+  {
+    "idx": 152,
+    "style": "Normal",
+    "text": "➢ Agropastorale : La production agricole et l'élevage."
+  },
+  {
+    "idx": 153,
+    "style": "Normal",
+    "text": "➢ Immobilier : la vente, la location et la gestion de biens."
+  },
+  {
+    "idx": 154,
+    "style": "Heading 4",
+    "text": "4. Partenariats "
+  },
+  {
+    "idx": 155,
+    "style": "Normal",
+    "text": "Soutarah Group entretient des collaborations avec plusieurs entreprises dont :"
+  },
+  {
+    "idx": 156,
+    "style": "List Paragraph",
+    "text": "BESSAC"
+  },
+  {
+    "idx": 157,
+    "style": "List Paragraph",
+    "text": "DM Company"
+  },
+  {
+    "idx": 158,
+    "style": "List Paragraph",
+    "text": "CIM IVOIRE"
+  },
+  {
+    "idx": 159,
+    "style": "List Paragraph",
+    "text": "Southcomp Polaris"
+  },
+  {
+    "idx": 160,
+    "style": "List Paragraph",
+    "text": "Enabel"
+  },
+  {
+    "idx": 187,
+    "style": "Heading 3",
+    "text": "I. CONTEXTE ET JUSTIFICATION DU PROJET"
+  },
+  {
+    "idx": 188,
+    "style": "Normal",
+    "text": "La croissance continue des activités de SOUTARAH GROUP et la diversification de ses pôles ont engendré un volume considérable de demandes de devis et de réservations. Face à cette montée en charge, les mécanismes traditionnels de traitement manuel (courriels isolés, échanges téléphoniques informels, tenue de registres physiques) ont montré leurs limites opérationnelles. L'absence de visibilité en temps réel sur la disponibilité des véhicules de location et le manque de synchronisation entre les services commerciaux et techniques ont motivé la direction à engager la transition numérique intégrale de son écosystème commercial."
+  },
+  {
+    "idx": 190,
+    "style": "Heading 3",
+    "text": "II. ÉTUDE DE L'EXISTANT ET LIMITES"
+  },
+  {
+    "idx": 191,
+    "style": "Normal",
+    "text": "L'analyse préalable de l'infrastructure existante a révélé que SOUTARAH GROUP disposait uniquement d'un site web vitrine statique. Ce dernier présentait l'entreprise mais ne disposait d'aucune composante dynamique de gestion de base de données, ni d'espace d'authentification client, ni de mécanisme de calcul tarifaire automatisé. Les demandes formulées via des formulaires de contact basiques aboutissaient dans une boîte mail générique sans traçabilité, rendant impossible la production de statistiques fiables et occasionnant des retards dans l'édition des devis officiels."
+  },
+  {
+    "idx": 193,
+    "style": "Heading 3",
+    "text": "III. OBJECTIFS DU PROJET"
+  },
+  {
+    "idx": 194,
+    "style": "Heading 4",
+    "text": "1. Objectif général"
+  },
+  {
+    "idx": 195,
+    "style": "Normal",
+    "text": "L’objectif général est de concevoir et de développer une solution logicielle unifiée comprenant une plateforme web de gestion globale des services et une application mobile dédiée à la réservation de véhicules, toutes deux synchronisées en temps réel via une API REST sécurisée."
+  },
+  {
+    "idx": 197,
+    "style": "Heading 4",
+    "text": "2. Objectifs spécifiques"
+  },
+  {
+    "idx": 198,
+    "style": "Normal",
+    "text": "De façon opérationnelle, le projet vise à :\n• Développer un portail web moderne présentant de manière interactive l'ensemble des 6 pôles de services et le catalogue de produits ;\n• Développer une application mobile native (Android / iOS) dédiée à la consultation en direct du parc automobile, à la réservation fluide avec tarification dynamique et au suivi des états de commandes ;\n• Mettre en place un panier multi-articles hybride (véhicules et fournitures) avec moteur de calcul automatisé des taxes (HT, TVA 18%, TDT 2.5%) ;\n• Automatiser la génération de devis pro-forma officiels au format PDF sur 2 pages (avec fiches techniques et visuels) prêts pour impression ou signature électronique ;\n• Développer un tableau de bord d'administration (Back-Office) centralisé pour le pilotage des devis, véhicules, clients et notifications ;\n• Intégrer un système de notification transactionnelle par courrier électronique."
+  },
+  {
+    "idx": 200,
+    "style": "Heading 3",
+    "text": "IV. CAHIER DES CHARGES DU SYSTÈME"
+  },
+  {
+    "idx": 201,
+    "style": "Normal",
+    "text": "Le cahier des charges formalise les exigences fonctionnelles et non-fonctionnelles du système interconnecté :\n\n1. Exigences fonctionnelles côté Client (Web & Mobile) :\n  • Consultation détaillée du catalogue des véhicules et produits par catégorie ;\n  • Filtrage multicritère des véhicules (marque, type, transmission, climatisation) ;\n  • Sélection des dates de location avec calcul dynamique selon le barème de destination (Abidjan / Hors Abidjan) et l'option chauffeur ;\n  • Gestion du panier d'achats / réservations et validation en un clic ;\n  • Téléchargement instantané du devis pro-forma officiel PDF respectant la charte juridique de l'entreprise ;\n  • Espace personnel de gestion des devis ;\n\n2. Exigences fonctionnelles côté Administrateur :\n  • Supervision globale des indicateurs clés (CA estimé, réservations actives) ;\n  • Gestion complète du parc automobile (ajout, modification, statut de maintenance) ;"
+  },
+  {
+    "idx": 202,
+    "style": "Normal",
+    "text": "  • Gestion complète des articles negoce (ajout de produits, modification des prix) ;\n  • Gestion des comptes clients et attribution de remises partenaires.\n\n3. Exigences techniques et contraintes :\n  • Sécurité ;\n  • Disponibilité et performance ;\n  • Portabilité : Compatibilité navigateurs modernes (Chrome, Safari, Edge) et mobiles."
+  },
+  {
+    "idx": 204,
+    "style": "Heading 3",
+    "text": "V. PLANIFICATION DES TÂCHES ET DIAGRAMME DE GANTT"
+  },
+  {
+    "idx": 205,
+    "style": "Normal",
+    "text": "Le projet s'est déroulé sur une période de deux mois (du 03 Août au 03 Octobre 2026), selon la décomposition chronologique suivante :"
+  },
+  {
+    "idx": 207,
+    "style": "Normal",
+    "text": "1. Planning"
+  },
+  {
+    "idx": 210,
+    "style": "Normal",
+    "text": "2. Diagramme de Gantt"
+  },
+  {
+    "idx": 212,
+    "style": "Normal",
+    "text": "Figure 1 : Diagramme de GANTT \n"
+  },
+  {
+    "idx": 223,
+    "style": "Heading 1",
+    "text": "PARTIE II"
+  },
+  {
+    "idx": 224,
+    "style": "Heading 1",
+    "text": "ETUDE CONCEPTUELLE"
+  },
+  {
+    "idx": 243,
+    "style": "Heading 3",
+    "text": "I. ÉTUDE COMPARATIVE DES MÉTHODES D'ANALYSE"
+  },
+  {
+    "idx": 244,
+    "style": "Normal",
+    "text": "La réussite d'un projet informatique complexe requiert une phase d'analyse et de modélisation rigoureuse. Deux approches méthodologiques majeures ont été examinées : la méthode cartésienne MERISE et la démarche orientée objet PU/UML."
+  },
+  {
+    "idx": 246,
+    "style": "List Paragraph",
+    "text": "Présentation de la méthode MERISE"
+  },
+  {
+    "idx": 247,
+    "style": "Normal",
+    "text": "MERISE (Méthode d’Étude et de Réalisation Informatique pour les Systèmes d’Entreprise) est une méthode d’analyse et de conception des systèmes d’information. Elle permet de structurer le développement d’un système en séparant principalement les données et les traitements."
+  },
+  {
+    "idx": 248,
+    "style": "Normal",
+    "text": "La méthode s’appuie sur différents niveaux de modélisation, notamment les niveaux conceptuel, logique et physique, permettant de passer progressivement de l’expression des besoins à la mise en œuvre du système."
+  },
+  {
+    "idx": 249,
+    "style": "Normal (Web)",
+    "text": "Pour la modélisation des données, MERISE utilise principalement le Modèle Conceptuel de Données (MCD), qui représente les entités, leurs propriétés et les relations entre elles. Le MCD peut ensuite être transformé en Modèle Logique de Données (MLD), puis en Modèle Physique de Données (MPD) afin de tenir compte des caractéristiques du SGBD utilisé."
+  },
+  {
+    "idx": 250,
+    "style": "Normal (Web)",
+    "text": "MERISE permet également de représenter les traitements et les processus nécessaires au fonctionnement du système. Cette approche facilite ainsi l’organisation des informations et la compréhension globale du système d’information avant sa réalisation."
+  },
+  {
+    "idx": 252,
+    "style": "List Paragraph",
+    "text": "Présentation de la méthode PU/UML"
+  },
+  {
+    "idx": 253,
+    "style": "Normal (Web)",
+    "text": "Le Processus Unifié (PU) est une méthode de développement logiciel itérative et incrémentale. Il permet d’organiser le développement d’un projet en plusieurs phases et de faire évoluer progressivement le système, de l’analyse des besoins jusqu’à sa réalisation."
+  },
+  {
+    "idx": 255,
+    "style": "Normal (Web)",
+    "text": "Le PU repose principalement sur quatre phases : l’inception, l’élaboration, la construction et la transition. Cette organisation permet de mieux suivre l’évolution du projet, de prendre en compte les besoins des utilisateurs et de corriger progressivement les éventuelles erreurs."
+  },
+  {
+    "idx": 256,
+    "style": "Normal (Web)",
+    "text": "Le PU s’appuie sur UML (Unified Modeling Language), un langage de modélisation graphique standardisé permettant de représenter les différents aspects d’un système informatique. UML facilite notamment la représentation des acteurs, des fonctionnalités, des processus, des interactions et de la structure des données à travers différents diagrammes."
+  },
+  {
+    "idx": 258,
+    "style": "List Paragraph",
+    "text": "Tableau comparatif Merise et PU/UML"
+  },
+  {
+    "idx": 261,
+    "style": "Heading 3",
+    "text": "Choix de la méthode d’analyse"
+  },
+  {
+    "idx": 262,
+    "style": "Normal",
+    "text": "Pour la réalisation de notre projet, nous avons choisi UML (Unified Modeling Language) comme méthode de modélisation, en l’associant au Processus Unifié (PU). Ce choix se justifie par les caractéristiques du projet et par la nécessité de représenter clairement les différentes fonctionnalités du système."
+  },
+  {
+    "idx": 263,
+    "style": "Normal",
+    "text": "Adaptation aux architectures Web et Mobile : UML est orienté objet et s’adapte aux architectures logicielles modernes. Il facilite notamment la conception des échanges entre le frontend, le backend et les différents composants du système."
+  },
+  {
+    "idx": 264,
+    "style": "Normal",
+    "text": "Modélisation des fonctionnalités : UML permet de représenter les interactions entre les utilisateurs et le système, ainsi que les différentes fonctionnalités de l’application à travers plusieurs diagrammes."
+  },
+  {
+    "idx": 265,
+    "style": "Normal",
+    "text": "Évolution du système : grâce à sa modélisation orientée objet, UML facilite la réutilisation et l’extension des composants logiciels. Les modèles peuvent également être enrichis progressivement lors de l’ajout de nouvelles fonctionnalités."
+  },
+  {
+    "idx": 266,
+    "style": "Normal",
+    "text": "Ainsi, le choix d’UML associé au Processus Unifié permet de disposer d’une méthode adaptée à notre projet, tout en facilitant son analyse, sa conception et son évolution."
+  },
+  {
+    "idx": 269,
+    "style": "Heading 3",
+    "text": "II. APPLICATION DU PU/UML AU SYSTÈME SOUTARAH GROUP"
+  },
+  {
+    "idx": 270,
+    "style": "Normal",
+    "text": "Dans le cadre de notre projet, le système intègre trois acteurs principaux :\n• Le Visiteur / Client : consulte le catalogue, compose son panier multi-services sur le Web, effectue des réservations de véhicules sur l'application Mobile et télécharge ses devis PDF ;\n• L'Administrateur : supervise l'ensemble des opérations, gère la flotte, met à jour les tarifs et valide les devis ;\n• Le Système / API REST : applique les règles métier, contrôle les disponibilités et orchestre la distribution des notifications."
+  },
+  {
+    "idx": 272,
+    "style": "Heading 4",
+    "text": "1. Diagrammes des cas d'utilisation"
+  },
+  {
+    "idx": 273,
+    "style": "Normal",
+    "text": "Le diagramme global des cas d'utilisation illustre les interactions des acteurs avec les deux volets de la plateforme (Web et Mobile)."
+  },
+  {
+    "idx": 274,
+    "style": "Normal",
+    "text": "Figure 2 : Diagramme global des cas d’utilisation (Web & Mobile)"
+  },
+  {
+    "idx": 276,
+    "style": "Normal",
+    "text": "❖ Description textuelle du diagramme"
+  },
+  {
+    "idx": 277,
+    "style": "List Paragraph",
+    "text": "Acteur : Visiteur"
+  },
+  {
+    "idx": 278,
+    "style": "Normal",
+    "text": "Cas d’utilisation : Consulter le site et les services"
+  },
+  {
+    "idx": 279,
+    "style": "List Paragraph",
+    "text": "Acteurs concernés : Visiteur, Client"
+  },
+  {
+    "idx": 280,
+    "style": "List Paragraph",
+    "text": "Description : Permet de découvrir les activités et catalogues de Soutarah Group sans compte."
+  },
+  {
+    "idx": 281,
+    "style": "List Paragraph",
+    "text": "Préconditions : Accès à Internet."
+  },
+  {
+    "idx": 282,
+    "style": "List Paragraph",
+    "text": "Scénario principal :"
+  },
+  {
+    "idx": 283,
+    "style": "Normal",
+    "text": "Le visiteur accède au site."
+  },
+  {
+    "idx": 284,
+    "style": "Normal",
+    "text": "Il consulte les services, catalogues et véhicules."
+  },
+  {
+    "idx": 285,
+    "style": "List Paragraph",
+    "text": "Postconditions : Les informations sont affichées."
+  },
+  {
+    "idx": 286,
+    "style": "Normal",
+    "text": "Cas d’utilisation : Utiliser l’assistant IA"
+  },
+  {
+    "idx": 287,
+    "style": "List Paragraph",
+    "text": "Acteurs concernés : Visiteur, Client"
+  },
+  {
+    "idx": 288,
+    "style": "List Paragraph",
+    "text": "Description : Permet de poser des questions et d’être orienté automatiquement."
+  },
+  {
+    "idx": 289,
+    "style": "List Paragraph",
+    "text": "Préconditions : Aucune."
+  },
+  {
+    "idx": 290,
+    "style": "List Paragraph",
+    "text": "Scénario principal :"
+  },
+  {
+    "idx": 291,
+    "style": "Normal",
+    "text": "L’utilisateur ouvre le chat."
+  },
+  {
+    "idx": 292,
+    "style": "Normal",
+    "text": "Il pose sa question."
+  },
+  {
+    "idx": 293,
+    "style": "Normal",
+    "text": "L’IA répond instantanément."
+  },
+  {
+    "idx": 294,
+    "style": "List Paragraph",
+    "text": "Postconditions : L'utilisateur reçoit l'information demandée."
+  },
+  {
+    "idx": 295,
+    "style": "Normal",
+    "text": "Cas d’utilisation : S’inscrire et Se connecter"
+  },
+  {
+    "idx": 296,
+    "style": "List Paragraph",
+    "text": "Acteurs concernés : Visiteur, Client"
+  },
+  {
+    "idx": 297,
+    "style": "List Paragraph",
+    "text": "Description : Permet de créer un compte et d'accéder à l'espace personnel."
+  },
+  {
+    "idx": 298,
+    "style": "List Paragraph",
+    "text": "Préconditions : Disposer d'une adresse email valide."
+  },
+  {
+    "idx": 299,
+    "style": "List Paragraph",
+    "text": "Scénario principal :"
+  },
+  {
+    "idx": 300,
+    "style": "Normal",
+    "text": "L’utilisateur saisit ses identifiants."
+  },
+  {
+    "idx": 301,
+    "style": "Normal",
+    "text": "Le système vérifie et valide l'accès."
+  },
+  {
+    "idx": 302,
+    "style": "List Paragraph",
+    "text": "Postconditions : L’utilisateur est connecté en tant que Client."
+  },
+  {
+    "idx": 304,
+    "style": "List Paragraph",
+    "text": "Acteur : Client (Web / Mobile)"
+  },
+  {
+    "idx": 305,
+    "style": "Normal",
+    "text": "Cas d’utilisation : Réserver un véhicule"
+  },
+  {
+    "idx": 306,
+    "style": "List Paragraph",
+    "text": "Acteurs concernés : Client (Mobile / Web)"
+  },
+  {
+    "idx": 307,
+    "style": "List Paragraph",
+    "text": "Description : Permet de choisir et réserver un véhicule parmi le parc des 21 véhicules."
+  },
+  {
+    "idx": 308,
+    "style": "List Paragraph",
+    "text": "Préconditions : Le client doit être connecté."
+  },
+  {
+    "idx": 309,
+    "style": "List Paragraph",
+    "text": "Scénario principal :"
+  },
+  {
+    "idx": 310,
+    "style": "Normal",
+    "text": "Le client choisit un véhicule et ses dates de location."
+  },
+  {
+    "idx": 311,
+    "style": "Normal",
+    "text": "Le système vérifie la disponibilité en temps réel."
+  },
+  {
+    "idx": 312,
+    "style": "Normal",
+    "text": "Le client confirme sa réservation."
+  },
+  {
+    "idx": 313,
+    "style": "List Paragraph",
+    "text": "Postconditions : La réservation est enregistrée en attente de validation."
+  },
+  {
+    "idx": 314,
+    "style": "Normal",
+    "text": "Cas d’utilisation : Demander un devis"
+  },
+  {
+    "idx": 315,
+    "style": "List Paragraph",
+    "text": "Acteurs concernés : Client"
+  },
+  {
+    "idx": 316,
+    "style": "List Paragraph",
+    "text": "Description : Permet de soumettre une demande chiffrée pour un service ou un produit."
+  },
+  {
+    "idx": 317,
+    "style": "List Paragraph",
+    "text": "Préconditions : Le client doit être connecté."
+  },
+  {
+    "idx": 318,
+    "style": "List Paragraph",
+    "text": "Scénario principal :"
+  },
+  {
+    "idx": 319,
+    "style": "Normal",
+    "text": "Le client sélectionne ses besoins et valide sa demande."
+  },
+  {
+    "idx": 320,
+    "style": "Normal",
+    "text": "Le système génère le devis proforma téléchargeable."
+  },
+  {
+    "idx": 321,
+    "style": "List Paragraph",
+    "text": "Postconditions : La demande de devis est transmise à l'administration."
+  },
+  {
+    "idx": 322,
+    "style": "Normal",
+    "text": "Cas d’utilisation : Payer une commande"
+  },
+  {
+    "idx": 323,
+    "style": "List Paragraph",
+    "text": "Acteurs concernés : Client"
+  },
+  {
+    "idx": 324,
+    "style": "List Paragraph",
+    "text": "Description : Permet de régler un acompte ou une commande en ligne."
+  },
+  {
+    "idx": 325,
+    "style": "List Paragraph",
+    "text": "Préconditions : Avoir une réservation ou un panier validé."
+  },
+  {
+    "idx": 326,
+    "style": "List Paragraph",
+    "text": "Scénario principal :"
+  },
+  {
+    "idx": 327,
+    "style": "Normal",
+    "text": "Le client choisit son mode de paiement (Mobile Money ou Carte)."
+  },
+  {
+    "idx": 328,
+    "style": "Normal",
+    "text": "Il effectue la transaction."
+  },
+  {
+    "idx": 329,
+    "style": "Normal",
+    "text": "Le système confirme le règlement."
+  },
+  {
+    "idx": 330,
+    "style": "List Paragraph",
+    "text": "Postconditions : Le paiement est validé et le reçu est généré."
+  },
+  {
+    "idx": 332,
+    "style": "List Paragraph",
+    "text": "Acteur : Administrateur"
+  },
+  {
+    "idx": 333,
+    "style": "Normal",
+    "text": "Cas d’utilisation : Consulter le tableau de bord"
+  },
+  {
+    "idx": 334,
+    "style": "List Paragraph",
+    "text": "Acteurs concernés : Administrateur"
+  },
+  {
+    "idx": 335,
+    "style": "List Paragraph",
+    "text": "Description : Permet de suivre les indicateurs clés (chiffre d'affaires, réservations, activités)."
+  },
+  {
+    "idx": 336,
+    "style": "List Paragraph",
+    "text": "Préconditions : L'administrateur doit être connecté."
+  },
+  {
+    "idx": 337,
+    "style": "List Paragraph",
+    "text": "Scénario principal :"
+  },
+  {
+    "idx": 338,
+    "style": "Normal",
+    "text": "L’administrateur accède au back-office."
+  },
+  {
+    "idx": 339,
+    "style": "Normal",
+    "text": "Le système affiche les statistiques et KPIs.\n• Postconditions : L'administrateur visualise l'état général de la plateforme."
+  },
+  {
+    "idx": 340,
+    "style": "Normal",
+    "text": "Cas d’utilisation : Gérer les véhicules"
+  },
+  {
+    "idx": 341,
+    "style": "List Paragraph",
+    "text": "Acteurs concernés : Administrateur"
+  },
+  {
+    "idx": 342,
+    "style": "List Paragraph",
+    "text": "Description : Permet d'ajouter, modifier et suivre l'état de la flotte des 21 véhicules."
+  },
+  {
+    "idx": 343,
+    "style": "List Paragraph",
+    "text": "Préconditions : L'administrateur doit être connecté."
+  },
+  {
+    "idx": 344,
+    "style": "List Paragraph",
+    "text": "Scénario principal :"
+  },
+  {
+    "idx": 345,
+    "style": "Normal",
+    "text": "L’administrateur accède à la liste des véhicules."
+  },
+  {
+    "idx": 346,
+    "style": "Normal",
+    "text": "Il met à jour les disponibilités, tarifs ou états techniques."
+  },
+  {
+    "idx": 347,
+    "style": "List Paragraph",
+    "text": "Postconditions : Les informations de la flotte sont actualisées sur le web et le mobile."
+  },
+  {
+    "idx": 348,
+    "style": "Normal",
+    "text": "Cas d’utilisation : Recevoir les devis et marquer comme lu"
+  },
+  {
+    "idx": 349,
+    "style": "List Paragraph",
+    "text": "Acteurs concernés : Administrateur"
+  },
+  {
+    "idx": 350,
+    "style": "List Paragraph",
+    "text": "Description : Permet de consulter les devis reçus et d'indiquer leur prise en compte."
+  },
+  {
+    "idx": 351,
+    "style": "List Paragraph",
+    "text": "Préconditions : L'administrateur doit être connecté."
+  },
+  {
+    "idx": 352,
+    "style": "List Paragraph",
+    "text": "Scénario principal :"
+  },
+  {
+    "idx": 353,
+    "style": "Normal",
+    "text": "L’administrateur ouvre la liste des demandes de devis."
+  },
+  {
+    "idx": 354,
+    "style": "Normal",
+    "text": "Il consulte le contenu du devis."
+  },
+  {
+    "idx": 355,
+    "style": "Normal",
+    "text": "Il clique sur « Marquer comme lu »."
+  },
+  {
+    "idx": 356,
+    "style": "List Paragraph",
+    "text": "Postconditions : Le statut du devis passe à « Lu / En traitement »."
+  },
+  {
+    "idx": 361,
+    "style": "Heading 4",
+    "text": "2. Diagrammes d'activité"
+  },
+  {
+    "idx": 363,
+    "style": "Normal",
+    "text": "2.1. Diagramme d’activité : Création et gestion d’un compte client"
+  },
+  {
+    "idx": 364,
+    "style": "Normal",
+    "text": "Le diagramme d'activité suivant explicite la cinématique de réservation de véhicule, mettant en relief le contrôle algorithmique anticollision des dates."
+  },
+  {
+    "idx": 366,
+    "style": "Normal",
+    "text": "Figure 3 : Diagramme d’activité : création et gestion d’un compte client\n"
+  },
+  {
+    "idx": 368,
+    "style": "Normal",
+    "text": "2.2. Diagramme d’activité : réservation d’un véhicule"
+  },
+  {
+    "idx": 369,
+    "style": "Normal",
+    "text": "Le diagramme d’activité Réservation d’un véhicule illustre le processus par lequel un client effectue la location d’un véhicule sur la plateforme SOUTARAH. Le processus débute lorsque le client choisit un véhicule et renseigne ses dates de location. Le système vérifie alors la disponibilité : si le véhicule est indisponible, le client en est informé et peut modifier ses dates ou changer de véhicule. S’il est disponible, le véhicule est ajouté au panier. Lorsque le client valide son panier, le système génère automatiquement le devis et le redirige vers la page de commande. Le client choisit ensuite son mode de règlement (en ligne par carte/Mobile Money ou en espèces à la livraison) et confirme sa commande. Le système valide automatiquement le devis, enregistre la réservation dans la base de données et transmet la commande à l’administrateur. Ce dernier n’a plus à approuver le devis : il reçoit la notification, consulte les détails de la commande et marque simplement le devis comme lu pour préparer le véhicule. Enfin, le client reçoit sa confirmation de réservation. Ce diagramme met ainsi en évidence le flux nominal de commande et le traitement simplifié côté administration."
+  },
+  {
+    "idx": 374,
+    "style": "Normal",
+    "text": "Figure 4 : Diagramme d’activité : Réservation d’un véhicule \n"
+  },
+  {
+    "idx": 381,
+    "style": "Normal",
+    "text": "2.3. Diagramme d’activité : achat d’un produit"
+  },
+  {
+    "idx": 382,
+    "style": "Normal",
+    "text": "Le diagramme d’activité Achat d’un produit illustre le processus par lequel un client effectue l’achat d’un article sur la plateforme SOUTARAH. Le processus commence lorsque le client parcourt le catalogue, choisit un produit et l’ajoute à son panier. Le système calcule et affiche alors instantanément dans le panier les montants détaillés (hors taxes, TVA et total TTC). Lorsque le client valide son panier et passe à la commande, le système génère le devis officiel horodaté et présente les modes de règlement disponibles. Le client choisit son moyen de paiement, soit en ligne (par carte bancaire ou Mobile Money), soit en espèces à la livraison, puis confirme sa commande. Le système enregistre ensuite la commande dans la base de données, valide automatiquement le devis et notifie l’administrateur. Ce dernier consulte les détails de la commande et marque simplement le devis comme lu afin d'enclencher la préparation et l’expédition de l’article. Enfin, le client reçoit sa confirmation de commande. Ce diagramme met ainsi en évidence le flux d’achat direct et la transparence des calculs dès l'étape du panier."
+  },
+  {
+    "idx": 387,
+    "style": "Normal",
+    "text": "Figure 5 : Diagramme d’activité : achat d’un produit \n"
+  },
+  {
+    "idx": 390,
+    "style": "Heading 4",
+    "text": "3. Diagrammes de séquences"
+  },
+  {
+    "idx": 392,
+    "style": "Normal",
+    "text": "3.1. Diagramme de séquence : Paiement en ligne"
+  },
+  {
+    "idx": 393,
+    "style": "Normal",
+    "text": "Ce diagramme de séquence présente le déroulement d'une transaction financière électronique réalisée via la passerelle Genius Pay (intégrant cartes bancaires et solutions Mobile Money locales). À la confirmation du panier, le serveur API initialise une session de paiement sécurisée et redirige le client vers le guichet de paiement externe. Après autorisation et débit bancaire, la passerelle notifie le serveur API via un webhook sécurisé pour passer la commande au statut payé dans la base de données. Le service Brevo achemine immédiatement un reçu électronique au client, tandis que l’interface web affiche l’écran de confirmation de paiement."
+  },
+  {
+    "idx": 394,
+    "style": "Normal",
+    "text": "Figure 6 : Diagramme de séquence : Paiement en ligne sécurisé"
+  },
+  {
+    "idx": 397,
+    "style": "Normal",
+    "text": "3.2. Diagramme de séquence : Réservation d'un véhicule"
+  },
+  {
+    "idx": 398,
+    "style": "Normal",
+    "text": "Ce diagramme de séquence illustre la cinématique complète de réservation d’un véhicule sur la plateforme. Lorsque le client sélectionne une voiture et une période de location, l’interface web interroge le serveur API afin de contrôler l’absence de conflit d’agenda dans la base de données. Une fois la disponibilité validée et la commande confirmée par le client, l’API enregistre la réservation ainsi que le devis associé, puis déclenche le service de messagerie Brevo pour transmettre instantanément les e-mails de confirmation au client et à l’administrateur. Dans son espace de gestion, l’administrateur accède à la fiche détaillée de la commande et marque le devis comme lu, ce qui enclenche la préparation opérationnelle du véhicule sans nécessiter de validation manuelle du devis."
+  },
+  {
+    "idx": 399,
+    "style": "Normal",
+    "text": "Figure 7 : Diagramme de séquence : Réservation d'un véhicule \n"
+  },
+  {
+    "idx": 402,
+    "style": "Normal",
+    "text": "3.3. Diagramme de séquence : Achat produit"
+  },
+  {
+    "idx": 403,
+    "style": "Normal",
+    "text": "Le diagramme de séquence Achat produit décrit le flux d’acquisition de marchandises issues du catalogue de négoce. À la validation de la commande, les données sont transmises au serveur API qui ajoute la transaction dans la base de données et valide automatiquement le devis correspondant. Le service Brevo est alors sollicité pour expédier le récapitulatif d’achat au client et alerter l’administrateur de la nouvelle commande. Ce dernier consulte les spécificités des articles commandés sur son tableau de bord et marque le devis comme lu afin d’ordonnancer la préparation du colis et sa livraison."
+  },
+  {
+    "idx": 404,
+    "style": "Normal",
+    "text": "Figure 8 : Diagramme de séquence : Achat produit"
+  },
+  {
+    "idx": 406,
+    "style": "Normal",
+    "text": "3.4. Diagramme de séquence : Inscription d'un utilisateur"
+  },
+  {
+    "idx": 407,
+    "style": "Normal",
+    "text": "Ce diagramme de séquence décrit le processus d’inscription d’un nouvel utilisateur sur la plateforme SOUTARAH. Le visiteur renseigne ses informations (particulier ou entreprise) via le formulaire de l’interface web. Ces données sont transmises au serveur API, qui contrôle d'abord l’unicité de l’adresse email et du numéro de téléphone auprès de la base de données. Après confirmation de l’absence de doublon, le serveur API sécurise le mot de passe par hachage Bcrypt puis insère les enregistrements de l’utilisateur et du profil client dans la base de données. Le serveur API sollicite ensuite le service Brevo pour expédier un email de bienvenue et de confirmation au visiteur, pendant que l’interface web lui confirme la création de son compte et le redirige vers la page de connexion."
+  },
+  {
+    "idx": 408,
+    "style": "Normal",
+    "text": "Figure 9 : Diagramme de séquence : Inscription d'un utilisateur \n"
+  },
+  {
+    "idx": 410,
+    "style": "Heading 4",
+    "text": "4. Diagramme de classes"
+  },
+  {
+    "idx": 411,
+    "style": "Normal",
+    "text": "Il représente la structure statique du système en décrivant les classes, leurs attributs, leurs méthodes ainsi que les relations qui les lient. Il est généralement élaboré après une compréhension approfondie des besoins et des interactions du système, afin de servir de base à la phase d’implémentation."
+  },
+  {
+    "idx": 422,
+    "style": "Heading 1",
+    "text": "PARTIE III"
+  },
+  {
+    "idx": 423,
+    "style": "Heading 1",
+    "text": "ÉTUDE TECHNIQUE"
+  },
+  {
+    "idx": 441,
+    "style": "Heading 3",
+    "text": "I. ANALYSE ET JUSTIFICATION DES CHOIX TECHNOLOGIQUES"
+  },
+  {
+    "idx": 442,
+    "style": "Normal",
+    "text": "Le choix des technologies et des outils représente une étape déterminante dans la mise en œuvre d’un projet. Afin de garantir la pertinence et l’efficacité des décisions prises, une analyse approfondie des solutions disponibles sur le marché a été réalisée, en tenant compte des spécificités du projet, de nos compétences et des objectifs à long terme. Cette démarche s’est appuyée sur plusieurs critères de sélection essentiels : performance et scalabilité, coût et conditions de licence, sécurité, flexibilité d’intégration, ainsi que la qualité de la documentation et l’accessibilité du support technique. Ces éléments ont permis d’orienter les choix technologiques vers des solutions à la fois robustes, adaptées et pérennes."
+  },
+  {
+    "idx": 444,
+    "style": "Heading 4",
+    "text": "Environnement de développement (IDE)"
+  },
+  {
+    "idx": 447,
+    "style": "Normal",
+    "text": "Visual Studio Code a été sélectionné pour sa légèreté, son support natif de l'écosystème JavaScript/TypeScript, ses extensions pour React, React Native et MySQL, ainsi que son terminal intégré."
+  },
+  {
+    "idx": 451,
+    "style": "Heading 4",
+    "text": "Maquette"
+  },
+  {
+    "idx": 455,
+    "style": "Normal",
+    "text": "Figma est un outil de conception d'interface (UI/UX) en ligne, utilisé pour créer des maquettes interactives et collaboratives. Accessible depuis un simple navigateur, il permet aux équipes de concevoir et partager des prototypes visuellement clairs. Dans le cadre d’un projet web, il facilite la visualisation de l’interface avant le développement "
+  },
+  {
+    "idx": 458,
+    "style": "Heading 4",
+    "text": "3. Technologies Frontend Web"
+  },
+  {
+    "idx": 461,
+    "style": "Normal",
+    "text": "Pour la plateforme web, le framework React.js couplé à CSS a été choisi. Son architecture basée sur le DOM virtuel et les composants réutilisables permet d'offrir une interface réactive et modulaire, facilitant la navigation fluide entre le catalogue, le panier interactif et le tableau de bord administrateur."
+  },
+  {
+    "idx": 464,
+    "style": "Heading 4",
+    "text": "4. Technologies Mobile"
+  },
+  {
+    "idx": 466,
+    "style": "Normal",
+    "text": "Pour le volet mobile, React Native associé à l'écosystème Expo a été retenu. Cette technologie offre un code unique en TypeScript/JavaScript compilé nativement pour Android et iOS, garantissant des performances élevées, un accès aisé aux fonctionnalités matérielles (système de fichiers, partage PDF) et une réduction substantielle des coûts de développement."
+  },
+  {
+    "idx": 468,
+    "style": "Heading 4",
+    "text": "5. Technologies Backend et API"
+  },
+  {
+    "idx": 470,
+    "style": "Normal",
+    "text": "Le serveur applicatif repose sur Node.js et le framework Express.js. Ce choix permet de conserver le même langage (JavaScript/TypeScript) sur toute la chaîne logicielle. L'architecture REST sans état (Stateless) basée sur des échanges JSON et sécurisée par des jetons JWT garantit une parfaite scalabilité et alimente indifféremment l'application Web et l’application Mobile."
+  },
+  {
+    "idx": 472,
+    "style": "Heading 4",
+    "text": "6. Technologies de notifications et messagerie"
+  },
+  {
+    "idx": 473,
+    "style": "Normal",
+    "text": "Pour assurer l'envoi des notifications et des messages électroniques, Brevo a été retenu. Il permet d'automatiser l'envoi d'e-mails liés aux différentes actions de la plateforme, notamment les confirmations de réservation, notifications de commande et messages destinés aux clients."
+  },
+  {
+    "idx": 474,
+    "style": "Normal",
+    "text": "Son intégration via API permet de centraliser et d'automatiser les      communications avec les utilisateurs, tout en facilitant son utilisation avec les applications web et mobiles."
+  },
+  {
+    "idx": 476,
+    "style": "Heading 4",
+    "text": "6. Technologies de paiement en ligne"
+  },
+  {
+    "idx": 481,
+    "style": "Heading 4",
+    "text": "7. Technologies de déploiement"
+  },
+  {
+    "idx": 483,
+    "style": "Normal",
+    "text": "Pour assurer la mise en ligne de la plateforme, Hostinger a été retenu."
+  },
+  {
+    "idx": 484,
+    "style": "Normal",
+    "text": "Le choix de Hostinger s'explique notamment par sa facilité de déploiement, son coût accessible et sa compatibilité avec les technologies utilisées dans le projet."
+  },
+  {
+    "idx": 487,
+    "style": "Heading 3",
+    "text": "II. SYSTÈME DE GESTION DE BASE DE DONNÉES (SGBD) "
+  },
+  {
+    "idx": 488,
+    "style": "Normal",
+    "text": "Le choix du système de gestion de base de données (SGBD) constitue une étape importante dans la conception et le déploiement d'une application. Il doit notamment répondre aux besoins du système en matière de performance, sécurité, fiabilité, évolutivité et facilité de maintenance. Dans le cadre du projet de SOUTARAH GROUP, plusieurs solutions ont été "
+  },
+  {
+    "idx": 489,
+    "style": "Normal",
+    "text": "étudiées, notamment MySQL, PostgreSQL, SQL Server, Oracle et MongoDB. L'analyse a porté sur leur modèle de données, leurs performances, leur coût, leur facilité d'intégration."
+  },
+  {
+    "idx": 491,
+    "style": "Heading 4",
+    "text": "Comparaison des principaux SGBD"
+  },
+  {
+    "idx": 495,
+    "style": "Heading 4",
+    "text": "2. Choix du SGBD "
+  },
+  {
+    "idx": 496,
+    "style": "Normal",
+    "text": "Après comparaison des différentes solutions, MySQL a été retenu comme système de gestion de base de données pour notre projet."
+  },
+  {
+    "idx": 497,
+    "style": "Normal",
+    "text": "Ce choix s'explique tout d'abord par la nature des données manipulées par la plateforme. L'application doit gérer plusieurs informations structurées telles que les clients, les véhicules, les réservations, les produits, les commandes, les devis. "
+  },
+  {
+    "idx": 498,
+    "style": "Normal",
+    "text": "Un autre élément déterminant dans ce choix concerne l'environnement de développement. L'offre d'hébergement acheté par SOUTARAH GROUP ne prend en charge que MySQL. Le choix de ce SGBD permet ainsi d'assurer une meilleure compatibilité entre l'application développée et l'infrastructure d'hébergement."
+  },
+  {
+    "idx": 499,
+    "style": "Normal",
+    "text": "Enfin, MySQL dispose d'un écosystème largement utilisé dans le développement web et s'intègre facilement aux différentes technologies utilisées dans le projet. Il constitue ainsi une solution fiable, performante, accessible et adaptée."
+  },
+  {
+    "idx": 502,
+    "style": "Heading 3",
+    "text": "III. ARCHITECTURE GÉNÉRALE DU SYSTÈME"
+  },
+  {
+    "idx": 503,
+    "style": "Normal",
+    "text": "Notre solution repose sur une architecture distribuée en trois niveaux (3-tiers) :"
+  },
+  {
+    "idx": 504,
+    "style": "Normal",
+    "text": "Niveau Présentation (Clients) : Les utilisateurs interagissent avec le système via deux canaux complémentaires :"
+  },
+  {
+    "idx": 505,
+    "style": "Normal",
+    "text": "Une application mobile (React Native / Expo) dédiée spécifiquement aux clients pour consulter la flotte des véhicules et effectuer des réservations en ligne ;"
+  },
+  {
+    "idx": 506,
+    "style": "Normal",
+    "text": "Une plateforme web (React / Vite) permettant la gestion globale des services, la demande de devis et le suivi administratif (Back-Office)."
+  },
+  {
+    "idx": 507,
+    "style": "Normal",
+    "text": "Niveau Réseau (Internet) : Assure la liaison sécurisée entre les clients et le serveur à travers le protocole HTTPS et des requêtes API REST échangeant des données au format JSON."
+  },
+  {
+    "idx": 508,
+    "style": "Normal",
+    "text": "Niveau Métier et Données (Serveur & BDD) : Un serveur d'application Node.js / Express gère la logique métier (vérification automatique de disponibilité anti-double réservation, calcul des devis, sécurité JWT) et communique avec une base de données MySQL pour la persistance des données."
+  },
+  {
+    "idx": 510,
+    "style": "Normal",
+    "text": "Figure 19 : Schéma de l’architecture générale du système \n"
+  },
+  {
+    "idx": 520,
+    "style": "Heading 1",
+    "text": "PARTIE IV"
+  },
+  {
+    "idx": 521,
+    "style": "Heading 1",
+    "text": "RÉALISATION ET MISE EN ŒUVRE"
+  },
+  {
+    "idx": 538,
+    "style": "Heading 3",
+    "text": "I. MISE EN PLACE DE LA BASE DE DONNÉES MySQL"
+  },
+  {
+    "idx": 539,
+    "style": "Normal",
+    "text": "La base de données MySQL a été conçue pour garantir la cohérence des flux transactionnels. Elle regroupe les tables principales suivantes :\n• Utilisateurs & Clients : gestion des identifiants (email, mot de passe hashé, rôle 'CLIENT' ou 'ADMIN') et liaisons vers les profils particuliers ou entreprises ;\n• Véhicules : marque, modèle, catégorie, tarif journalier, statut, photographies ;\n• Réservations : dates de début et de fin, option avec/sans chauffeur, montant total, statut ;\n• Services & Produits : catalogue général des 6 pôles avec caractéristiques techniques et tarifs ;\n• Devis : référence unique (ex: DMD-2026-XXXX), date de création, montant HT/TTC ;\n• Notifications : alertes émises à destination des clients et administrateurs."
+  },
+  {
+    "idx": 543,
+    "style": "Normal",
+    "text": "II. IMPLÉMENTATION DE L’ASSISTANT IA ET DU SERVICE DES NOTIFICATIONS TRANSACTIONNELLES (BREVO / SMTP)"
+  },
+  {
+    "idx": 544,
+    "style": "Normal",
+    "text": "Pour moderniser la relation client et fluidifier la communication opérationnelle de SOUTARAH GROUP, nous avons enrichi la plateforme de deux modules : un agent conversationnel intelligent et un service d’e-mails transactionnels automatisés."
+  },
+  {
+    "idx": 546,
+    "style": "Normal",
+    "text": "1. L’Assistant virtuel intelligent (Agent IA)"
+  },
+  {
+    "idx": 547,
+    "style": "Normal",
+    "text": "Afin d'orienter les visiteurs et d'assister les gestionnaires, un agent virtuel basé sur un modèle de langage avancé (LLM) a été développé :"
+  },
+  {
+    "idx": 548,
+    "style": "Normal",
+    "text": "Architecture technique : Il s'articule autour d'un widget interactif flottant en React connecté via une API REST sécurisée au service backend. Ce dernier sollicite le modèle OpenAI (gpt-4o-mini) en lui injectant dynamiquement en contexte les données temps réel de la base MySQL (véhicules disponibles, caractéristiques techniques, tarifs et stocks)."
+  },
+  {
+    "idx": 549,
+    "style": "Normal",
+    "text": "Rôle pour le Client : L'assistant comprend les demandes exprimées en langage naturel (ex. : « Je cherche un véhicule pour 5 personnes climatisé pour Yamoussoukro »), propose le modèle adéquat et génère des boutons d'actions cliquables pour rediriger instantanément l'usager vers la fiche du véhicule ou vers le panier."
+  },
+  {
+    "idx": 550,
+    "style": "Normal",
+    "text": "Rôle pour l’Administrateur : Lorsque l'utilisateur est authentifié avec le rôle ADMIN, l'assistant se mue en outil d'aide à la décision : il exécute des requêtes d'agrégation pour répondre à des questions de gestion (produits proches du seuil de rupture, véhicules les plus loués, volume de devis en attente)."
+  },
+  {
+    "idx": 552,
+    "style": "Normal",
+    "text": "2. Le Service de messagerie et notifications transactionnelles (Brevo / SMTP)"
+  },
+  {
+    "idx": 553,
+    "style": "Normal",
+    "text": "Pour garantir la traçabilité et réagir sans délai aux sollicitations commerciales, un système de notification par e-mail a été implémenté :"
+  },
+  {
+    "idx": 554,
+    "style": "Normal",
+    "text": "Infrastructure d'envoi : Pour envoyer les e-mails, notre serveur Node.js utilise l'outil Nodemailer, qui prépare et met en forme les messages. Ces messages sont ensuite transmis au service professionnel Brevo, qui se charge de les distribuer aux destinataires. La communication avec Brevo est totalement chiffrée et sécurisée (protocole TLS). "
+  },
+  {
+    "idx": 555,
+    "style": "Normal",
+    "text": "Notifications Clients : Le système déclenche automatiquement l'envoi d'un courriel lors de l'inscription d'un nouvel utilisateur, lors de la confirmation d'une réservation, et achemine le devis pro-forma officiel au format PDF (2 pages) dès la validation du panier."
+  },
+  {
+    "idx": 556,
+    "style": "Normal",
+    "text": "Alertes Administrateur : Dès qu'un client ajoute une réservation automobile ou un article à son panier, une alerte immédiate est transmise à l'équipe commerciale avec les coordonnées du client, le détail des dates et les montants estimés, permettant une prise en charge proactive."
+  },
+  {
+    "idx": 558,
+    "style": "Normal",
+    "text": "3. Le Module de paiement en ligne sécurisé (Genius Pay)"
+  },
+  {
+    "idx": 559,
+    "style": "Heading 3",
+    "text": "Pour sécuriser les règlements et automatiser la validation des commandes, une passerelle de paiement a été intégrée via Genius Pay :"
+  },
+  {
+    "idx": 560,
+    "style": "Heading 3",
+    "text": "Infrastructure et passerelle : Notre serveur Node.js initialise la transaction via l'API REST de Genius Pay et redirige le client vers son guichet sécurisé et chiffré (TLS). Aucune donnée bancaire sensible ne transite par nos serveurs, garantissant une sécurité optimale."
+  },
+  {
+    "idx": 561,
+    "style": "Heading 3",
+    "text": "Modes de règlement : La plateforme accepte les cartes bancaires (Visa, Mastercard) ainsi que le Mobile Money local. La transaction est protégée par une authentification forte (code OTP/SMS) avant tout débit effectif."
+  },
+  {
+    "idx": 562,
+    "style": "Heading 3",
+    "text": "Validation et notifications : Après validation bancaire, Genius Pay notifie directement notre API par Webhook pour passer la commande au statut « PAYÉ » en base de données. Le service Brevo achemine aussitôt le reçu électronique au client, tandis qu'en cas de refus, une alerte invite à réessayer."
+  },
+  {
+    "idx": 564,
+    "style": "Heading 3",
+    "text": "III. RÉALISATION DES INTERFACES DE LA PLATEFORME WEB"
+  },
+  {
+    "idx": 565,
+    "style": "Normal",
+    "text": "Le portail web a été développé dans une esthétique moderne respectant la charte graphique de SOUTARAH :"
+  },
+  {
+    "idx": 566,
+    "style": "Heading 4",
+    "text": "1. Page d'accueil et de connexion"
+  },
+  {
+    "idx": 568,
+    "style": "List Paragraph",
+    "text": "La page d'accueil constitue la vitrine d'entrée. Elle présente l'histoire, les valeurs S.A.P.E, les pôles d'activités et intègre un assistant virtuel intelligent orientant les usagers."
+  },
+  {
+    "idx": 570,
+    "style": "List Paragraph",
+    "text": "La page de connexion permet au client d’accéder à son espace personnel en renseignant ses identifiants de connexion, notamment son adresse e-mail et son mot de passe. Après vérification de ces informations, le client est authentifié et peut accéder aux différentes fonctionnalités qui lui sont réservées."
+  },
+  {
+    "idx": 572,
+    "style": "Heading 4",
+    "text": "2. Catalogue des produits "
+  },
+  {
+    "idx": 573,
+    "style": "Normal",
+    "text": "Permet aux clients de parcourir les fournitures, matériels de construction et outillages, avec possibilité d’ajout direct au panier."
+  },
+  {
+    "idx": 575,
+    "style": "Heading 4",
+    "text": "3. Module de réservation de véhicules "
+  },
+  {
+    "idx": 576,
+    "style": "Normal",
+    "text": "Permet la sélection d'un véhicule, le choix précis des dates de prise en charge et de restitution, et l'option avec chauffeur."
+  },
+  {
+    "idx": 589,
+    "style": "Heading 4",
+    "text": "4. Panier multi-articles et génération de devis PDF"
+  },
+  {
+    "idx": 590,
+    "style": "Normal",
+    "text": " Le panier regroupe à la fois les réservations de véhicules et les produits physiques, calcule les taxes réglementaires et génère le devis pro-forma téléchargeable instantanément."
+  },
+  {
+    "idx": 591,
+    "style": "Normal",
+    "text": "Figure 25 : Interface Web : Panier multi-articles \n"
+  },
+  {
+    "idx": 593,
+    "style": "Heading 4",
+    "text": "5. Espace Client et suivi des demandes"
+  },
+  {
+    "idx": 594,
+    "style": "Normal",
+    "text": "Offre à l'utilisateur authentifié une vue d'ensemble de ses devis en cours."
+  },
+  {
+    "idx": 596,
+    "style": "Normal",
+    "text": "Figure 26 : Interface Web : Espace client et suivi des demandes"
+  },
+  {
+    "idx": 599,
+    "style": "Heading 3",
+    "text": "IV. RÉALISATION DE L'APPLICATION MOBILE DÉDIÉE À LA RÉSERVATION"
+  },
+  {
+    "idx": 600,
+    "style": "Normal",
+    "text": "L'application mobile 'SOUTARAH Mobile' apporte une réponse sur mesure à la mobilité en se focalisant sur le service de location de véhicules :"
+  },
+  {
+    "idx": 602,
+    "style": "Heading 4",
+    "text": "1. Écran d'accueil et Fiche détaillée du véhicule"
+  },
+  {
+    "idx": 603,
+    "style": "Normal",
+    "text": "L’écran d'accueil affiche les véhicules disponibles catégorisés (SUV, Berlines, Utilitaires) avec filtres dynamiques, tarif journalier et visuels haute définition. La fiche détaillée présente les caractéristiques techniques du véhicule (climatisation, boîte de vitesses, carburant), intègre un sélecteur de calendrier et calcule instantanément le coût total selon la destination et l'option chauffeur."
+  },
+  {
+    "idx": 606,
+    "style": "Normal",
+    "text": "Figure 27 : Application Mobile : Écran d'accueil et fiche détaillée du véhicule"
+  },
+  {
+    "idx": 607,
+    "style": "Heading 4",
+    "text": "\n2. Panier mobile "
+  },
+  {
+    "idx": 608,
+    "style": "Normal",
+    "text": " Permet d'ajuster les quantités ou durées de location, de renseigner des instructions particulières de livraison et de valider la demande en temps réel."
+  },
+  {
+    "idx": 611,
+    "style": "Heading 3",
+    "text": "V. RÉALISATION DE L'ESPACE ADMINISTRATEUR "
+  },
+  {
+    "idx": 612,
+    "style": "Normal",
+    "text": "Le Back-Office Web constitue la tour de contrôle de l'entreprise. Il intègre :\n• Tableau de bord : graphiques de performance, chiffre d'affaires prévisionnel, nombre de devis et réservations en cours ;\n• Gestion du parc et des articles de négoce : ajout de nouveaux véhicules, produits, mise à jour des prix journaliers ;"
+  },
+  {
+    "idx": 632,
+    "style": "Normal",
+    "text": "Figure 29 : Interface d’administration : Gestion de la flotte et du parc de véhicules"
+  },
+  {
+    "idx": 636,
+    "style": "Heading 3",
+    "text": "I. TESTS FONCTIONNELS ET VALIDATION "
+  },
+  {
+    "idx": 637,
+    "style": "Normal",
+    "text": "Une campagne exhaustive de tests a été conduite afin de valider la robustesse et l'intégrité de la solution interconnectée :"
+  },
+  {
+    "idx": 640,
+    "style": "Heading 3",
+    "text": "II. ÉTUDE FINANCIÈRE ET ESTIMATION DES COÛTS"
+  },
+  {
+    "idx": 641,
+    "style": "Heading 4",
+    "text": "1. Coûts matériels et logiciels"
+  },
+  {
+    "idx": 642,
+    "style": "Normal",
+    "text": "L'ensemble des technologies de développement retenues (React, React Native, Node.js, MySQL, Expo) reposant sur des licences Open Source gratuites, les coûts logiciels de développement direct sont nuls. L'investissement matériel a porté sur le poste de travail et les terminaux de test mobile."
+  },
+  {
+    "idx": 643,
+    "style": "Heading 4",
+    "text": "2. Coûts d'hébergement et de maintenance"
+  },
+  {
+    "idx": 644,
+    "style": "Normal",
+    "text": "Pour le déploiement en production, les coûts annuels estimés se décomposent comme suit :"
+  },
+  {
+    "idx": 646,
+    "style": "Normal",
+    "text": "III. Rentabilité, retour sur investissement (ROI) et perspectives d’évolution"
+  },
+  {
+    "idx": 647,
+    "style": "Normal",
+    "text": "1. Rentabilité immédiate et retour sur investissement"
+  },
+  {
+    "idx": 648,
+    "style": "Normal",
+    "text": "L'automatisation du processus de réservation et de génération des devis permet à SOUTA-RAH GROUP de réduire de plus de 80% le temps administratif consacré au traitement d'un dossier client (passant de 45 minutes à moins de 3 minutes). Cette réactivité commerciale immédiate, conjuguée à la suppression totale des pertes d'exploitation liées aux doubles ré-servations, permet un retour sur investissement complet dès le premier trimestre d'exploita-tion. "
+  },
+  {
+    "idx": 650,
+    "style": "Normal",
+    "text": "2. Perspectives d’évolution de la plateforme"
+  },
+  {
+    "idx": 651,
+    "style": "Normal",
+    "text": "Afin d'accompagner le développement de l'entreprise, l'architecture modulaire mise en place permettra de déployer à court et moyen termes :"
+  },
+  {
+    "idx": 652,
+    "style": "Normal",
+    "text": "Programme de fidélité : Attribution de points de récompense à chaque réservation ou commande, échangeables contre des remises ou des services gratuits, afin de renforcer la rétention client ;"
+  },
+  {
+    "idx": 653,
+    "style": "Normal",
+    "text": "La télématique et le suivi GPS : Intégration de traceurs connectés sur les véhicules afin de suivre les trajets en direct et planifier les entretiens mécaniques ;"
+  },
+  {
+    "idx": 654,
+    "style": "Normal",
+    "text": "Les notifications Push natives : Alerte instantanée sur smartphone via Firebase Cloud Messaging pour le suivi des réservations ;"
+  },
+  {
+    "idx": 657,
+    "style": "Heading 1",
+    "text": "CONCLUSION GÉNÉRALE "
+  },
+  {
+    "idx": 658,
+    "style": "Normal",
+    "text": "Au terme de ce stage d'application effectué au sein de l'entreprise SOUTARAH GROUP, nous avons mené à bien la conception et la réalisation intégrale d'une solution numérique unifiée, répondant au thème : « Conception et développement d’une plateforme numérique de gestion des services de SOUTARAH GROUP intégrant une application mobile dédiée à la réservation de véhicules ».\n\nCe projet a permis de transformer en profondeur les pratiques commerciales de l'entreprise en substituant aux méthodes manuelles un écosystème logiciel moderne, cohérent et interconnecté. L'approche méthodologique rigoureuse basée sur le Processus Unifié et la modélisation UML (PU/UML) a garanti une analyse précise des besoins et une structuration sans faille de la base de données relationnelle MySQL.\n\nSur le plan technique, la synergie entre la plateforme web développée sous React.js et l'application mobile conçue sous React Native/Expo, toutes deux articulées autour d'une API REST Node.js/Express, a permis d'atteindre l'ensemble des objectifs fixés. Les utilisateurs disposent désormais d'une visibilité totale sur les 6 pôles de l'entreprise, d'un module de réservation fluide avec algorithme anti-double-réservation, d'un panier multi-articles interactif et d'un outil de génération instantanée de devis officiels au format PDF.\n\nSur le plan personnel et académique, ce projet a constitué une expérience particulièrement enrichissante. Il nous a permis de consolider nos acquis théoriques reçus à l'École Supérieure d’Industrie (ESI) de l'INP-HB, d'appréhender les contraintes de l'ingénierie logicielle en milieu professionnel et de maîtriser des technologies full-stack de pointe."
+  },
+  {
+    "idx": 666,
+    "style": "Normal",
+    "text": "BIBLIOGRAPHIE"
+  },
+  {
+    "idx": 667,
+    "style": "Normal",
+    "text": "I. OUVRAGES DE RÉFÉRENCE ET MANUELS MÉTHODOLOGIQUES :"
+  },
+  {
+    "idx": 668,
+    "style": "List Paragraph",
+    "text": "AUDIBERT, Laurent. « Cours UML : Modélisation objet et diagrammes », Éditions Eyrolles / Institut Universitaire, pages 21-46."
+  },
+  {
+    "idx": 669,
+    "style": "List Paragraph",
+    "text": "ROQUES, Pascal. « UML 2 par la pratique : Études de cas et exercices corrigés », Éditions Eyrolles, 7e édition, 2021, 394 pages."
+  },
+  {
+    "idx": 671,
+    "style": "Normal",
+    "text": "II. SUPPORTS DE COURS ACADÉMIQUES (INP-HB / ESI) :"
+  },
+  {
+    "idx": 672,
+    "style": "List Paragraph",
+    "text": "Zana Yéo. « Serveur-HTTP-et-Express.js », Support de cours, STIC, ESI / INP-HB Yamoussoukro, 2025-2026."
+  },
+  {
+    "idx": 691,
+    "style": "Normal",
+    "text": "WEBOGRAPHIE"
+  },
+  {
+    "idx": 692,
+    "style": "List Paragraph",
+    "text": "REACT.JS. « Documentation officielle React 18 et Virtual DOM », Meta Open Source. Accessible sur : https://react.dev (Consulté LE 30 Août 2026)."
+  },
+  {
+    "idx": 693,
+    "style": "List Paragraph",
+    "text": "REACT NATIVE & EXPO. « Cross-Platform Native Mobile Development with Expo Framework ». Accessible sur : https://reactnative.dev et https://docs.expo.dev (Consulté le 15 Septembre 2026)."
+  },
+  {
+    "idx": 694,
+    "style": "List Paragraph",
+    "text": "BREVO. Accessible sur : https://brevo.com (Consulté en 1 Septembre 2026)."
+  },
+  {
+    "idx": 714,
+    "style": "Heading 3",
+    "text": "TABLE DES MATIÈRES "
+  },
+  {
+    "idx": 715,
+    "style": "Normal",
+    "text": "DÉDICACE\t - 1 -"
+  },
+  {
+    "idx": 716,
+    "style": "Normal",
+    "text": "REMERCIEMENTS\t - 2 -"
+  },
+  {
+    "idx": 717,
+    "style": "Normal",
+    "text": "AVANT-PROPOS\t - 3 -"
+  },
+  {
+    "idx": 718,
+    "style": "Normal",
+    "text": "SOMMAIRE\t - 5 -"
+  },
+  {
+    "idx": 719,
+    "style": "Normal",
+    "text": "LISTE DES FIGURES\t - 6 -"
+  },
+  {
+    "idx": 720,
+    "style": "Normal",
+    "text": "LISTE DES TABLEAUX\t - 7 -"
+  },
+  {
+    "idx": 721,
+    "style": "Normal",
+    "text": "LISTE DES ABRÉVIATIONS\t - 8 -"
+  },
+  {
+    "idx": 722,
+    "style": "Normal",
+    "text": "RÉSUMÉ\t - 9 -"
+  },
+  {
+    "idx": 723,
+    "style": "Normal",
+    "text": "INTRODUCTION GÉNÉRALE\t - 10 -"
+  },
+  {
+    "idx": 724,
+    "style": "Normal",
+    "text": "PARTIE I : CADRE ET CONTEXTE DU PROJET\t - 11 -"
+  },
+  {
+    "idx": 725,
+    "style": "Normal",
+    "text": "Chapitre 1 : Présentation de la structure d’accueil\t - 12 -"
+  },
+  {
+    "idx": 726,
+    "style": "Normal",
+    "text": "I. Présentation de SOUTARAH GROUP\t - 12 -"
+  },
+  {
+    "idx": 727,
+    "style": "Normal",
+    "text": "1. Présentation générale\t - 12 -"
+  },
+  {
+    "idx": 728,
+    "style": "Normal",
+    "text": "2. Mission, Vision et Valeurs\t - 12 -"
+  },
+  {
+    "idx": 729,
+    "style": "Normal",
+    "text": "3. Domaines d'activités et services\t - 13 -"
+  },
+  {
+    "idx": 730,
+    "style": "Normal",
+    "text": "4. Partenariats\t - 14 -"
+  },
+  {
+    "idx": 731,
+    "style": "Normal",
+    "text": "Chapitre 2 : Présentation du projet\t - 15 -"
+  },
+  {
+    "idx": 732,
+    "style": "Normal",
+    "text": "I. Contexte et justification du projet\t - 15 -"
+  },
+  {
+    "idx": 733,
+    "style": "Normal",
+    "text": "III. Étude de l'existant et limites\t - 15 -"
+  },
+  {
+    "idx": 734,
+    "style": "Normal",
+    "text": "III. Objectifs du projet\t - 15 -"
+  },
+  {
+    "idx": 735,
+    "style": "Normal",
+    "text": "1. Objectif général\t - 15 -"
+  },
+  {
+    "idx": 736,
+    "style": "Normal",
+    "text": "2. Objectifs spécifiques\t - 16 -"
+  },
+  {
+    "idx": 737,
+    "style": "Normal",
+    "text": "IV. Cahier des charges du système\t - 16 -"
+  },
+  {
+    "idx": 738,
+    "style": "Normal",
+    "text": "1. Exigences fonctionnelles côté Client\t - 16 -"
+  },
+  {
+    "idx": 739,
+    "style": "Normal",
+    "text": "2. Exigences fonctionnelles côté Administrateur\t - 17 -"
+  },
+  {
+    "idx": 740,
+    "style": "Normal",
+    "text": "3. Exigences techniques et contraintes\t - 17 -"
+  },
+  {
+    "idx": 741,
+    "style": "Normal",
+    "text": "V. Planification des tâches et diagramme de GANTT\t - 17 -"
+  },
+  {
+    "idx": 742,
+    "style": "Normal",
+    "text": "1. Planning prévisionnel\t - 17 -"
+  },
+  {
+    "idx": 743,
+    "style": "Normal",
+    "text": "2. Diagramme de GANTT\t - 18 -"
+  },
+  {
+    "idx": 744,
+    "style": "Normal",
+    "text": "PARTIE II : ÉTUDE CONCEPTUELLE\t - 19 -"
+  },
+  {
+    "idx": 745,
+    "style": "Normal",
+    "text": "Chapitre 3 : Choix de la méthode d’analyse\t - 20 -"
+  },
+  {
+    "idx": 746,
+    "style": "Normal",
+    "text": "I. Étude comparative des méthodes d'analyse \t - 20 -"
+  },
+  {
+    "idx": 747,
+    "style": "Normal",
+    "text": "     1. Présentation de la méthode MERISE\t - 20 -"
+  },
+  {
+    "idx": 748,
+    "style": "Normal",
+    "text": "     2. Présentation de la méthode PU/UML\t - 20 -"
+  },
+  {
+    "idx": 749,
+    "style": "Normal",
+    "text": "     3. Tableau comparatif Merise et PU/UML\t - 21 -"
+  },
+  {
+    "idx": 750,
+    "style": "Normal",
+    "text": "           4. choix de la méthode d’analyse\t - 22 -"
+  },
+  {
+    "idx": 751,
+    "style": "Normal",
+    "text": "II. Application du PU/UML au système SOUTARAH GROUP\t - 22 -"
+  },
+  {
+    "idx": 752,
+    "style": "Normal",
+    "text": "1. Diagrammes des cas d'utilisation\t - 23 -"
+  },
+  {
+    "idx": 753,
+    "style": "Normal",
+    "text": "❖ Description textuelle des cas d’utilisation\t - 23 -"
+  },
+  {
+    "idx": 754,
+    "style": "Normal",
+    "text": "2. Diagrammes d'activité\t - 27 -"
+  },
+  {
+    "idx": 755,
+    "style": "Normal",
+    "text": "2.1. Création et gestion d’un compte client\t - 27 -"
+  },
+  {
+    "idx": 756,
+    "style": "Normal",
+    "text": "2.2. Réservation d’un véhicule avec contrôle de disponibilité\t - 28 -"
+  },
+  {
+    "idx": 757,
+    "style": "Normal",
+    "text": "2.3. Processus d’achat d’un produit\t - 30 -"
+  },
+  {
+    "idx": 758,
+    "style": "Normal",
+    "text": "3. Diagrammes de séquences\t - 32 -"
+  },
+  {
+    "idx": 759,
+    "style": "Normal",
+    "text": "3.1. Paiement en ligne sécurisé\t - 32 -"
+  },
+  {
+    "idx": 760,
+    "style": "Normal",
+    "text": "3.2. Réservation d'un véhicule\t - 33 -"
+  },
+  {
+    "idx": 761,
+    "style": "Normal",
+    "text": "3.3. Achat produit\t - 34 -"
+  },
+  {
+    "idx": 762,
+    "style": "Normal",
+    "text": "3.4. Inscription d'un utilisateur\t - 35 -"
+  },
+  {
+    "idx": 763,
+    "style": "Normal",
+    "text": "4. Diagramme de classes\t - 36 -"
+  },
+  {
+    "idx": 764,
+    "style": "Normal",
+    "text": "PARTIE III : ÉTUDE TECHNIQUE\t - 37 -"
+  },
+  {
+    "idx": 765,
+    "style": "Normal",
+    "text": "Chapitre 4 : Conception du système et choix technologiques\t - 38 -"
+  },
+  {
+    "idx": 766,
+    "style": "Normal",
+    "text": "I. Analyse et justification des choix technologiques\t - 38 -"
+  },
+  {
+    "idx": 767,
+    "style": "Normal",
+    "text": "1. Environnement de développement\t - 38 -"
+  },
+  {
+    "idx": 768,
+    "style": "Normal",
+    "text": "2. Outil de maquettage UI/UX\t - 38 -"
+  },
+  {
+    "idx": 769,
+    "style": "Normal",
+    "text": "3. Technologies Frontend Web\t - 39 -"
+  },
+  {
+    "idx": 770,
+    "style": "Normal",
+    "text": "4. Technologies Mobile \t - 39 -"
+  },
+  {
+    "idx": 771,
+    "style": "Normal",
+    "text": "5. Technologies Backend et API REST \t - 40 -"
+  },
+  {
+    "idx": 772,
+    "style": "Normal",
+    "text": "6. Technologies de notifications et messagerie \t - 40 -"
+  },
+  {
+    "idx": 773,
+    "style": "Normal",
+    "text": "7. Plateforme d’hébergement et déploiement \t - 40 -"
+  },
+  {
+    "idx": 774,
+    "style": "Normal",
+    "text": "II. Système de Gestion de Base de Données (SGBD)\t - 41 -"
+  },
+  {
+    "idx": 775,
+    "style": "Normal",
+    "text": "1. Comparaison des principaux SGBD\t - 41 -"
+  },
+  {
+    "idx": 776,
+    "style": "Normal",
+    "text": "2. Choix et justification de MySQL\t - 42 -"
+  },
+  {
+    "idx": 777,
+    "style": "Normal",
+    "text": "III. Architecture générale du système \t - 42 -"
+  },
+  {
+    "idx": 778,
+    "style": "Normal",
+    "text": "PARTIE IV : RÉALISATION ET MISE EN ŒUVRE\t - 44 -"
+  },
+  {
+    "idx": 779,
+    "style": "Normal",
+    "text": "Chapitre 5 : Réalisation de la plateforme web et de l’application mobile\t - 45 -"
+  },
+  {
+    "idx": 780,
+    "style": "Normal",
+    "text": "I. Mise en place de la base de données MySQL\t - 45 -"
+  },
+  {
+    "idx": 781,
+    "style": "Normal",
+    "text": "II. Implémentation de l'Assistant IA et des notifications (Brevo)\t - 46 -"
+  },
+  {
+    "idx": 782,
+    "style": "Normal",
+    "text": "1. L'Assistant virtuel intelligent (Agent IA)\t - 46 -"
+  },
+  {
+    "idx": 783,
+    "style": "Normal",
+    "text": "2. Le Service de messagerie et notifications (Brevo / SMTP)\t - 46 -"
+  },
+  {
+    "idx": 784,
+    "style": "Normal",
+    "text": "III. Réalisation des interfaces de la plateforme Web\t - 48 -"
+  },
+  {
+    "idx": 785,
+    "style": "Normal",
+    "text": "1. Page d'accueil et de connexion\t - 48 -"
+  },
+  {
+    "idx": 786,
+    "style": "Normal",
+    "text": "2. Catalogue des produits\t - 49 -"
+  },
+  {
+    "idx": 787,
+    "style": "Normal",
+    "text": "3. Module de réservation de véhicules\t - 49 -"
+  },
+  {
+    "idx": 788,
+    "style": "Normal",
+    "text": "4. Panier multi-articles et génération de devis PDF\t - 50 -"
+  },
+  {
+    "idx": 789,
+    "style": "Normal",
+    "text": "5. Espace Client et suivi des demandes\t - 50 -"
+  },
+  {
+    "idx": 790,
+    "style": "Normal",
+    "text": "IV. Réalisation de l'application mobile dédiée à la réservation\t - 51 -"
+  },
+  {
+    "idx": 791,
+    "style": "Normal",
+    "text": "1. Écran d'accueil et fiche détaillée du véhicule\t - 51 -"
+  },
+  {
+    "idx": 792,
+    "style": "Normal",
+    "text": "2. Panier mobile\t - 52 -"
+  },
+  {
+    "idx": 793,
+    "style": "Normal",
+    "text": "V. Réalisation de l'espace administrateur (Back-Office Web)\t - 52 -"
+  },
+  {
+    "idx": 794,
+    "style": "Normal",
+    "text": "Chapitre 6 : Mise en œuvre\t - 54 -"
+  },
+  {
+    "idx": 795,
+    "style": "Normal",
+    "text": "I. Tests fonctionnels et validation (Cahier de recettes)\t - 54 -"
+  },
+  {
+    "idx": 796,
+    "style": "Normal",
+    "text": "II. Étude financière et estimation des coûts\t - 55 -"
+  },
+  {
+    "idx": 797,
+    "style": "Normal",
+    "text": "1. Coûts matériels et logiciels\t - 55 -"
+  },
+  {
+    "idx": 798,
+    "style": "Normal",
+    "text": "2. Coûts d'hébergement et de maintenance annuelle\t - 55 -"
+  },
+  {
+    "idx": 799,
+    "style": "Normal",
+    "text": "III. Rentabilité, retour sur investissement et perspectives\t - 56 -"
+  },
+  {
+    "idx": 800,
+    "style": "Normal",
+    "text": "1. Rentabilité immédiate et retour sur investissement (ROI)\t - 56 -"
+  },
+  {
+    "idx": 801,
+    "style": "Normal",
+    "text": "2. Perspectives d’évolution de la plateforme\t - 56 -"
+  },
+  {
+    "idx": 802,
+    "style": "Normal",
+    "text": "CONCLUSION GÉNÉRALE ET PERSPECTIVES\t - 57 -"
+  },
+  {
+    "idx": 803,
+    "style": "Normal",
+    "text": "BIBLIOGRAPHIE\t - 58 -"
+  },
+  {
+    "idx": 804,
+    "style": "Normal",
+    "text": "I. Ouvrages et cours académiques\t - 58 -"
+  },
+  {
+    "idx": 805,
+    "style": "Normal",
+    "text": "II. Documentations techniques et références web\t - 58 -"
+  },
+  {
+    "idx": 806,
+    "style": "Normal",
+    "text": "WEBOGRAPHIE\t - 59 -"
+  },
+  {
+    "idx": 807,
+    "style": "Normal",
+    "text": "TABLE DES MATIÈRES\t - 60 -"
+  }
+]

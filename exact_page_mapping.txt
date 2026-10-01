@@ -1,0 +1,162 @@
+Total pages: 61
+
+[HEADING] LISTE DES ABRÉVIATIONS -> Page 8 | Full: LISTE DES ABRÉVIATIONS
+[HEADING] RÉSUMÉ -> Page 9 | Full: RÉSUMÉ
+[HEADING] INTRODUCTION GÉNÉRALE -> Page 10 | Full: INTRODUCTION GÉNÉRALE
+[HEADING] PARTIE I -> Page 11 | Full: PARTIE I
+[HEADING] 1. Présentation générale -> Page 12 | Full: 1. Présentation générale
+[HEADING] 2. Mission, Vision et Valeurs -> Page 12 | Full: 2. Mission, Vision et Valeurs
+[HEADING] 4. Partenariats -> Page 14 | Full: 4. Partenariats
+[HEADING] 1. Objectif général -> Page 15 | Full: 1. Objectif général
+[HEADING] 2. Objectifs spécifiques -> Page 16 | Full: 2. Objectifs spécifiques
+[HEADING] 2. Diagramme de GANTT -> Page 18 | Full: 2. Diagramme de Gantt
+[FIGURE] Figure 1 -> Page 18 | Full: Figure 1 : Diagramme de GANTT
+[HEADING] PARTIE I -> Page 19 | Full: PARTIE II
+[HEADING] PARTIE II -> Page 19 | Full: PARTIE II
+[HEADING] 1. Diagrammes des cas d'utilisation -> Page 23 | Full: 1. Diagrammes des cas d'utilisation
+[FIGURE] Figure 2 -> Page 23 | Full: Figure 2 : Diagramme global des cas d’utilisation (Web & Mobile)
+[HEADING] 2. Diagrammes d'activité -> Page 27 | Full: 2. Diagrammes d'activité
+[FIGURE] Figure 3 -> Page 27 | Full: Figure 3 : Diagramme d’activité : création et gestion d’un compte client
+[FIGURE] Figure 4 -> Page 29 | Full: Figure 4 : Diagramme d’activité : Réservation d’un véhicule
+[FIGURE] Figure 5 -> Page 31 | Full: Figure 5 : Diagramme d’activité : achat d’un produit
+[HEADING] 3. Diagrammes de séquences -> Page 32 | Full: 3. Diagrammes de séquences
+[FIGURE] Figure 6 -> Page 32 | Full: Figure 6 : Diagramme de séquence : Paiement en ligne sécurisé
+[FIGURE] Figure 7 -> Page 33 | Full: Figure 7 : Diagramme de séquence : Réservation d'un véhicule
+[FIGURE] Figure 8 -> Page 34 | Full: Figure 8 : Diagramme de séquence : Achat produit
+[FIGURE] Figure 9 -> Page 35 | Full: Figure 9 : Diagramme de séquence : Inscription d'un utilisateur
+[HEADING] 4. Diagramme de classes -> Page 36 | Full: 4. Diagramme de classes
+[HEADING] PARTIE I -> Page 37 | Full: PARTIE III
+[HEADING] PARTIE II -> Page 37 | Full: PARTIE III
+[HEADING] PARTIE III -> Page 37 | Full: PARTIE III
+[HEADING] 3. Technologies Frontend Web -> Page 39 | Full: 3. Technologies Frontend Web
+[HEADING] 4. Technologies Mobile -> Page 39 | Full: 4. Technologies Mobile
+[HEADING] 6. Technologies de notifications et messagerie -> Page 40 | Full: 6. Technologies de notifications et messagerie
+[FIGURE] Figure 1 -> Page 43 | Full: Figure 19 : Schéma de l’architecture générale du système
+[FIGURE] Figure 19 -> Page 43 | Full: Figure 19 : Schéma de l’architecture générale du système
+[HEADING] PARTIE I -> Page 44 | Full: PARTIE IV
+[HEADING] PARTIE IV -> Page 44 | Full: PARTIE IV
+[HEADING] 2. Le Service de messagerie -> Page 46 | Full: 2. Le Service de messagerie et notifications transactionnelles (Brevo / SMTP)
+[HEADING] 3. Le Module de paiement en ligne sécurisé (Genius Pay) -> Page 47 | Full: 3. Le Module de paiement en ligne sécurisé (Genius Pay)
+[HEADING] 1. Page d'accueil et de connexion -> Page 47 | Full: 1. Page d'accueil et de connexion
+[HEADING] 2. Catalogue des produits -> Page 49 | Full: 2. Catalogue des produits
+[HEADING] 3. Module de réservation de véhicules -> Page 49 | Full: 3. Module de réservation de véhicules
+[HEADING] 4. Panier multi-articles -> Page 50 | Full: 4. Panier multi-articles et génération de devis PDF
+[FIGURE] Figure 2 -> Page 50 | Full: Figure 25 : Interface Web : Panier multi-articles
+[FIGURE] Figure 25 -> Page 50 | Full: Figure 25 : Interface Web : Panier multi-articles
+[HEADING] 5. Espace Client et suivi des demandes -> Page 50 | Full: 5. Espace Client et suivi des demandes
+[FIGURE] Figure 2 -> Page 50 | Full: Figure 26 : Interface Web : Espace client et suivi des demandes
+[FIGURE] Figure 26 -> Page 50 | Full: Figure 26 : Interface Web : Espace client et suivi des demandes
+[HEADING] 1. Écran d'accueil et fiche détaillée -> Page 51 | Full: 1. Écran d'accueil et Fiche détaillée du véhicule
+[FIGURE] Figure 2 -> Page 51 | Full: Figure 27 : Application Mobile : Écran d'accueil et fiche détaillée du véhicule
+[FIGURE] Figure 27 -> Page 51 | Full: Figure 27 : Application Mobile : Écran d'accueil et fiche détaillée du véhicule
+[HEADING] 2. Panier mobile -> Page 52 | Full: 2. Panier mobile
+[FIGURE] Figure 2 -> Page 54 | Full: Figure 29 : Interface d’administration : Gestion de la flotte et du parc de véhi
+[FIGURE] Figure 29 -> Page 54 | Full: Figure 29 : Interface d’administration : Gestion de la flotte et du parc de véhi
+[HEADING] 1. Coûts matériels et logiciels -> Page 55 | Full: 1. Coûts matériels et logiciels
+[HEADING] 2. Coûts d'hébergement et de maintenance -> Page 55 | Full: 2. Coûts d'hébergement et de maintenance
+[HEADING] III. Rentabilité, retour sur investissement -> Page 56 | Full: III. Rentabilité, retour sur investissement (ROI) et perspectives d’évolution
+[HEADING] 1. Rentabilité immédiate -> Page 56 | Full: 1. Rentabilité immédiate et retour sur investissement
+[HEADING] 2. Perspectives d’évolution -> Page 56 | Full: 2. Perspectives d’évolution de la plateforme
+[HEADING] CONCLUSION GÉNÉRALE -> Page 57 | Full: CONCLUSION GÉNÉRALE
+[HEADING] BIBLIOGRAPHIE -> Page 58 | Full: BIBLIOGRAPHIE
+[HEADING] WEBOGRAPHIE -> Page 59 | Full: WEBOGRAPHIE
+[HEADING] TABLE DES MATIÈRES -> Page 60 | Full: TABLE DES MATIÈRES
+[HEADING] DÉDICACE -> Page 60 | Full: DÉDICACE	 - 1 -
+[HEADING] REMERCIEMENTS -> Page 60 | Full: REMERCIEMENTS	 - 2 -
+[HEADING] AVANT-PROPOS -> Page 60 | Full: AVANT-PROPOS	 - 3 -
+[HEADING] SOMMAIRE -> Page 60 | Full: SOMMAIRE	 - 5 -
+[HEADING] LISTE DES FIGURES -> Page 60 | Full: LISTE DES FIGURES	 - 6 -
+[HEADING] LISTE DES TABLEAUX -> Page 60 | Full: LISTE DES TABLEAUX	 - 7 -
+[HEADING] LISTE DES ABRÉVIATIONS -> Page 60 | Full: LISTE DES ABRÉVIATIONS	 - 8 -
+[HEADING] RÉSUMÉ -> Page 60 | Full: RÉSUMÉ	 - 9 -
+[HEADING] INTRODUCTION GÉNÉRALE -> Page 60 | Full: INTRODUCTION GÉNÉRALE	 - 10 -
+[HEADING] PARTIE I -> Page 60 | Full: PARTIE I : CADRE ET CONTEXTE DU PROJET	 - 11 -
+[HEADING] Chapitre 1 : Présentation de la structure -> Page 60 | Full: Chapitre 1 : Présentation de la structure d’accueil	 - 12 -
+[HEADING] I. Présentation de SOUTARAH GROUP -> Page 60 | Full: I. Présentation de SOUTARAH GROUP	 - 12 -
+[HEADING] 1. Présentation générale -> Page 60 | Full: 1. Présentation générale	 - 12 -
+[HEADING] 2. Mission, Vision et Valeurs -> Page 60 | Full: 2. Mission, Vision et Valeurs	 - 12 -
+[HEADING] 3. Domaines d'activités et services -> Page 60 | Full: 3. Domaines d'activités et services	 - 13 -
+[HEADING] 4. Partenariats -> Page 60 | Full: 4. Partenariats	 - 14 -
+[HEADING] Chapitre 2 : Présentation du projet -> Page 60 | Full: Chapitre 2 : Présentation du projet	 - 15 -
+[HEADING] I. Contexte et justification du projet -> Page 60 | Full: I. Contexte et justification du projet	 - 15 -
+[HEADING] III. Étude de l'existant et limites -> Page 60 | Full: III. Étude de l'existant et limites	 - 15 -
+[HEADING] III. Objectifs du projet -> Page 60 | Full: III. Objectifs du projet	 - 15 -
+[HEADING] 1. Objectif général -> Page 60 | Full: 1. Objectif général	 - 15 -
+[HEADING] 2. Objectifs spécifiques -> Page 60 | Full: 2. Objectifs spécifiques	 - 16 -
+[HEADING] IV. Cahier des charges du système -> Page 60 | Full: IV. Cahier des charges du système	 - 16 -
+[HEADING] 1. Exigences fonctionnelles côté Client -> Page 60 | Full: 1. Exigences fonctionnelles côté Client	 - 16 -
+[HEADING] 2. Exigences fonctionnelles côté Administrateur -> Page 60 | Full: 2. Exigences fonctionnelles côté Administrateur	 - 17 -
+[HEADING] 3. Exigences techniques et contraintes -> Page 60 | Full: 3. Exigences techniques et contraintes	 - 17 -
+[HEADING] V. Planification des tâches et diagramme de GANTT -> Page 60 | Full: V. Planification des tâches et diagramme de GANTT	 - 17 -
+[HEADING] 1. Planning prévisionnel -> Page 60 | Full: 1. Planning prévisionnel	 - 17 -
+[HEADING] 2. Diagramme de GANTT -> Page 60 | Full: 2. Diagramme de GANTT	 - 18 -
+[HEADING] PARTIE I -> Page 60 | Full: PARTIE II : ÉTUDE CONCEPTUELLE	 - 19 -
+[HEADING] PARTIE II -> Page 60 | Full: PARTIE II : ÉTUDE CONCEPTUELLE	 - 19 -
+[HEADING] Chapitre 3 : Choix de la méthode d’analyse -> Page 60 | Full: Chapitre 3 : Choix de la méthode d’analyse	 - 20 -
+[HEADING] I. Étude comparative des méthodes d'analyse -> Page 60 | Full: I. Étude comparative des méthodes d'analyse 	 - 20 -
+[HEADING] 1. Présentation de la méthode MERISE -> Page 60 | Full: 1. Présentation de la méthode MERISE	 - 20 -
+[HEADING] 2. Présentation de la méthode PU/UML -> Page 60 | Full: 2. Présentation de la méthode PU/UML	 - 20 -
+[HEADING] 3. Tableau comparatif Merise et PU/UML -> Page 60 | Full: 3. Tableau comparatif Merise et PU/UML	 - 21 -
+[HEADING] 4. choix de la méthode d’analyse -> Page 60 | Full: 4. choix de la méthode d’analyse	 - 22 -
+[HEADING] II. Application du PU/UML au système SOUTARAH GROUP -> Page 60 | Full: II. Application du PU/UML au système SOUTARAH GROUP	 - 22 -
+[HEADING] 1. Diagrammes des cas d'utilisation -> Page 60 | Full: 1. Diagrammes des cas d'utilisation	 - 23 -
+[HEADING] Description textuelle des cas d’utilisation -> Page 60 | Full: ❖ Description textuelle des cas d’utilisation	 - 23 -
+[HEADING] 2. Diagrammes d'activité -> Page 60 | Full: 2. Diagrammes d'activité	 - 27 -
+[HEADING] 2.1. Création et gestion d’un compte client -> Page 60 | Full: 2.1. Création et gestion d’un compte client	 - 27 -
+[HEADING] 2.2. Réservation d’un véhicule -> Page 60 | Full: 2.2. Réservation d’un véhicule avec contrôle de disponibilité	 - 28 -
+[HEADING] 2.3. Processus d’achat d’un produit -> Page 60 | Full: 2.3. Processus d’achat d’un produit	 - 30 -
+[HEADING] 3. Diagrammes de séquences -> Page 60 | Full: 3. Diagrammes de séquences	 - 32 -
+[HEADING] 3.1. Paiement en ligne sécurisé -> Page 60 | Full: 3.1. Paiement en ligne sécurisé	 - 32 -
+[HEADING] 3.2. Réservation d'un véhicule -> Page 60 | Full: 3.2. Réservation d'un véhicule	 - 33 -
+[HEADING] 3.3. Achat produit -> Page 60 | Full: 3.3. Achat produit	 - 34 -
+[HEADING] 3.4. Inscription d'un utilisateur -> Page 60 | Full: 3.4. Inscription d'un utilisateur	 - 35 -
+[HEADING] 4. Diagramme de classes -> Page 60 | Full: 4. Diagramme de classes	 - 36 -
+[HEADING] PARTIE I -> Page 60 | Full: PARTIE III : ÉTUDE TECHNIQUE	 - 37 -
+[HEADING] PARTIE II -> Page 60 | Full: PARTIE III : ÉTUDE TECHNIQUE	 - 37 -
+[HEADING] PARTIE III -> Page 60 | Full: PARTIE III : ÉTUDE TECHNIQUE	 - 37 -
+[HEADING] Chapitre 4 : Conception du système et choix technologiques -> Page 60 | Full: Chapitre 4 : Conception du système et choix technologiques	 - 38 -
+[HEADING] I. Analyse et justification des choix technologiques -> Page 61 | Full: I. Analyse et justification des choix technologiques	 - 38 -
+[HEADING] 1. Environnement de développement -> Page 61 | Full: 1. Environnement de développement	 - 38 -
+[HEADING] 2. Outil de maquettage UI/UX -> Page 61 | Full: 2. Outil de maquettage UI/UX	 - 38 -
+[HEADING] 3. Technologies Frontend Web -> Page 61 | Full: 3. Technologies Frontend Web	 - 39 -
+[HEADING] 4. Technologies Mobile -> Page 61 | Full: 4. Technologies Mobile 	 - 39 -
+[HEADING] 5. Technologies Backend et API REST -> Page 61 | Full: 5. Technologies Backend et API REST 	 - 40 -
+[HEADING] 6. Technologies de notifications et messagerie -> Page 61 | Full: 6. Technologies de notifications et messagerie 	 - 40 -
+[HEADING] 7. Plateforme d’hébergement et déploiement -> Page 61 | Full: 7. Plateforme d’hébergement et déploiement 	 - 40 -
+[HEADING] II. Système de Gestion de Base de Données (SGBD) -> Page 61 | Full: II. Système de Gestion de Base de Données (SGBD)	 - 41 -
+[HEADING] 1. Comparaison des principaux SGBD -> Page 61 | Full: 1. Comparaison des principaux SGBD	 - 41 -
+[HEADING] 2. Choix et justification de MySQL -> Page 61 | Full: 2. Choix et justification de MySQL	 - 42 -
+[HEADING] III. Architecture générale du système -> Page 61 | Full: III. Architecture générale du système 	 - 42 -
+[HEADING] PARTIE I -> Page 61 | Full: PARTIE IV : RÉALISATION ET MISE EN ŒUVRE	 - 44 -
+[HEADING] PARTIE IV -> Page 61 | Full: PARTIE IV : RÉALISATION ET MISE EN ŒUVRE	 - 44 -
+[HEADING] Chapitre 5 : Réalisation de la plateforme web -> Page 61 | Full: Chapitre 5 : Réalisation de la plateforme web et de l’application mobile	 - 45 -
+[HEADING] I. Mise en place de la base de données MySQL -> Page 61 | Full: I. Mise en place de la base de données MySQL	 - 45 -
+[HEADING] II. Implémentation de l'Assistant IA -> Page 61 | Full: II. Implémentation de l'Assistant IA et des notifications (Brevo)	 - 46 -
+[HEADING] 1. L'Assistant virtuel intelligent -> Page 61 | Full: 1. L'Assistant virtuel intelligent (Agent IA)	 - 46 -
+[HEADING] 2. Le Service de messagerie -> Page 61 | Full: 2. Le Service de messagerie et notifications (Brevo / SMTP)	 - 46 -
+[HEADING] III. Réalisation des interfaces de la plateforme Web -> Page 61 | Full: III. Réalisation des interfaces de la plateforme Web	 - 47 -
+[HEADING] 1. Page d'accueil et de connexion -> Page 61 | Full: 1. Page d'accueil et de connexion	 - 47 -
+[HEADING] 2. Catalogue des produits -> Page 61 | Full: 2. Catalogue des produits	 - 48 -
+[HEADING] 3. Module de réservation de véhicules -> Page 61 | Full: 3. Module de réservation de véhicules	 - 49 -
+[HEADING] 4. Panier multi-articles -> Page 61 | Full: 4. Panier multi-articles et génération de devis PDF	 - 49 -
+[HEADING] 5. Espace Client et suivi des demandes -> Page 61 | Full: 5. Espace Client et suivi des demandes	 - 50 -
+[HEADING] IV. Réalisation de l'application mobile -> Page 61 | Full: IV. Réalisation de l'application mobile dédiée à la réservation	 - 50 -
+[HEADING] 1. Écran d'accueil et fiche détaillée -> Page 61 | Full: 1. Écran d'accueil et fiche détaillée du véhicule	 - 50 -
+[HEADING] 2. Panier mobile -> Page 61 | Full: 2. Panier mobile	 - 51 -
+[HEADING] V. Réalisation de l'espace administrateur -> Page 61 | Full: V. Réalisation de l'espace administrateur (Back-Office Web)	 - 52 -
+[HEADING] 1. Tableau de bord des indicateurs clés -> Page 61 | Full: 1. Tableau de bord des indicateurs clés (Dashboard)	 - 52 -
+[HEADING] 2. Gestion du parc de véhicules -> Page 61 | Full: 2. Gestion du parc de véhicules et des réservations	 - 53 -
+[HEADING] Chapitre 6 : Mise en œuvre -> Page 61 | Full: Chapitre 6 : Mise en œuvre	 - 53 -
+[HEADING] I. Tests fonctionnels et validation -> Page 61 | Full: I. Tests fonctionnels et validation (Cahier de recettes)	 - 53 -
+[HEADING] II. Étude financière et estimation des coûts -> Page 61 | Full: II. Étude financière et estimation des coûts	 - 54 -
+[HEADING] 1. Coûts matériels et logiciels -> Page 61 | Full: 1. Coûts matériels et logiciels	 - 54 -
+[HEADING] 2. Coûts d'hébergement et de maintenance -> Page 61 | Full: 2. Coûts d'hébergement et de maintenance annuelle	 - 54 -
+[HEADING] III. Rentabilité, retour sur investissement -> Page 61 | Full: III. Rentabilité, retour sur investissement et perspectives	 - 55 -
+[HEADING] 1. Rentabilité immédiate -> Page 61 | Full: 1. Rentabilité immédiate et retour sur investissement (ROI)	 - 55 -
+[HEADING] 2. Perspectives d’évolution -> Page 61 | Full: 2. Perspectives d’évolution de la plateforme	 - 55 -
+[HEADING] CONCLUSION GÉNÉRALE -> Page 61 | Full: CONCLUSION GÉNÉRALE ET PERSPECTIVES	 - 56 -
+[HEADING] BIBLIOGRAPHIE -> Page 61 | Full: BIBLIOGRAPHIE	 - 57 -
+[HEADING] I. Ouvrages et cours -> Page 61 | Full: I. Ouvrages et cours académiques	 - 57 -
+[HEADING] II. Documentations techniques -> Page 61 | Full: II. Documentations techniques et références web	 - 57 -
+[HEADING] WEBOGRAPHIE -> Page 61 | Full: WEBOGRAPHIE	 - 58 -
+[HEADING] TABLE DES MATIÈRES -> Page 61 | Full: TABLE DES MATIÈRES	 - 59 -

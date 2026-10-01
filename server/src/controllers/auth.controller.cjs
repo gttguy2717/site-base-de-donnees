@@ -278,7 +278,7 @@ async function updateProfile(request, response, next) {
 
     if (!user) throw badRequest('Utilisateur introuvable.');
 
-    const { firstName, lastName, email, phone, address, companyName, responsibleName, identificationNumber, newPassword, avatar_url } = request.body;
+    const { firstName, lastName, email, phone, address, companyName, responsibleName, identificationNumber, currentPassword, newPassword, avatar_url } = request.body;
 
     if (avatar_url !== undefined) {
       user.avatar_url = avatar_url;
@@ -299,6 +299,8 @@ async function updateProfile(request, response, next) {
     }
 
     if (newPassword && newPassword.trim()) {
+      if (!currentPassword || !currentPassword.trim()) throw badRequest('Le mot de passe actuel est requis.');
+      if (!(await comparePassword(currentPassword, user.mot_de_passe_hash))) throw badRequest('Le mot de passe actuel est incorrect.');
       if (newPassword.trim().length < 8) throw badRequest('Le mot de passe doit contenir au moins 8 caractères.');
       user.mot_de_passe_hash = await hashPassword(newPassword.trim());
     }

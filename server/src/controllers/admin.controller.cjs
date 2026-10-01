@@ -3,6 +3,7 @@ const { sequelize, User, Client, Company, Product, Category, Tariff, Vehicle, Re
 const XLSX = require('xlsx');
 const fs = require('fs');
 const { repairRecursive, repairText } = require('../utilities/text-encoding.cjs');
+const { hashPassword } = require('../services/auth.service.cjs');
 
 // Répare les chaînes (clés ET valeurs) d'une ligne d'export Excel
 function repairExcelRow(row) {
@@ -172,14 +173,32 @@ async function getAllProducts(request, response, next) {
 
 async function createProduct(request, response, next) {
   try {
-    const { nom, reference, description, image_url, categorie_id, unite, stock, seuil_alerte, tarifs } = request.body;
+    const { nom, reference, description, image_url, categorie_id, categorie_nom, unite, stock, seuil_alerte, tarifs } = request.body;
+
+    // Catégorie : soit un id existant, soit un libellé du site (findOrCreate)
+    // pour que l'article soit aussitôt rattaché à la bonne catégorie publique.
+    let resolvedCategoryId = categorie_id || null;
+    if (!resolvedCategoryId && categorie_nom) {
+      const label = String(categorie_nom).trim();
+      const slug = label
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+      const [category] = await Category.findOrCreate({
+        where: { slug },
+        defaults: { nom: label, slug, description: label, est_actif: true },
+      });
+      resolvedCategoryId = category.id;
+    }
 
     const product = await Product.create({
       nom,
       reference,
       description,
       image_url,
-      categorie_id: categorie_id || null,
+      categorie_id: resolvedCategoryId,
       unite: unite || 'unité',
       stock: stock || 0,
       seuil_alerte: seuil_alerte || 0,
@@ -1483,6 +1502,54 @@ async function saveSettings(request, response, next) {
 }
 
 // Changer le statut d'un client (bloquer/débloquer)
+/**
+ * Suppression definitive d'un compte client (particulier ou entreprise).
+ * L'ordre compte a cause des cles etrangeres : les tables enfants d'abord,
+ * puis l'entreprise, le client et enfin le compte utilisateur.
+ * Les reservations sont protegees : on refuse la suppression si le compte
+ * en possede, plutot que de detruire l'historique.
+ */
+async function deleteClient(request, response, next) {
+  const transaction = await sequelize.transaction();
+  try {
+    const { id } = request.params;
+    const client = await Client.findOne({
+      where: { id },
+      include: [{ model: Company, as: 'entreprise' }],
+      transaction,
+    });
+    if (!client) {
+      await transaction.rollback();
+      return response.status(404).json({ message: 'Client introuvable.' });
+    }
+
+    // Garde-fou : des reservations bloquent la suppression (cle etrangere).
+    const reservations = await Reservation.count({ where: { client_id: id }, transaction });
+    if (reservations > 0) {
+      await transaction.rollback();
+      return response.status(409).json({
+        message: `Suppression impossible : ce compte est lié à ${reservations} réservation(s). ` +
+          'Désactivez le compte ou supprimez d\'abord les réservations.',
+      });
+    }
+
+    const utilisateurId = client.utilisateur_id;
+
+    // Nettoyage des donnees dependantes
+    await Notification.destroy({ where: { utilisateur_id: utilisateurId }, transaction });
+    await Quote.destroy({ where: { client_id: id }, transaction });
+    await Company.destroy({ where: { client_id: id }, transaction });
+    await Client.destroy({ where: { id }, transaction });
+    await User.destroy({ where: { id: utilisateurId }, transaction });
+
+    await transaction.commit();
+    return response.json({ message: 'Compte client supprimé.' });
+  } catch (error) {
+    await transaction.rollback();
+    return next(error);
+  }
+}
+
 async function updateClientStatus(request, response, next) {
   try {
     const { id } = request.params;
@@ -1500,6 +1567,27 @@ async function updateClientStatus(request, response, next) {
       message: est_actif ? 'Compte débloqué' : 'Compte bloqué',
       user: { id: user.id, est_actif: user.est_actif }
     });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// Réinitialiser le mot de passe d'un client (depuis l'espace admin)
+async function resetClientPassword(request, response, next) {
+  try {
+    const { id } = request.params;
+    const password = (request.body.password || '').trim();
+
+    if (password.length < 8) {
+      return response.status(400).json({ message: 'Le mot de passe doit contenir au moins 8 caractères.' });
+    }
+
+    const user = await User.findByPk(id);
+    if (!user) return response.status(404).json({ message: 'Utilisateur non trouvé' });
+
+    await user.update({ mot_de_passe_hash: await hashPassword(password) });
+
+    response.json({ success: true, message: 'Mot de passe mis à jour' });
   } catch (error) {
     next(error);
   }
@@ -1702,7 +1790,9 @@ async function uploadSignedQuote(request, response, next) {
 module.exports = {
   getAllClients,
   createClient,
+  deleteClient,
   updateClientStatus,
+  resetClientPassword,
   reviewClientVerification,
   convertEntrepriseClient,
   downloadClientDocument,

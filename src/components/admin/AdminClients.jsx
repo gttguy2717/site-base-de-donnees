@@ -16,6 +16,45 @@ function getColorClass(color) {
   return COLOR_CLASSES[color] || 'bg-gray-500';
 }
 
+/** Champs du formulaire de création d'une entreprise cliente. */
+const FIELD_CLASS =
+  'w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500';
+
+const CREATE_FIELDS = [
+  { key: 'companyName', label: 'Nom de l’entreprise', required: true, type: 'text', placeholder: 'Ex. Sahel Distribution' },
+  { key: 'responsibleName', label: 'Responsable', type: 'text', placeholder: 'Nom et prénom' },
+  { key: 'email', label: 'Email', required: true, type: 'email', placeholder: 'contact@entreprise.com' },
+  { key: 'phone', label: 'Téléphone', required: true, type: 'tel', placeholder: '+225 07 00 00 00 00' },
+  { key: 'city', label: 'Ville', required: true, type: 'text', placeholder: 'Abidjan' },
+  { key: 'address', label: 'Adresse', type: 'text', placeholder: 'Rue, quartier' },
+  { key: 'identificationNumber', label: 'Numéro d’identification', type: 'text', placeholder: 'RCCM / Numéro contribuable', full: true },
+  { key: 'password', label: 'Mot de passe', required: true, type: 'password', placeholder: 'Au moins 8 caractères' },
+  { key: 'confirmPassword', label: 'Confirmer le mot de passe', required: true, type: 'password', placeholder: '••••••••' },
+];
+
+function CreateFields({ form, setField }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {CREATE_FIELDS.map((f) => (
+        <div key={f.key} className={f.full ? 'sm:col-span-2' : ''}>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            {f.label} {f.required && <span className="text-red-500">*</span>}
+          </label>
+          <input
+            type={f.type}
+            required={f.required}
+            minLength={f.type === 'password' ? 8 : undefined}
+            value={form[f.key]}
+            onChange={setField(f.key)}
+            placeholder={f.placeholder}
+            className={FIELD_CLASS}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function AdminClients() {
   const { token } = useAuth();
   const [clients, setClients] = useState([]);
@@ -31,6 +70,102 @@ export default function AdminClients() {
   const [convertDays, setConvertDays] = useState('30');
   const [convertBusy, setConvertBusy] = useState(false);
   const [busyUserId, setBusyUserId] = useState(null);
+  // --- Suppression d'un compte client ---
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState('');
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+
+  const closeDelete = () => {
+    setDeleteTarget(null);
+    setDeleteConfirm('');
+    setDeleteError('');
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleteBusy(true);
+    setDeleteError('');
+    try {
+      const response = await fetch(`/api/admin/clients/${deleteTarget.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setDeleteError(data.message || 'Erreur lors de la suppression.');
+        return;
+      }
+      closeDelete();
+      await loadClients();
+    } catch (error) {
+      console.error('Erreur suppression client:', error);
+      setDeleteError('Erreur réseau, veuillez réessayer.');
+    } finally {
+      setDeleteBusy(false);
+    }
+  };
+  // --- Création d'une entreprise cliente ---
+  const [showCreate, setShowCreate] = useState(false);
+  const [createBusy, setCreateBusy] = useState(false);
+  const [createError, setCreateError] = useState('');
+  const [createForm, setCreateForm] = useState({
+    companyName: '', responsibleName: '', email: '', phone: '',
+    address: '', city: '', identificationNumber: '',
+    password: '', confirmPassword: '',
+  });
+
+  const CREATE_INITIAL = {
+    companyName: '', responsibleName: '', email: '', phone: '',
+    address: '', city: '', identificationNumber: '',
+    password: '', confirmPassword: '',
+  };
+
+  const openCreate = () => {
+    setCreateForm({ ...CREATE_INITIAL });
+    setCreateError('');
+    setShowCreate(true);
+  };
+
+  const setCreateField = (field) => (event) =>
+    setCreateForm((f) => ({ ...f, [field]: event.target.value }));
+
+  const submitCreate = async (event) => {
+    event.preventDefault();
+    setCreateError('');
+    if (createForm.password !== createForm.confirmPassword) {
+      setCreateError('Les mots de passe ne correspondent pas.');
+      return;
+    }
+    if ((createForm.password || '').trim().length < 8) {
+      setCreateError('Le mot de passe doit contenir au moins 8 caractères.');
+      return;
+    }
+    setCreateBusy(true);
+    try {
+      const response = await fetch('/api/admin/clients', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(createForm),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setCreateError(data.message || 'Erreur lors de la création de l’entreprise.');
+        return;
+      }
+      setShowCreate(false);
+      setCreateForm({ ...CREATE_INITIAL });
+      await loadClients();
+    } catch (error) {
+      console.error('Erreur création entreprise:', error);
+      setCreateError('Erreur réseau, veuillez réessayer.');
+    } finally {
+      setCreateBusy(false);
+    }
+  };
 
   const loadClients = async () => {
     try {
@@ -253,6 +388,14 @@ export default function AdminClients() {
           <p className="text-sm text-gray-500">Gestion des particuliers et des entreprises</p>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={openCreate}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
+            title="Créer une entreprise cliente"
+          >
+            <span className="material-symbols-outlined text-sm">add_business</span>
+            Nouvelle entreprise
+          </button>
           <input
             type="text"
             value={search}
@@ -405,6 +548,7 @@ export default function AdminClients() {
                       )}
                     </td>
                     <td className="px-4 py-3 text-center">
+                      <div className="flex flex-wrap items-center justify-center gap-1.5">
                       {estEntreprise && client.type_client === 'ENTREPRISE' ? (
                         <button
                           onClick={() => { setConvertMode('none'); setConvertDays('30'); setConvertClient(client); }}
@@ -429,6 +573,16 @@ export default function AdminClients() {
                       ) : (
                         <span className="text-xs text-gray-400">-</span>
                       )}
+                        <button
+                          onClick={() => setDeleteTarget(client)}
+                          disabled={busyUserId === client.utilisateur?.id}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors border border-red-200 bg-white text-red-600 hover:bg-red-50 disabled:opacity-50"
+                          title="Supprimer définitivement ce compte"
+                        >
+                          <span className="material-symbols-outlined text-sm">delete</span>
+                          Supprimer
+                        </button>
+                      </div>
                     </td>
                     </>
                     )}
@@ -446,6 +600,117 @@ export default function AdminClients() {
         )}
       </div>
       )}
+      {/* Modale : suppression définitive d'un compte client */}
+      {deleteTarget && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">Supprimer ce compte</h2>
+                <p className="text-sm text-gray-500">
+                  {deleteTarget.entreprise?.nom ||
+                    `${deleteTarget.prenom || ''} ${deleteTarget.nom || ''}`.trim() ||
+                    'Ce client'}
+                </p>
+              </div>
+              <button
+                onClick={closeDelete}
+                className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="rounded-xl bg-red-50 border border-red-200 px-3 py-2.5 text-xs text-red-700">
+              Cette action est <strong>irréversible</strong> : le compte utilisateur,
+              l'entreprise associée et ses devis seront définitivement supprimés.
+            </div>
+
+            <label className="block text-sm font-semibold text-gray-700 mt-4 mb-1">
+              Tapez <span className="font-mono">SUPPRIMER</span> pour confirmer
+            </label>
+            <input
+              type="text"
+              value={deleteConfirm}
+              onChange={(e) => setDeleteConfirm(e.target.value)}
+              placeholder="SUPPRIMER"
+              className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+
+            {deleteError && (
+              <p className="mt-3 rounded-xl bg-red-50 border border-red-200 px-3 py-2 text-xs font-bold text-red-700">
+                {deleteError}
+              </p>
+            )}
+
+            <div className="flex items-center justify-end gap-2 mt-5">
+              <button
+                onClick={closeDelete}
+                className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={deleteBusy || deleteConfirm.trim().toUpperCase() !== 'SUPPRIMER'}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-sm">delete_forever</span>
+                {deleteBusy ? 'Suppression…' : 'Supprimer définitivement'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modale : créer une entreprise cliente (remplace l'ancienne
+          modale de mot de passe, retirée sur demande) */}
+      {showCreate && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">Nouvelle entreprise cliente</h2>
+                <p className="text-sm text-gray-500">
+                  Crée le compte utilisateur et l’entreprise associée.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowCreate(false)}
+                className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <form onSubmit={submitCreate}>
+              <CreateFields form={createForm} setField={setCreateField} />
+              {createError && (
+                <p className="mt-4 rounded-xl bg-red-50 border border-red-200 px-3 py-2 text-xs font-bold text-red-700">
+                  {createError}
+                </p>
+              )}
+              <div className="flex items-center justify-end gap-2 mt-5">
+                <button
+                  type="button"
+                  onClick={() => setShowCreate(false)}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={createBusy}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                >
+                  <span className="material-symbols-outlined text-sm">add_business</span>
+                  {createBusy ? 'Création…' : 'Créer l’entreprise'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Modale : examen des documents d'entreprise */}
       {reviewClient && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

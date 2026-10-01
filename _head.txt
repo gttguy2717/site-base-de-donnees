@@ -1,0 +1,60 @@
+1 | Normal | img=0  | D├ëDICACE
+2 | Normal | img=0  | Je d├®die ce modeste travail ├á toute ma famille ainsi quÔÇÖ├á tous ceux qui mÔÇÖont soutenu de pr├¿s et de loin tout 
+5 | Heading 1 | img=0  | REMERCIEMENTS
+6 | Normal | img=0  | Je tiens ├á adresser mes sinc├¿res remerciements ├á Monsieur Kologo Harouna, Directeur de Soutarah Group, ainsi q
+7 | Normal | img=0  | AVANT-PROPOS
+8 | Normal | img=0  | LÔÇÖInstitut National Polytechnique F├®lix HOUPHOU├ïT-BOIGNY (INP-HB) de Yamoussoukro a ├®t├® cr├®├® par le d├®cret n┬░ 
+9 | List Paragraph | img=0  | INSET : Institut National Sup├®rieur de lÔÇÖEnseignement Technique ;
+10 | List Paragraph | img=0  | ENSTP : Ecole Nationale Sup├®rieure des Travaux Publics ;
+11 | List Paragraph | img=0  | ENSA : Ecole Nationale Sup├®rieure dÔÇÖAgronomie ;
+12 | List Paragraph | img=0  | IAB : Institut Agricole de Bouak├®.
+13 | Normal | img=0  | ├Ç pr├®sent, lÔÇÖINP-HB compte onze (11) grandes ├®coles responsables de la formation qualifiante des ├®tudiants. On
+14 | List Paragraph | img=0  | ESI : Ecole Sup├®rieure dÔÇÖIndustrie ;
+15 | List Paragraph | img=0  | ESMG : Ecole Sup├®rieure des Mines et G├®ologie ;
+16 | List Paragraph | img=0  | ESA : Ecole Sup├®rieure dÔÇÖAgronomie ;
+17 | List Paragraph | img=0  | ESCAE : Ecole Sup├®rieure de Commerce et dÔÇÖAdministration des Entreprises ;
+18 | List Paragraph | img=0  | ESTP : Ecole Sup├®rieure des Travaux Publics ;
+19 | List Paragraph | img=0  | EFSPC : Ecole des Formations Sp├®cialis├®es et du Perfectionnement des Cadres ;
+20 | List Paragraph | img=0  | EDPSAPT : Ecole Doctorale Science Agronomique et Proc├®d├®s de Transformation ;
+21 | List Paragraph | img=0  | ESCPE : Ecole Sup├®rieure de Chimie P├®trole et de lÔÇÖEnergie ;
+22 | List Paragraph | img=0  | EPGE : Ecole Pr├®paratoires aux Grandes Ecoles ;
+23 | List Paragraph | img=0  | EDPSTI : Ecole Doctorale des Sciences et Techniques de lÔÇÖIng├®nieur┬á;
+24 | List Paragraph | img=0  | ESAS : Ecole Sup├®rieure de lÔÇÖA├®ronautique et du Spatiale.
+25 | Normal | img=0  | LÔÇÖINP-HB est un label de r├®forme qui, dans le cadre du perfectionnement des ├®tudiants, propose des formations 
+26 | Normal | img=0  | Dans le cadre de ce perfectionnement, la direction de lÔÇÖESI a mis en place une r├®forme en 2016 visant ├á amener
+27 | Normal | img=0  | Ainsi, jÔÇÖai pu effectuer mon stage au sein de lÔÇÖentreprise Soutarah Group. Ce stage de 2 mois sÔÇÖest d├®roul├® du
+29 | Heading 1 | img=0  | SOMMAIRE
+30 | Normal | img=0  | D├ëDICACE	 - 1 -
+31 | Normal | img=0  | REMERCIEMENTS	 - 2 -
+32 | Normal | img=0  | AVANT-PROPOS	 - 3 -
+33 | Normal | img=0  | SOMMAIRE	 - 5 -
+34 | Normal | img=0  | LISTE DES FIGURES	 - 6 -
+35 | Normal | img=0  | LISTE DES TABLEAUX	 - 7 -
+36 | Normal | img=0  | LISTE DES ABR├ëVIATIONS	 - 8 -
+37 | Normal | img=0  | R├ëSUM├ë	 - 9 -
+38 | Normal | img=0  | INTRODUCTION G├ëN├ëRALE	 - 10 -
+39 | Normal | img=0  | PARTIE I : CADRE ET CONTEXTE DU PROJET	 - 11 -
+40 | Normal | img=0  | Chapitre 1 : Pr├®sentation de la structure dÔÇÖaccueil	 - 12 -
+41 | Normal | img=0  | Chapitre 2 : Pr├®sentation et planification du projet	 - 15 -
+42 | Normal | img=0  | PARTIE II : ├ëTUDE CONCEPTUELLE	 - 19 -
+43 | Normal | img=0  | Chapitre 3 : Choix de la m├®thode dÔÇÖanalyse	 - 20 -
+44 | Normal | img=0  | PARTIE III : ├ëTUDE TECHNIQUE	 - 37 -
+45 | Normal | img=0  | Chapitre 4 : Conception du syst├¿me et choix technologiques	 - 38 -
+46 | Normal | img=0  | PARTIE IV : R├ëALISATION ET MISE EN ┼ÆUVRE	 - 44 -
+47 | Normal | img=0  | Chapitre 5 : R├®alisation de la plateforme web et de l'application mobile	 - 45 -
+48 | Normal | img=0  | Chapitre 6 : Mise en ┼ôuvre	 - 54 -
+49 | Normal | img=0  | CONCLUSION G├ëN├ëRALE	 - 57 -
+50 | Normal | img=0  | BIBLIOGRAPHIE 	 - 58 -
+51 | Normal | img=0  | WEBOGRAPHIE	 - 59 -
+52 | Normal | img=0  | TABLE DES MATI├êRES	 - 60 -
+54 | Heading 1 | img=0  | LISTE DES FIGURES
+55 | Normal | img=0  | Figure 1 : Diagramme de GANTT	 - 18 -
+56 | Normal | img=0  | Figure 2 : Diagramme global des cas dÔÇÖutilisation (Web & Mobile)	 - 23 -
+57 | Normal | img=0  | Figure 3 : Diagramme dÔÇÖactivit├® de cr├®ation et gestion dÔÇÖun compte client	 - 27 -
+58 | Normal | img=0  | Figure 4 : Diagramme dÔÇÖactivit├® de r├®servation dÔÇÖun v├®hicule	 - 29 -
+59 | Normal | img=0  | Figure 5 : Diagramme dÔÇÖactivit├® d'achat dÔÇÖun produit	 - 31 -
+
+--- sections ---
+section 0 start_type NEW_PAGE (2) diff_first_page False
+  header: [' ']
+  footer: ['']

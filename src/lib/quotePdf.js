@@ -5,7 +5,7 @@ export const COMPANY_LETTERHEAD = [
   'Société à Responsabilité limitée SARL, Capital : 10 000 000 FCFA • Abidjan, Palmeraie Saint Viateur',
   '25 BP 1032 Abidjan 25 • Tél : 27 22 30 11 27 / 07 18 88 88 89 / 07 18 40 40 40 / 07 06 91 91 91 / 07 69 38 66 50',
   'N°RCCM : CI-ABJ-03-2022-B12-03750 • N°CC : 2242663 T • Compte Bancaire BNI : CI092 01021 000108230000 36',
-  'Email: infosoutarahgroup@gmail.com - info@soutarahgroup.ci • Web: www.soutarah-group.ci',
+  'Email: infosoutarahgroup@gmail.com - infos@soutarahgroup.com • Web: www.soutarah-group.ci',
 ];
 
 // Placeholder SVG embarqué pour les véhicules : aucun fichier physique requis, ne peut pas être en 404
@@ -117,21 +117,25 @@ export function buildLocationReference(quote = {}, date) {
   if (quote.reference && !quote.reference.startsWith('DMD-')) {
     return quote.reference;
   }
-  const seed = String(quote.id || quote.reference || '');
+  const seed = String(quote.reference || quote.id || '');
   let hash = 0;
   for (let i = 0; i < seed.length; i += 1) hash = (hash * 31 + seed.charCodeAt(i)) % 997;
   const seq = String(hash + 1).padStart(3, '0');
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const yy = String(date.getFullYear()).slice(-2);
-  return `${mm}-${yy}/UFO/LOC/${seq}`;
+  // Numéro ancré sur la date de création du devis (cohérent PDF ↔ dashboard ↔ recherche)
+  const anchor = quote.cree_le && !Number.isNaN(new Date(quote.cree_le).getTime()) ? new Date(quote.cree_le) : date;
+  const mm = String(anchor.getMonth() + 1).padStart(2, '0');
+  const yy = String(anchor.getFullYear()).slice(-2);
+  return `${mm}-${yy}/LOC/${seq}`;
 }
 
 export function buildNegoceReference(quote = {}, date) {
   if (quote.reference && (quote.reference.includes('/NEG/') || quote.reference.includes('NEG'))) {
     return quote.reference;
   }
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const yy = String(date.getFullYear()).slice(-2);
+  // Numéro ancré sur la date de création du devis (cohérent PDF ↔ dashboard ↔ recherche)
+  const negAnchor = quote.cree_le && !Number.isNaN(new Date(quote.cree_le).getTime()) ? new Date(quote.cree_le) : date;
+  const mm = String(negAnchor.getMonth() + 1).padStart(2, '0');
+  const yy = String(negAnchor.getFullYear()).slice(-2);
   if (quote.reference && quote.reference.startsWith('DMD-')) {
     const parts = quote.reference.split('-');
     const seq = (parts[parts.length - 1] || '001').slice(-3).padStart(3, '0');
@@ -252,8 +256,14 @@ function normalizeLocationItems(quote, items) {
       if (isVehicleItem(it)) {
         const vehicleName = it.vehicle?.name || it.vehicleName || it.vehicleType || it.vehicleModel || 'Véhicule';
         const dailyPrice = numberOrZero(it.unitPrice ?? it.dailyPrice ?? it.prix_unitaire);
-        const days = numberOrZero((it.days ?? it.duration ?? it.jours) || 1);
-        const total = numberOrZero(it.totalPrice ?? it.total ?? it.prix_total ?? (dailyPrice * days));
+        // Jours recalculés depuis les dates (comptage inclusif) : « Du 23 AU 24 » = 2 jours.
+        const dateDays = (it.startDate && it.endDate)
+          ? Math.max(1, Math.round((new Date(it.endDate) - new Date(it.startDate)) / 86400000) + 1)
+          : null;
+        const days = dateDays ?? numberOrZero((it.days ?? it.duration ?? it.jours) || 1);
+        const total = (dateDays != null && dailyPrice > 0)
+          ? dailyPrice * days
+          : numberOrZero(it.totalPrice ?? it.total ?? it.prix_total ?? (dailyPrice * days));
         rows.push({
           kind: 'vehicle',
           designationPrimary: 'LOCATION DE VEHICULE',
@@ -577,10 +587,11 @@ export async function generateLocationQuotePdf({ quote = {}, items = [], filenam
         Arrêtée la présente à la somme de : <strong>${montantEnLettres} francs CFA</strong>
       </div>
 
+      ${allSansChauffeur ? '' : `
       <div style="margin-top: 16px; font-size: 11px; color: #c62828;">
         <div style="font-weight: bold;">NB :</div>
         <div style="padding-left: 12px;">- Le chauffeur est à votre disposition de 7h à 21h</div>
-      </div>
+      </div>`}
 
       <div style="position: absolute; bottom: 88px; left: 0; right: 0; height: 0.5cm; background: #69c33b;"></div>
 
@@ -889,7 +900,7 @@ export async function generateNegoceQuotePdf({ quote = {}, items = [], filename 
           <div>Société à Responsabilité limitée SARL, Capital : 10 000 000 FCFA • Abidjan, Palmeraie Saint Viateur</div>
           <div>25 BP 1032 Abidjan 25 • Tél : 27 22 30 11 27 / 07 18 88 88 89 / 07 18 40 40 40 / 07 06 91 91 91 / 07 69 38 66 50</div>
           <div>N°RCCM : CI-ABJ-03-2022-B12-03750 • N°CC : 2242663 T • Compte Bancaire BNI : CI092 01021 000108230000 36</div>
-          <div>Email: infosoutarahgroup@gmail.com - info@soutarahgroup.ci • Web: www.soutarah-group.ci</div>
+          <div>Email: infosoutarahgroup@gmail.com - infos@soutarahgroup.com • Web: www.soutarah-group.ci</div>
         </div>
       </div>
     `;

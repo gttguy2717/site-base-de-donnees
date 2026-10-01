@@ -1,10 +1,11 @@
 const { Router } = require('express');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const { upload } = require('../middlewares/upload.cjs');
 const {
   getAllClients,
   createClient,
+  deleteClient,
   updateClientStatus,
+  resetClientPassword,
   reviewClientVerification,
   convertEntrepriseClient,
   downloadClientDocument,
@@ -62,7 +63,9 @@ adminRouter.get('/dashboard/sales-evolution', getSalesEvolution);
 // Clients
 adminRouter.get('/clients', getAllClients);
 adminRouter.post('/clients', createClient);
+adminRouter.delete('/clients/:id', deleteClient);
 adminRouter.put('/clients/:id/status', updateClientStatus);
+adminRouter.put('/clients/:id/password', resetClientPassword);
 adminRouter.post('/clients/:id/verification', reviewClientVerification);
 adminRouter.put('/clients/:id/convert-entreprise', convertEntrepriseClient);
 adminRouter.get('/clients/:id/documents/:docIndex', downloadClientDocument);

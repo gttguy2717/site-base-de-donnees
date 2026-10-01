@@ -1,0 +1,962 @@
+[P1|Normal] <image/empty>
+[P2|Normal] DÉDICACE
+[P3|Normal] Je dédie ce modeste travail à toute ma famille ainsi qu’à tous ceux qui m’ont soutenu de près et de loin tout au long de mon cursus académique.
+
+Dédicaces toutes particulières à :
+
+•  Mon père, Monsieur SORHO YETIENA, pour son encadrement bienveillant, sa sagesse et ses précieux conseils ;
+•  Ma mère, Madame SORHO SANABA, pour son amour inconditionnel, ses prières constantes et son soutien indéfectible ;
+•  Ma sœur, SORHO ESLIE, pour ses encouragements permanents et son dynamisme réconfortant.
+
+À tous ceux qui ont contribué à faire de moi la personne que je suis aujourd'hui, trouvez ici l’expression de ma profonde gratitude.
+[P4|Normal] <image/empty>
+[P5|Heading 1] <image/empty>
+[P6|Heading 1] REMERCIEMENTS
+[P7|Normal] Je tiens à adresser mes sincères remerciements à Monsieur Kologo Harouna, Directeur de Soutarah Group, ainsi qu’à mon maître de stage, pour leur accueil, leur accompagnement, leurs conseils et leur disponibilité tout au long de mon stage. Aussi, ce rapport a lieu grâce à l’implication de plusieurs personnes, ainsi je tiens à adresser mes remerciements à : 
+
+• Mes parents, Monsieur Yetiena SORHO et Madame Sanaba COULIBALY, pour tous les sacrifices consentis, leur accompagnement financier et moral inestimable depuis le premier jour de mes études ;
+•  La République de Côte d'Ivoire, pour l'ensemble des infrastructures universitaires et le cadre d’excellence offert à la jeunesse estudiantine ;
+• L'Institut National Polytechnique Félix Houphouët-Boigny (INP-HB) de Yamoussoukro, pour m'avoir ouvert ses portes et m'avoir prodigué une formation technique d'élite ;
+• Dr Moussa DIABY Abdoul Kader, Directeur Général de l’INP-HB, pour son leadership inspirant et son engagement constant pour le rayonnement de l'institut ;
+• Dr Adama OUATTARA, Directeur de l’École Supérieure d’Industrie (ESI), pour les réformes et la rigueur insufflées au sein de notre école ;
+• Monsieur Siriky KONE, Sous-Directeur des Études à l'ESI, pour son écoute attentive, sa disponibilité et ses conseils avisés ;
+•  Monsieur Louagbeu Loua KPO, Directeur de l’Unité Pédagogique Sciences et Technologies de l’Information et de la Communication (STIC), pour la qualité exceptionnelle du programme de formation et son encadrement stratégique ;
+• Tout le corps professoral et administratif de l’ESI et du département STIC pour leur dévouement et leur transmission passionnée du savoir ;
+• La Direction Générale et à l’ensemble du personnel de l’entreprise SOUTARAH GROUP, pour leur accueil chaleureux, leur accompagnement technique au quotidien et la confiance accordée lors de ce stage d'immersion professionnelle.
+[P8|Normal] AVANT-PROPOS
+[P9|Normal] L’Institut National Polytechnique Félix HOUPHOUËT-BOIGNY (INP-HB) de Yamoussoukro a été créé par le décret n° 96-678 du 4 septembre 1996, modifié par le décret n° 2016-747 du 27 septembre 2016. L’INP-HB résulte de la fusion de quatre grandes écoles, que sont :
+[P10|List Paragraph] INSET : Institut National Supérieur de l’Enseignement Technique ;
+[P11|List Paragraph] ENSTP : Ecole Nationale Supérieure des Travaux Publics ;
+[P12|List Paragraph] ENSA : Ecole Nationale Supérieure d’Agronomie ;
+[P13|List Paragraph] IAB : Institut Agricole de Bouaké.
+[P14|Normal] À présent, l’INP-HB compte onze (11) grandes écoles responsables de la formation qualifiante des étudiants. On note, entre autres :
+[P15|List Paragraph] ESI : Ecole Supérieure d’Industrie ;
+[P16|List Paragraph] ESMG : Ecole Supérieure des Mines et Géologie ;
+[P17|List Paragraph] ESA : Ecole Supérieure d’Agronomie ;
+[P18|List Paragraph] ESCAE : Ecole Supérieure de Commerce et d’Administration des Entreprises ;
+[P19|List Paragraph] ESTP : Ecole Supérieure des Travaux Publics ;
+[P20|List Paragraph] EFSPC : Ecole des Formations Spécialisées et du Perfectionnement des Cadres ;
+[P21|List Paragraph] EDPSAPT : Ecole Doctorale Science Agronomique et Procédés de Transformation ;
+[P22|List Paragraph] ESCPE : Ecole Supérieure de Chimie Pétrole et de l’Energie ;
+[P23|List Paragraph] EPGE : Ecole Préparatoires aux Grandes Ecoles ;
+[P24|List Paragraph] EDPSTI : Ecole Doctorale des Sciences et Techniques de l’Ingénieur ;
+[P25|List Paragraph] ESAS : Ecole Supérieure de l’Aéronautique et du Spatiale.
+[P26|Normal] L’INP-HB est un label de réforme qui, dans le cadre du perfectionnement des étudiants, propose des formations visant à former des techniciens supérieurs, des ingénieurs en techniques et des ingénieurs de conception dans les domaines de l’industrie, de l’aéronautique, du commerce, de l’administration, du génie civil, des travaux publics, de l’agronomie, des mines et de la géologie. En outre, l’INP-HB est également impliqué dans des activités de recherche pour contribuer à l’avancement des connaissances et des technologies dans ces domaines.
+[P27|Normal] Dans le cadre de ce perfectionnement, la direction de l’ESI a mis en place une réforme en 2016 visant à amener ses étudiants à effectuer des stages d’immersion en première année, des stages d’application en deuxième année et des stages professionnels de fin d’études en troisième année dans le but que ceux-ci appliquent leurs connaissances acquises durant leurs parcours académiques.
+[P28|Normal] Ainsi, j’ai pu effectuer mon stage au sein de l’entreprise Soutarah Group. Ce stage de 2 mois s’est déroulé du 03 Aout 2026 au 03 Octobre 2026. Ce présent rapport relate les activités que nous avons menées durant cette période.
+[P29|Normal] <image/empty>
+[P30|Heading 1] SOMMAIRE
+[P31|Normal] DÉDICACE	 - 1 -
+[P32|Normal] REMERCIEMENTS	 - 2 -
+[P33|Normal] AVANT-PROPOS	 - 3 -
+[P34|Normal] SOMMAIRE	 - 5 -
+[P35|Normal] LISTE DES FIGURES	 - 6 -
+[P36|Normal] LISTE DES TABLEAUX	 - 7 -
+[P37|Normal] LISTE DES ABRÉVIATIONS	 - 8 -
+[P38|Normal] RÉSUMÉ	 - 9 -
+[P39|Normal] INTRODUCTION GÉNÉRALE	 - 10 -
+[P40|Normal] PARTIE I : CADRE ET CONTEXTE DU PROJET	 - 11 -
+[P41|Normal] Chapitre 1 : Présentation de la structure d’accueil	 - 12 -
+[P42|Normal] Chapitre 2 : Présentation et planification du projet	 - 15 -
+[P43|Normal] PARTIE II : ÉTUDE CONCEPTUELLE	 - 19 -
+[P44|Normal] Chapitre 3 : Choix de la méthode d’analyse	 - 20 -
+[P45|Normal] PARTIE III : ÉTUDE TECHNIQUE	 - 37 -
+[P46|Normal] Chapitre 4 : Conception du système et choix technologiques	 - 38 -
+[P47|Normal] PARTIE IV : RÉALISATION ET MISE EN ŒUVRE	 - 44 -
+[P48|Normal] Chapitre 5 : Réalisation de la plateforme web et de l'application mobile	 - 45 -
+[P49|Normal] Chapitre 6 : Mise en œuvre	 - 54 -
+[P50|Normal] CONCLUSION GÉNÉRALE	 - 57 -
+[P51|Normal] BIBLIOGRAPHIE 	 - 58 -
+[P52|Normal] WEBOGRAPHIE	 - 59 -
+[P53|Normal] TABLE DES MATIÈRES	 - 60 -
+[P54|Normal] <image/empty>
+[P55|Heading 1] LISTE DES FIGURES
+[P56|Normal] Figure 1 : Diagramme de GANTT	 - 18 -
+[P57|Normal] Figure 2 : Diagramme global des cas d’utilisation (Web & Mobile)	 - 23 -
+[P58|Normal] Figure 3 : Diagramme d’activité de création et gestion d’un compte client	 - 27 -
+[P59|Normal] Figure 4 : Diagramme d’activité de réservation d’un véhicule	 - 29 -
+[P60|Normal] Figure 5 : Diagramme d’activité d'achat d’un produit	 - 31 -
+[P61|Normal] Figure 6 : Diagramme de séquence de paiement en ligne sécurisé	 - 32 -
+[P62|Normal] Figure 7 : Diagramme de séquence de réservation d'un véhicule	 - 33 -
+[P63|Normal] Figure 8 : Diagramme de séquence d'achat produit	 - 34 -
+[P64|Normal] Figure 9 : Diagramme de séquence d'inscription d'un utilisateur	 - 35 -
+[P65|Normal] Figure 10 : Diagramme des classes du système	 - 36 -
+[P66|Normal] Figure 11 : Logo de l’éditeur de code Visual Studio Code	 - 38 -
+[P67|Normal] Figure 12 : Logo de Figma	 - 39 -
+[P68|Normal] Figure 13 : Logo du Framework React.js	 - 39 -
+[P69|Normal] Figure 14 : Logo du Framework Mobile React Native & Expo	 - 39 -
+[P70|Normal] Figure 15 : Logo de Node.js	 - 40 -
+[P71|Normal] Figure 16 : Logo Brevo	 - 40 -
+[P72|Normal] Figure 17 : Logo de Genius Pay	 - 40 -
+[P73|Normal] Figure 18 : Logo de Hostinger	 - 41 -
+[P74|Normal] Figure 19 : Schéma de l'architecture générale du système	 - 43 -
+[P75|Normal] Figure 20 : Structure et schéma relationnel de la base de données MySQL	 - 45 -
+[P76|Normal] Figure 21 : Interface Web : Page d'accueil	 - 48 -
+[P77|Normal] Figure 22 : Interface Web : Page connexion et formulaire d'authentification	 - 48 -
+[P78|Normal] Figure 23 : Interface Web : Catalogue des produits	 - 49 -
+[P79|Normal] Figure 24 : Interface Web : Module de réservation de véhicule	 - 49 -
+[P80|Normal] Figure 25 : Interface Web : Panier multi-articles et devis PDF	 - 50 -
+[P81|Normal] Figure 26 : Interface Web : Espace client et historique des demandes	 - 50 -
+[P82|Normal] Figure 27 : Application Mobile : Écran d'accueil et fiche détaillée du véhicule	 - 51 -
+[P83|Normal] Figure 28 : Application Mobile : Panier de réservation mobile	 - 52 -
+[P84|Normal] Figure 29 : Interface d’administration : Tableau de bord	 - 52 -
+[P85|Normal] Figure 30 : Interface d’administration : Gestion du parc de véhicules et des réservations	 - 53 -
+[P86|Normal] <image/empty>
+[P87|Heading 1] LISTE DES TABLEAUX
+[P88|Normal] Tableau 1 : Planning prévisionnel et chronogramme des tâches	 - 17 -
+[P89|Normal] Tableau 2 : Etude comparative entre la méthode MERISE et PU/UML	 - 21 -
+[P90|Normal] Tableau 3 : Analyse comparative des systèmes de gestion de bases de données	 - 41 -
+[P91|Normal] Tableau 4 : Cahier de recettes et validation des tests fonctionnels (Web & Mobile)	 - 54 -
+[P92|Normal] Tableau 5 : Bilan financier estimatif des coûts d’infrastructure et de maintenance annuelle	 - 55 -
+[P93|Normal] <image/empty>
+[P94|Heading 1] LISTE DES ABRÉVIATIONS
+=== TABLE 95 (25x2) ===
+API | Application Programming Interface (Interface de Programmation d'Application)
+BTP | Bâtiment et Travaux Publics
+CSS | Cascading Style Sheets
+ESI | École Supérieure d'Industrie
+HTML | HyperText Markup Language
+HTTP / HTTPS | HyperText Transfer Protocol (Secure)
+IA | Intelligence Artificielle
+IDE | Integrated Development Environment (Environnement de Développement Intégré)
+INP-HB | Institut National Polytechnique Félix Houphouët-Boigny
+JSON | JavaScript Object Notation
+JWT | JSON Web Token
+LLM | Large Language Model (Modèle de Langage Avancé)
+MCD | Modèle Conceptuel de Données
+MLD | Modèle Logique de Données
+ORM | Object-Relational Mapping
+PDF | Portable Document Format
+PU | Processus Unifié
+REST | Representational State Transfer
+SARL | Société à Responsabilité Limitée
+SGBD | Système de Gestion de Base de Données
+SGBDR | Système de Gestion de Base de Données Relationnelle
+SQL | Structured Query Language
+STIC | Sciences et Technologies de l'Information et de la Communication
+UI / UX | User Interface / User Experience
+UML | Unified Modeling Language
+=== END TABLE ===
+[P96|Normal] <image/empty>
+[P97|Heading 1] <image/empty>
+[P98|Heading 1] RÉSUMÉ
+[P99|Normal] Ce projet d'application porte sur la conception et le développement d’une plateforme numérique globale de gestion des services de l’entreprise SOUTARAH GROUP intégrant une application mobile dédiée à la réservation et au suivi de véhicules. Face à une gestion jusqu'alors manuelle des devis, et à l’absence de centralisation de la relation client, l’objectif a été de mettre en place un écosystème numérique unifié.
+
+La méthodologie adoptée repose sur le Processus Unifié associé au langage UML (PU/UML) pour la modélisation rigoureuse des besoins et des traitements. La solution logicielle s'appuie sur une architecture client-serveur moderne en trois tiers : une interface web responsive conçue en React.js et CSS pour l'ensemble des activités multisectorielles de l'entreprise (location de véhicules, négoce, services techniques, énergies renouvelables, agropastorale, immobilier) ; une application mobile native développée sous React Native et Expo spécialisée dans la réservation de véhicules en temps réel ; et un backend centralisé sous Node.js/Express couplé à une base de données MySQL gérée par l'ORM Sequelize.
+
+Les résultats obtenus concrétisent une synchronisation instantanée entre le web et le mobile : génération automatique de devis pro-forma officiels au format PDF sur 2 pages, panier multi-articles synchronisé, notifications par courrier électronique (Brevo) et tableau de bord d'administration complet. Cette solution garantit à SOUTARAH GROUP une rentabilité accrue, une réactivité commerciale optimale et une traçabilité totale des opérations.
+[P100|Normal] <image/empty>
+[P101|Heading 1] <image/empty>
+[P102|Normal] <image/empty>
+[P103|Normal] <image/empty>
+[P104|Normal] <image/empty>
+[P105|Heading 1] INTRODUCTION GÉNÉRALE
+[P106|Normal] Le secteur des prestations de services est un moteur essentiel de l'économie ivoirienne, contribuant fortement au PIB et à l'emploi, avec des activités variées allant du transport au négoce international, en passant par le génie technique et l'énergie. Cependant, ces entreprises font face à des défis organisationnels : gestion papier, lenteur dans la formulation des devis, manque de traçabilité client. Dans ce contexte, l'intégration des TIC devient un impératif stratégique de compétitivité. C'est dans cette optique que s'inscrit le projet mené au sein de SOUTARAH GROUP.
+[P107|Normal] Le projet a pour thème : « Conception et développement d’une plateforme numérique de gestion des services de SOUTARAH GROUP intégrant une application mobile dédiée à la réservation de véhicules ».
+Le projet s'articule autour de deux composantes complémentaires : une plateforme web et une application mobile. La plateforme web centralise les six pôles d'activités de l'entreprise (location de véhicules, négoce/import-export, services techniques BTP, énergies renouvelables, agropastorale et immobilier), ainsi que la gestion du catalogue, l'édition de devis pro-forma et le back-office d'administration. L'application mobile, quant à elle, répond aux besoins spécifiques de mobilité des clients, en offrant la consultation du parc automobile, la vérification de disponibilité et la réservation directe.
+[P108|Normal] Le présent rapport rend compte de l'ensemble de la démarche d'ingénierie logicielle suivie et s'articule autour de quatre grandes parties :
+•  La Première Partie expose le cadre et le contexte du projet, présentant la structure d’accueil SOUTARAH GROUP, l'analyse de l'existant, les objectifs visés, le cahier des charges ainsi que la planification des tâches ;
+• La Deuxième Partie est dédiée à l’étude conceptuelle, détaillant la démarche méthodologique PU/UML et les différents diagrammes de conception (cas d'utilisation, activité, séquence et classes) ;
+•  La Troisième Partie développe l’étude technique, justifiant les choix technologiques (React, React Native, Node.js, MySQL) et explicitant l'architecture logicielle globale ;
+•  La Quatrième Partie décrit la mise en œuvre pratique de la plateforme web et de l'application mobile, détaillant les fonctionnalités développées, les tests de validation, les résultats obtenus et l'analyse financière du projet.
+[P109|Normal] <image/empty>
+[P110|Heading 1] <image/empty>
+[P111|Heading 1] <image/empty>
+[P112|Normal] <image/empty>
+[P113|Heading 1] <image/empty>
+[P114|Heading 1] <image/empty>
+[P115|Heading 1] PARTIE I
+[P116|Heading 1] CADRE ET CONTEXTE DU PROJET
+[P117|Normal] <image/empty>
+[P118|Normal] <image/empty>
+[P119|Normal] <image/empty>
+[P120|Normal] <image/empty>
+[P121|Normal] <image/empty>
+[P122|Normal] <image/empty>
+[P123|Normal] <image/empty>
+[P124|Normal] <image/empty>
+[P125|Normal] <image/empty>
+[P126|Normal] <image/empty>
+[P127|Normal] <image/empty>
+[P128|Normal] <image/empty>
+[P129|Normal] <image/empty>
+[P130|Normal] <image/empty>
+[P131|Normal] <image/empty>
+[P132|Heading 3] <image/empty>
+[P133|Heading 3] I. PRÉSENTATION DE SOUTARAH GROUP
+[P134|Heading 4] 1. Présentation générale
+[P135|Normal] SOUTARAH GROUP est une entreprise polyvalente proposant une gamme diversifiée de services destinés aussi bien aux professionnels qu'aux particuliers. Grâce à son expertise multisectorielle, l'entreprise met à la disposition de sa clientèle des solutions intégrées et adaptées à différents besoins, tout en veillant à maintenir un niveau de qualité uniforme auprès d'un même prestataire.
+[P136|Normal] Les activités de SOUTARAH GROUP couvrent plusieurs domaines, notamment des services liés à la location de véhicules, au négoce et à l’import-export ainsi qu’à l’accompagnement et à la réalisation de projets. Cette diversité constitue l'une des principales forces de SOUTARAH GROUP. Elle lui permet d'accompagner ses clients dans différents projets et de leur proposer des solutions correspondant à leurs besoins spécifiques.
+[P137|Normal] Dans un environnement marqué par l'évolution constante des besoins des clients et le développement des technologies numériques, SOUTARAH GROUP ambitionne de révolutionner le domaine de la prestation de services. L'entreprise souhaite ainsi renforcer son positionnement grâce à son expertise multisectorielle, son innovation constante et son engagement envers la satisfaction de sa clientèle.
+[P138|Heading 4] <image/empty>
+[P139|Heading 4] 2. Mission, Vision et Valeurs
+[P140|Normal] ❖ Mission
+[P141|Normal] La mission de SOUTARAH GROUP est de réinventer des services de qualité, fiables et adaptés pour vous « soutra ». Cette mission traduit la volonté de l'entreprise de proposer à ses clients des solutions adaptées à leurs besoins, tout en recherchant constamment l'amélioration de la qualité et de la fiabilité de ses prestations.
+
+❖ Vision
+[P142|Normal] La vision de SOUTARAH GROUP est d’être le partenaire privilégié de nos clients avec des solutions innovantes, une réactivité exceptionnelle et des services de qualité.
+
+❖ Valeurs (S.A.P.E) 
+  Les valeurs de SOUTARAH GROUP sont regroupées autour de l'acronyme S.A.P.E :
+[P143|Normal] S — Solution pérenne et innovante
+L'entreprise privilégie la mise en œuvre de solutions durables et innovantes permettant de répondre efficacement aux besoins de ses clients.
+[P144|Normal] A — Adaptabilité
+SOUTARAH GROUP s'adapte aux différents besoins de ses clients ainsi qu'aux évolutions de son environnement professionnel.
+[P145|Normal] P — Priorité client
+La satisfaction du client constitue un élément essentiel dans la conception et la réalisation des prestations proposées3. Domaines d'activités
+[P146|Normal] E — Efficacité du personnel
+L'entreprise valorise les compétences et l'efficacité de ses collaborateurs afin de garantir la qualité des prestations réalisées.
+[P147|Normal] <image/empty>
+[P148|Normal] 3. Services
+[P149|Normal] SOUTARAH GROUP intervient dans plusieurs domaines d'activités.
+[P150|Normal] ➢ Location de véhicules : Le service de location de véhicules propose des solutions de mobilité adaptées aux différents besoins des clients, que ce soit pour des déplacements ponctuels ou pour des périodes plus longues.
+[P151|Normal] ➢ Négoce / Import-Export : Faciliter l'approvisionnement et la distribution de différents biens.
+[P152|Normal] ➢ Technique : L'installation, la maintenance et le support des équipements.
+[P153|Normal] ➢ Énergies renouvelables : Optimiser la consommation énergétique et favoriser l'utilisation des énergies renouvelables.
+[P154|Normal] ➢ Agropastorale : La production agricole et l'élevage.
+[P155|Normal] ➢ Immobilier : la vente, la location et la gestion de biens.
+[P156|Heading 4] 4. Partenariats
+[P157|Normal] Soutarah Group entretient des collaborations avec plusieurs entreprises dont :
+[P158|List Paragraph] BESSAC
+[P159|List Paragraph] DM Company
+[P160|List Paragraph] CIM IVOIRE
+[P161|List Paragraph] Southcomp Polaris
+[P162|List Paragraph] Enabel
+[P163|List Paragraph] <image/empty>
+[P164|List Paragraph] <image/empty>
+[P165|List Paragraph] <image/empty>
+[P166|List Paragraph] <image/empty>
+[P167|List Paragraph] <image/empty>
+[P168|List Paragraph] <image/empty>
+[P169|List Paragraph] <image/empty>
+[P170|List Paragraph] <image/empty>
+[P171|List Paragraph] <image/empty>
+[P172|List Paragraph] <image/empty>
+[P173|List Paragraph] <image/empty>
+[P174|List Paragraph] <image/empty>
+[P175|List Paragraph] <image/empty>
+[P176|List Paragraph] <image/empty>
+[P177|List Paragraph] <image/empty>
+[P178|List Paragraph] <image/empty>
+[P179|List Paragraph] <image/empty>
+[P180|List Paragraph] <image/empty>
+[P181|List Paragraph] <image/empty>
+[P182|List Paragraph] <image/empty>
+[P183|List Paragraph] <image/empty>
+[P184|Normal] <image/empty>
+[P185|Heading 2] <image/empty>
+[P186|Heading 3] <image/empty>
+[P187|Heading 3] <image/empty>
+[P188|Heading 3] I. CONTEXTE ET JUSTIFICATION DU PROJET
+[P189|Normal] La croissance continue des activités de SOUTARAH GROUP et la diversification de ses pôles ont engendré un volume considérable de demandes de devis et de réservations. Face à cette montée en charge, les mécanismes traditionnels de traitement manuel (courriels isolés, échanges téléphoniques informels, tenue de registres physiques) ont montré leurs limites opérationnelles. L'absence de visibilité en temps réel sur la disponibilité des véhicules de location et le manque de synchronisation entre les services commerciaux et techniques ont motivé la direction à engager la transition numérique intégrale de son écosystème commercial.
+[P190|Heading 3] <image/empty>
+[P191|Heading 3] II. ÉTUDE DE L'EXISTANT, LIMITES ET PROBLÉMATIQUE
+[P192|Normal] L'analyse préalable de l'infrastructure existante a révélé que SOUTARAH GROUP disposait uniquement d'un site web vitrine statique. Ce dernier présentait l'entreprise mais ne disposait d'aucune composante dynamique de gestion de base de données, ni d'espace d'authentification client, ni de mécanisme de calcul tarifaire automatisé. Les demandes formulées via des formulaires de contact basiques aboutissaient dans une boîte mail générique sans traçabilité, rendant impossible la production de statistiques fiables et occasionnant des retards dans l'édition des devis officiels.
+[P193|Normal] Dès lors, comment concevoir et développer une plateforme numérique permettant de centraliser et de faciliter la gestion des services et des clients de SOUTARAH GROUP, tout en intégrant une application mobile dédiée à la réservation des véhicules ?
+[P194|Normal] <image/empty>
+[P195|Heading 3] III. OBJECTIFS DU PROJET
+[P196|Heading 4] 1. Objectif général
+[P197|Normal] L’objectif général est de concevoir et de développer une solution logicielle unifiée comprenant une plateforme web de gestion globale des services et une application mobile dédiée à la réservation de véhicules, toutes deux synchronisées en temps réel via une API REST sécurisée.
+[P198|Heading 4] <image/empty>
+[P199|Heading 4] 2. Objectifs spécifiques
+[P200|Normal] De façon opérationnelle, le projet vise à :
+• Développer un portail web moderne présentant de manière interactive l'ensemble des 6 pôles de services et le catalogue de produits ;
+• Développer une application mobile native (Android / iOS) dédiée à la consultation en direct du parc automobile, à la réservation fluide avec tarification dynamique et au suivi des états de commandes ;
+• Mettre en place un panier multi-articles hybride (véhicules et fournitures) avec moteur de calcul automatisé des taxes (HT, TVA 18%, TDT 2.5%) ;
+• Automatiser la génération de devis pro-forma officiels au format PDF sur 2 pages (avec fiches techniques et visuels) prêts pour impression ou signature électronique ;
+• Développer un tableau de bord d'administration  centralisé pour le pilotage des devis, véhicules, clients et notifications ;
+• Intégrer un système de notification transactionnelle par courrier électronique.
+[P201|Normal] <image/empty>
+[P202|Heading 3] IV. CAHIER DES CHARGES DU SYSTÈME
+[P203|Normal] Le cahier des charges formalise les exigences fonctionnelles et non-fonctionnelles du système :
+
+1. Exigences fonctionnelles côté Client (Web & Mobile) :
+  • Consultation détaillée du catalogue des véhicules et produits par catégorie ;
+  • Filtrage des véhicules (marque, type, climatisation) ;
+  • Sélection des dates de location avec calcul dynamique selon le barème de destination (Abidjan / Hors Abidjan) et l'option chauffeur ;
+  • Gestion du panier d'achats / réservations et validation en un clic ;
+  • Téléchargement instantané du devis pro-forma officiel PDF respectant la charte juridique de l'entreprise ;
+  • Espace personnel de gestion des devis ;
+
+2. Exigences fonctionnelles côté Administrateur :
+  • Supervision globale des indicateurs clés (CA estimé, réservations actives) ;
+  • Gestion complète du parc automobile (ajout, modification, statut de maintenance) ;
+[P204|Normal] • Gestion complète des articles negoce (ajout de produits, modification des prix) ;
+  • Gestion des comptes clients et attribution de remises partenaires.
+
+3. Exigences techniques et contraintes :
+  • Sécurité ;
+  • Disponibilité et performance ;
+  • Portabilité : Compatibilité navigateurs modernes (Chrome, Safari, Edge) et mobiles.
+[P205|Normal] <image/empty>
+[P206|Heading 3] V. PLANIFICATION DES TÂCHES ET DIAGRAMME DE GANTT
+[P207|Normal] Le projet s'est déroulé sur une période de deux mois (du 03 Août au 03 Octobre 2026), selon la décomposition chronologique suivante :
+[P208|Normal] <image/empty>
+[P209|Normal] 1. Planning
+=== TABLE 210 (8x5) ===
+N° | Désignation de la tâche | Date Début | Durée | Date Fin
+1 | Prise de contact, immersion et compréhension du projet | 03/08/2026 | 5 j | 07/08/2026
+2 | Étude de l'existant et rédaction du cahier des charges | 08/08/2026 | 4 j | 11/08/2026
+3 | Modélisation conceptuelle PU/UML | 12/08/2026 | 6 j | 17/08/2026
+4 | Développement de l'API Backend Node.js / Express et base de données | 18/08/2026 | 10 j | 27/08/2026
+5 | Développement de la Plateforme Web React.js & CSS | 28/08/2026 | 12 j | 08/09/2026
+6 | Développement de l'Application Mobile React Native / Expo | 09/09/2026 | 12 j | 20/09/2026
+7 | Tests d'intégration et corrections | 21/09/2026 | 6 j | 26/09/2026
+=== END TABLE ===
+[P211|Normal] <image/empty>
+[P212|Normal] <image/empty>
+[P213|Normal] 2. Diagramme de Gantt
+[P214|Normal] <image/empty>
+[P215|Normal] Figure 1 : Diagramme de GANTT
+[P216|Normal] <image/empty>
+[P217|Heading 1] <image/empty>
+[P218|Heading 1] <image/empty>
+[P219|Heading 1] <image/empty>
+[P220|Normal] <image/empty>
+[P221|Heading 1] <image/empty>
+[P222|Heading 1] <image/empty>
+[P223|Heading 1] <image/empty>
+[P224|Heading 1] <image/empty>
+[P225|Heading 1] <image/empty>
+[P226|Heading 1] PARTIE II
+[P227|Heading 1] ETUDE CONCEPTUELLE
+[P228|Normal] <image/empty>
+[P229|Normal] <image/empty>
+[P230|Normal] <image/empty>
+[P231|Normal] <image/empty>
+[P232|Normal] <image/empty>
+[P233|Normal] <image/empty>
+[P234|Normal] <image/empty>
+[P235|Normal] <image/empty>
+[P236|Normal] <image/empty>
+[P237|Normal] <image/empty>
+[P238|Normal] <image/empty>
+[P239|Normal] <image/empty>
+[P240|Normal] <image/empty>
+[P241|Heading 3] <image/empty>
+[P242|Heading 3] <image/empty>
+[P243|Heading 3] <image/empty>
+[P244|Heading 3] <image/empty>
+[P245|Normal] <image/empty>
+[P246|Heading 3] I. ÉTUDE COMPARATIVE DES MÉTHODES D'ANALYSE
+[P247|Normal] La réussite d'un projet informatique complexe requiert une phase d'analyse et de modélisation rigoureuse. Deux approches méthodologiques majeures ont été examinées : la méthode cartésienne MERISE et la démarche orientée objet PU/UML.
+[P248|Normal] <image/empty>
+[P249|List Paragraph] Présentation de la méthode MERISE
+[P250|Normal] MERISE (Méthode d’Étude et de Réalisation Informatique pour les Systèmes d’Entreprise) est une méthode d’analyse et de conception des systèmes d’information. Elle permet de structurer le développement d’un système en séparant principalement les données et les traitements.
+[P251|Normal] La méthode s’appuie sur différents niveaux de modélisation, notamment les niveaux conceptuel, logique et physique, permettant de passer progressivement de l’expression des besoins à la mise en œuvre du système.
+[P252|Normal (Web)] Pour la modélisation des données, MERISE utilise principalement le Modèle Conceptuel de Données (MCD), qui représente les entités, leurs propriétés et les relations entre elles. Le MCD peut ensuite être transformé en Modèle Logique de Données (MLD), puis en Modèle Physique de Données (MPD) afin de tenir compte des caractéristiques du SGBD utilisé.
+[P253|Normal (Web)] MERISE permet également de représenter les traitements et les processus nécessaires au fonctionnement du système. Cette approche facilite ainsi l’organisation des informations et la compréhension globale du système d’information avant sa réalisation.
+[P254|Normal (Web)] <image/empty>
+[P255|List Paragraph] Présentation de la méthode PU/UML
+[P256|Normal (Web)] Le Processus Unifié (PU) est une méthode de développement logiciel itérative et incrémentale. Il permet d’organiser le développement d’un projet en plusieurs phases et de faire évoluer progressivement le système, de l’analyse des besoins jusqu’à sa réalisation.
+[P257|Normal (Web)] <image/empty>
+[P258|Normal (Web)] Le PU repose principalement sur quatre phases : l’inception, l’élaboration, la construction et la transition. Cette organisation permet de mieux suivre l’évolution du projet, de prendre en compte les besoins des utilisateurs et de corriger progressivement les éventuelles erreurs.
+[P259|Normal (Web)] Le PU s’appuie sur UML (Unified Modeling Language), un langage de modélisation graphique standardisé permettant de représenter les différents aspects d’un système informatique. UML facilite notamment la représentation des acteurs, des fonctionnalités, des processus, des interactions et de la structure des données à travers différents diagrammes.
+[P260|Normal] <image/empty>
+[P261|List Paragraph] Tableau comparatif : Merise et PU/UML
+[P262|Normal] <image/empty>
+=== TABLE 263 (6x3) ===
+Critères d'évaluation | Méthode MERISE | Processus Unifié & UML (PU/UML)
+Approche | Séquentielle, séparation stricte données / traitements | Orientée objet, itérative, incrémentale et centrée sur l'utilisateur
+Modélisation des données | MCD, MLD très adaptés aux bases SQL relationnelles | Diagramme de classes reflétant directement les modèles ORM
+Modélisation des traitements | MCT, MLT axés sur les flux d'informations | Diagrammes de cas d'utilisation, de séquence et d'activité
+Adaptation aux architectures Web / Mobile | Rigide pour les applications événementielles et interactives | Parfaite adéquation avec les frameworks modernes (React, Node.js)
+Évolution du système | Reprise lourde des modèles conceptuels en cas de changement | Intégration fluide de nouvelles fonctionnalités par itération
+=== END TABLE ===
+[P264|Heading 3] <image/empty>
+[P265|Heading 3] Choix de la méthode d’analyse
+[P266|Normal] Pour la réalisation de notre projet, nous avons choisi UML (Unified Modeling Language) comme méthode de modélisation, en l’associant au Processus Unifié (PU). Ce choix se justifie par les caractéristiques du projet et par la nécessité de représenter clairement les différentes fonctionnalités du système.
+[P267|Normal] Adaptation aux architectures Web et Mobile : UML est orienté objet et s’adapte aux architectures logicielles modernes. Il facilite notamment la conception des échanges entre le frontend, le backend et les différents composants du système.
+[P268|Normal] Modélisation des fonctionnalités : UML permet de représenter les interactions entre les utilisateurs et le système, ainsi que les différentes fonctionnalités de l’application à travers plusieurs diagrammes.
+[P269|Normal] Évolution du système : grâce à sa modélisation orientée objet, UML facilite la réutilisation et l’extension des composants logiciels. Les modèles peuvent également être enrichis progressivement lors de l’ajout de nouvelles fonctionnalités.
+[P270|Normal] Ainsi, le choix d’UML associé au Processus Unifié permet de disposer d’une méthode adaptée à notre projet, tout en facilitant son analyse, sa conception et son évolution.
+[P271|Normal] <image/empty>
+[P272|Normal] <image/empty>
+[P273|Heading 3] II. APPLICATION DU PU/UML AU SYSTÈME SOUTARAH GROUP
+[P274|Normal] Dans le cadre de notre projet, le système intègre trois acteurs principaux :
+• Le Visiteur / Client : consulte le catalogue, compose son panier multi-services sur le Web, effectue des réservations de véhicules sur l'application Mobile et télécharge ses devis PDF ;
+• L'Administrateur : supervise l'ensemble des opérations, gère la flotte, met à jour les tarifs et valide les devis ;
+• Le Système / API REST : applique les règles métier, contrôle les disponibilités et orchestre la distribution des notifications.
+[P275|Heading 4] <image/empty>
+[P276|Heading 4] 1. Diagrammes des cas d'utilisation
+[P277|Normal] Le diagramme global des cas d'utilisation illustre les interactions des acteurs avec les deux volets de la plateforme (Web et Mobile).
+[P278|Normal] Figure 2 : Diagramme global des cas d’utilisation (Web & Mobile)
+[P279|Normal] <image/empty>
+[P280|Normal] ❖ Description textuelle du diagramme
+[P281|List Paragraph] Acteur : Visiteur
+[P282|Normal] Cas d’utilisation : Consulter le site et les services
+[P283|List Paragraph] Acteurs concernés : Visiteur, Client
+[P284|List Paragraph] Description : Permet de découvrir les activités et catalogues de Soutarah Group sans compte.
+[P285|List Paragraph] Préconditions : Accès à Internet.
+[P286|List Paragraph] Scénario principal :
+[P287|Normal] Le visiteur accède au site.
+[P288|Normal] Il consulte les services, catalogues et véhicules.
+[P289|List Paragraph] Postconditions : Les informations sont affichées.
+[P290|Normal] Cas d’utilisation : Utiliser l’assistant IA
+[P291|List Paragraph] Acteurs concernés : Visiteur, Client
+[P292|List Paragraph] Description : Permet de poser des questions et d’être orienté automatiquement.
+[P293|List Paragraph] Préconditions : Aucune.
+[P294|List Paragraph] Scénario principal :
+[P295|Normal] L’utilisateur ouvre le chat.
+[P296|Normal] Il pose sa question.
+[P297|Normal] L’IA répond instantanément.
+[P298|List Paragraph] Postconditions : L'utilisateur reçoit l'information demandée.
+[P299|Normal] Cas d’utilisation : S’inscrire et Se connecter
+[P300|List Paragraph] Acteurs concernés : Visiteur, Client
+[P301|List Paragraph] Description : Permet de créer un compte et d'accéder à l'espace personnel.
+[P302|List Paragraph] Préconditions : Disposer d'une adresse email valide.
+[P303|List Paragraph] Scénario principal :
+[P304|Normal] L’utilisateur saisit ses identifiants.
+[P305|Normal] Le système vérifie et valide l'accès.
+[P306|List Paragraph] Postconditions : L’utilisateur est connecté en tant que Client.
+[P307|Normal] <image/empty>
+[P308|List Paragraph] Acteur : Client (Web / Mobile)
+[P309|Normal] Cas d’utilisation : Réserver un véhicule
+[P310|List Paragraph] Acteurs concernés : Client (Mobile / Web)
+[P311|List Paragraph] Description : Permet de choisir et réserver un véhicule parmi le parc des 21 véhicules.
+[P312|List Paragraph] Préconditions : Le client doit être connecté.
+[P313|List Paragraph] Scénario principal :
+[P314|Normal] Le client choisit un véhicule et ses dates de location.
+[P315|Normal] Le système vérifie la disponibilité en temps réel.
+[P316|Normal] Le client confirme sa réservation.
+[P317|List Paragraph] Postconditions : La réservation est enregistrée en attente de validation.
+[P318|Normal] Cas d’utilisation : Demander un devis
+[P319|List Paragraph] Acteurs concernés : Client
+[P320|List Paragraph] Description : Permet de soumettre une demande chiffrée pour un service ou un produit.
+[P321|List Paragraph] Préconditions : Le client doit être connecté.
+[P322|List Paragraph] Scénario principal :
+[P323|Normal] Le client sélectionne ses besoins et valide sa demande.
+[P324|Normal] Le système génère le devis proforma téléchargeable.
+[P325|List Paragraph] Postconditions : La demande de devis est transmise à l'administration.
+[P326|Normal] Cas d’utilisation : Payer une commande
+[P327|List Paragraph] Acteurs concernés : Client
+[P328|List Paragraph] Description : Permet de régler un acompte ou une commande en ligne.
+[P329|List Paragraph] Préconditions : Avoir une réservation ou un panier validé.
+[P330|List Paragraph] Scénario principal :
+[P331|Normal] Le client choisit son mode de paiement (Mobile Money ou Carte).
+[P332|Normal] Il effectue la transaction.
+[P333|Normal] Le système confirme le règlement.
+[P334|List Paragraph] Postconditions : Le paiement est validé et le reçu est généré.
+[P335|Normal] <image/empty>
+[P336|List Paragraph] Acteur : Administrateur
+[P337|Normal] Cas d’utilisation : Consulter le tableau de bord
+[P338|List Paragraph] Acteurs concernés : Administrateur
+[P339|List Paragraph] Description : Permet de suivre les indicateurs clés (chiffre d'affaires, réservations, activités).
+[P340|List Paragraph] Préconditions : L'administrateur doit être connecté.
+[P341|List Paragraph] Scénario principal :
+[P342|Normal] L’administrateur accède au back-office.
+[P343|Normal] Le système affiche les statistiques et KPIs.
+[P344|List Paragraph] Postconditions : L'administrateur visualise l'état général de la plateforme.
+[P345|Normal] Cas d’utilisation : Gérer les véhicules
+[P346|List Paragraph] Acteurs concernés : Administrateur
+[P347|List Paragraph] Description : Permet d'ajouter, modifier et suivre l'état de la flotte des 21 véhicules.
+[P348|List Paragraph] Préconditions : L'administrateur doit être connecté.
+[P349|List Paragraph] Scénario principal :
+[P350|Normal] L’administrateur accède à la liste des véhicules.
+[P351|Normal] Il met à jour les disponibilités, tarifs ou états techniques.
+[P352|List Paragraph] Postconditions : Les informations de la flotte sont actualisées sur le web et le mobile.
+[P353|Normal] Cas d’utilisation : Recevoir les devis et marquer comme lu
+[P354|List Paragraph] Acteurs concernés : Administrateur
+[P355|List Paragraph] Description : Permet de consulter les devis reçus et d'indiquer leur prise en compte.
+[P356|List Paragraph] Préconditions : L'administrateur doit être connecté.
+[P357|List Paragraph] Scénario principal :
+[P358|Normal] L’administrateur ouvre la liste des demandes de devis.
+[P359|Normal] Il consulte le contenu du devis.
+[P360|Normal] Il clique sur « Marquer comme lu ».
+[P361|List Paragraph] Postconditions : Le statut du devis passe à « Lu / En traitement ».
+[P362|Heading 4] <image/empty>
+[P363|Normal] <image/empty>
+[P364|Normal] <image/empty>
+[P365|Normal] <image/empty>
+[P366|Heading 4] 2. Diagrammes d'activité
+[P367|Normal] <image/empty>
+[P368|Normal] 2.1. Diagramme d’activité : Création et gestion d’un compte client
+[P369|Normal] Le diagramme d'activité suivant explicite la cinématique de réservation de véhicule, mettant en relief le contrôle algorithmique anticollision des dates.
+[P370|Normal] <image/empty>
+[P371|Normal] 2.2. Diagramme d’activité : réservation d’un véhicule
+[P372|Normal] Le diagramme d’activité Réservation d’un véhicule illustre le processus par lequel un client effectue la location d’un véhicule sur la plateforme SOUTARAH. Le processus débute lorsque le client choisit un véhicule et renseigne ses dates de location. Le système vérifie alors la disponibilité : si le véhicule est indisponible, le client en est informé et peut modifier ses dates ou changer de véhicule. S’il est disponible, le véhicule est ajouté au panier. Lorsque le client valide son panier, le système génère automatiquement le devis et le redirige vers la page de commande. Le client choisit ensuite son mode de règlement (en ligne par carte/Mobile Money ou en espèces à la livraison) et confirme sa commande. Le système valide automatiquement le devis, enregistre la réservation dans la base de données et transmet la commande à l’administrateur. Ce dernier n’a plus à approuver le devis : il reçoit la notification, consulte les détails de la commande et marque simplement le devis comme lu pour préparer le véhicule. Enfin, le client reçoit sa confirmation de réservation. Ce diagramme met ainsi en évidence le flux nominal de commande et le traitement simplifié côté administration.
+[P373|Normal] <image/empty>
+[P374|Normal] <image/empty>
+[P375|Normal] <image/empty>
+[P376|Normal] <image/empty>
+[P377|Normal] Figure 4 : Diagramme d’activité : Réservation d’un véhicule
+[P378|Normal] <image/empty>
+[P379|Normal] <image/empty>
+[P380|Normal] <image/empty>
+[P381|Normal] <image/empty>
+[P382|Normal] <image/empty>
+[P383|Normal] <image/empty>
+[P384|Normal] 2.3. Diagramme d’activité : achat d’un produit
+[P385|Normal] Le diagramme d’activité Achat d’un produit illustre le processus par lequel un client effectue l’achat d’un article sur la plateforme SOUTARAH. Le processus commence lorsque le client parcourt le catalogue, choisit un produit et l’ajoute à son panier. Le système calcule et affiche alors instantanément dans le panier les montants détaillés (hors taxes, TVA et total TTC). Lorsque le client valide son panier et passe à la commande, le système génère le devis officiel horodaté et présente les modes de règlement disponibles. Le client choisit son moyen de paiement, soit en ligne (par carte bancaire ou Mobile Money), soit en espèces à la livraison, puis confirme sa commande. Le système enregistre ensuite la commande dans la base de données, valide automatiquement le devis et notifie l’administrateur. Ce dernier consulte les détails de la commande et marque simplement le devis comme lu afin d'enclencher la préparation et l’expédition de l’article. Enfin, le client reçoit sa confirmation de commande. Ce diagramme met ainsi en évidence le flux d’achat direct et la transparence des calculs dès l'étape du panier.
+[P386|Normal] <image/empty>
+[P387|Normal] <image/empty>
+[P388|Normal] <image/empty>
+[P389|Normal] <image/empty>
+[P390|Normal] Figure 5 : Diagramme d’activité : achat d’un produit
+[P391|Normal] <image/empty>
+[P392|Heading 4] <image/empty>
+[P393|Heading 4] 3. Diagrammes de séquences
+[P394|Normal] <image/empty>
+[P395|Normal] 3.1. Diagramme de séquence : Paiement en ligne
+[P396|Normal] Ce diagramme de séquence présente le déroulement d'une transaction financière électronique réalisée via la passerelle Genius Pay (intégrant cartes bancaires et solutions Mobile Money locales). À la confirmation du panier, le serveur API initialise une session de paiement sécurisée et redirige le client vers le guichet de paiement externe. Après autorisation et débit bancaire, la passerelle notifie le serveur API via un webhook sécurisé pour passer la commande au statut payé dans la base de données. Le service Brevo achemine immédiatement un reçu électronique au client, tandis que l’interface web affiche l’écran de confirmation de paiement.
+[P397|Normal] Figure 6 : Diagramme de séquence : Paiement en ligne sécurisé
+[P398|Normal] <image/empty>
+[P399|Normal] <image/empty>
+[P400|Normal] 3.2. Diagramme de séquence : Réservation d'un véhicule
+[P401|Normal] Ce diagramme de séquence illustre la cinématique complète de réservation d’un véhicule sur la plateforme. Lorsque le client sélectionne une voiture et une période de location, l’interface web interroge le serveur API afin de contrôler l’absence de conflit d’agenda dans la base de données. Une fois la disponibilité validée et la commande confirmée par le client, l’API enregistre la réservation ainsi que le devis associé, puis déclenche le service de messagerie Brevo pour transmettre instantanément les e-mails de confirmation au client et à l’administrateur. Dans son espace de gestion, l’administrateur accède à la fiche détaillée de la commande et marque le devis comme lu, ce qui enclenche la préparation opérationnelle du véhicule sans nécessiter de validation manuelle du devis.
+[P402|Normal] Figure 7 : Diagramme de séquence : Réservation d'un véhicule
+[P403|Normal] <image/empty>
+[P404|Normal] <image/empty>
+[P405|Normal] 3.3. Diagramme de séquence : Achat produit
+[P406|Normal] Le diagramme de séquence Achat produit décrit le flux d’acquisition de marchandises issues du catalogue de négoce. À la validation de la commande, les données sont transmises au serveur API qui ajoute la transaction dans la base de données et valide automatiquement le devis correspondant. Le service Brevo est alors sollicité pour expédier le récapitulatif d’achat au client et alerter l’administrateur de la nouvelle commande. Ce dernier consulte les spécificités des articles commandés sur son tableau de bord et marque le devis comme lu afin d’ordonnancer la préparation du colis et sa livraison.
+[P407|Normal] Figure 8 : Diagramme de séquence : Achat produit
+[P408|Normal] <image/empty>
+[P409|Normal] 3.4. Diagramme de séquence : Inscription d'un utilisateur
+[P410|Normal] Ce diagramme de séquence décrit le processus d’inscription d’un nouvel utilisateur sur la plateforme SOUTARAH. Le visiteur renseigne ses informations (particulier ou entreprise) via le formulaire de l’interface web. Ces données sont transmises au serveur API, qui contrôle d'abord l’unicité de l’adresse email et du numéro de téléphone auprès de la base de données. Après confirmation de l’absence de doublon, le serveur API sécurise le mot de passe par hachage Bcrypt puis insère les enregistrements de l’utilisateur et du profil client dans la base de données. Le serveur API sollicite ensuite le service Brevo pour expédier un email de bienvenue et de confirmation au visiteur, pendant que l’interface web lui confirme la création de son compte et le redirige vers la page de connexion.
+[P411|Normal] Figure 9 : Diagramme de séquence : Inscription d'un utilisateur
+[P412|Normal] <image/empty>
+[P413|Heading 4] 4. Diagramme de classes
+[P414|Normal] Il représente la structure statique du système en décrivant les classes, leurs attributs, leurs méthodes ainsi que les relations qui les lient. Il est généralement élaboré après une compréhension approfondie des besoins et des interactions du système, afin de servir de base à la phase d’implémentation.
+[P415|Normal] <image/empty>
+[P416|Normal] <image/empty>
+[P417|Normal] <image/empty>
+[P418|Normal] <image/empty>
+[P419|Normal] <image/empty>
+[P420|Normal] <image/empty>
+[P421|Normal] <image/empty>
+[P422|Normal] <image/empty>
+[P423|Normal] <image/empty>
+[P424|Normal] <image/empty>
+[P425|Heading 1] PARTIE III
+[P426|Heading 1] ÉTUDE TECHNIQUE
+[P427|Normal] <image/empty>
+[P428|Normal] <image/empty>
+[P429|Normal] <image/empty>
+[P430|Normal] <image/empty>
+[P431|Normal] <image/empty>
+[P432|Normal] <image/empty>
+[P433|Normal] <image/empty>
+[P434|Normal] <image/empty>
+[P435|Normal] <image/empty>
+[P436|Normal] <image/empty>
+[P437|Normal] <image/empty>
+[P438|Normal] <image/empty>
+[P439|Heading 3] <image/empty>
+[P440|Heading 3] <image/empty>
+[P441|Heading 3] <image/empty>
+[P442|Heading 3] <image/empty>
+[P443|Heading 3] <image/empty>
+[P444|Heading 3] I. ANALYSE ET JUSTIFICATION DES CHOIX TECHNOLOGIQUES
+[P445|Normal] Le choix des technologies et des outils représente une étape déterminante dans la mise en œuvre d’un projet. Afin de garantir la pertinence et l’efficacité des décisions prises, une analyse approfondie des solutions disponibles sur le marché a été réalisée, en tenant compte des spécificités du projet, de nos compétences et des objectifs à long terme. Cette démarche s’est appuyée sur plusieurs critères de sélection essentiels : performance et scalabilité, coût et conditions de licence, sécurité, flexibilité d’intégration, ainsi que la qualité de la documentation et l’accessibilité du support technique. Ces éléments ont permis d’orienter les choix technologiques vers des solutions à la fois robustes, adaptées et pérennes.
+[P446|Normal] <image/empty>
+[P447|Heading 4] Environnement de développement (IDE)
+[P448|Normal] <image/empty>
+[P449|Normal] <image/empty>
+[P450|Normal] Visual Studio Code a été sélectionné pour sa légèreté, son support natif de l'écosystème JavaScript/TypeScript, ses extensions pour React, React Native et MySQL, ainsi que son terminal intégré.
+[P451|Heading 4] <image/empty>
+[P452|Heading 4] <image/empty>
+[P453|Heading 4] <image/empty>
+[P454|Heading 4] Maquette
+[P455|List Paragraph] <image/empty>
+[P456|Normal] <image/empty>
+[P457|Normal] <image/empty>
+[P458|Normal] Figma est un outil de conception d'interface (UI/UX) en ligne, utilisé pour créer des maquettes interactives et collaboratives. Accessible depuis un simple navigateur, il permet aux équipes de concevoir et partager des prototypes visuellement clairs. Dans le cadre d’un projet web, il facilite la visualisation de l’interface avant le développement
+[P459|Normal] <image/empty>
+[P460|Heading 4] <image/empty>
+[P461|Heading 4] 3. Technologies Frontend Web
+[P462|Normal] <image/empty>
+[P463|Normal] <image/empty>
+[P464|Normal] Pour la plateforme web, le framework React.js couplé à CSS a été choisi. Son architecture basée sur le DOM virtuel et les composants réutilisables permet d'offrir une interface réactive et modulaire, facilitant la navigation fluide entre le catalogue, le panier interactif et le tableau de bord administrateur.
+[P465|Heading 4] <image/empty>
+[P466|Heading 4] <image/empty>
+[P467|Heading 4] 4. Technologies Mobile
+[P468|Normal] <image/empty>
+[P469|Normal] Pour le volet mobile, React Native associé à l'écosystème Expo a été retenu. Cette technologie offre un code unique en TypeScript/JavaScript compilé nativement pour Android et iOS, garantissant des performances élevées, un accès aisé aux fonctionnalités matérielles (système de fichiers, partage PDF) et une réduction substantielle des coûts de développement.
+[P470|Heading 4] <image/empty>
+[P471|Heading 4] 5. Technologies Backend et API
+[P472|Normal] <image/empty>
+[P473|Normal] Le serveur applicatif repose sur Node.js et le framework Express.js. Ce choix permet de conserver le même langage (JavaScript/TypeScript) sur toute la chaîne logicielle. L'architecture REST sans état (Stateless) basée sur des échanges JSON et sécurisée par des jetons JWT garantit une parfaite scalabilité et alimente indifféremment l'application Web et l’application Mobile.
+[P474|Normal] <image/empty>
+[P475|Heading 4] 6. Technologies de notifications et messagerie
+[P476|Normal] Pour assurer l'envoi des notifications et des messages électroniques, Brevo a été retenu. Il permet d'automatiser l'envoi d'e-mails liés aux différentes actions de la plateforme, notamment les confirmations de réservation, notifications de commande et messages destinés aux clients.
+[P477|Normal] Son intégration via API permet de centraliser et d'automatiser les      communications avec les utilisateurs, tout en facilitant son utilisation avec les applications web et mobiles.
+[P478|Normal] <image/empty>
+[P479|Heading 4] 6. Technologies de paiement en ligne
+[P480|Normal] <image/empty>
+[P481|Normal] <image/empty>
+[P482|Heading 4] <image/empty>
+[P483|Normal] <image/empty>
+[P484|Heading 4] 7. Technologies de déploiement
+[P485|Normal] <image/empty>
+[P486|Normal] Pour assurer la mise en ligne de la plateforme, Hostinger a été retenu.
+[P487|Normal] Le choix de Hostinger s'explique notamment par sa facilité de déploiement, son coût accessible et sa compatibilité avec les technologies utilisées dans le projet.
+[P488|Normal] <image/empty>
+[P489|Heading 3] <image/empty>
+[P490|Heading 3] II. SYSTÈME DE GESTION DE BASE DE DONNÉES (SGBD)
+[P491|Normal] Le choix du système de gestion de base de données (SGBD) constitue une étape importante dans la conception et le déploiement d'une application. Il doit notamment répondre aux besoins du système en matière de performance, sécurité, fiabilité, évolutivité et facilité de maintenance. Dans le cadre du projet de SOUTARAH GROUP, plusieurs solutions ont été
+[P492|Normal] étudiées, notamment MySQL, PostgreSQL, SQL Server, Oracle et MongoDB. L'analyse a porté sur leur modèle de données, leurs performances, leur coût, leur facilité d'intégration.
+[P493|Normal] <image/empty>
+[P494|Heading 4] Comparaison des principaux SGBD
+[P495|Normal] <image/empty>
+=== TABLE 496 (8x6) ===
+Critères | MySQL | PostgreSQL | SQL Server | Oracle | MongoDB
+Type | Relationnel, open source | Relationnel, open source | Relationnel, propriétaire | Relationnel, propriétaire | NoSQL, orienté documents
+Modèle de données | Relationnel, structuré | Relationnel, structuré | Relationnel, structuré | Relationnel, structuré | Documents flexibles
+Performance | Très bonne | Très bonne | Très bonne | Excellente | Excellente sur certains gros volumes
+Scalabilité | Bonne | Très bonne | Très bonne | Excellente | Excellente
+Coût | Gratuit | Gratuit | Payant | Payant | Gratuit / offres cloud
+Facilité d'utilisation | Élevée | Moyenne à élevée | Élevée | Plus complexe | Élevée
+Compatibilité avec l'hébergement retenu | Oui | Non disponible sur l'offre retenue | Non | Non | Non
+=== END TABLE ===
+[P497|Heading 4] <image/empty>
+[P498|Normal] <image/empty>
+[P499|Heading 4] 2. Choix du SGBD
+[P500|Normal] Après comparaison des différentes solutions, MySQL a été retenu comme système de gestion de base de données pour notre projet.
+[P501|Normal] Ce choix s'explique tout d'abord par la nature des données manipulées par la plateforme. L'application doit gérer plusieurs informations structurées telles que les clients, les véhicules, les réservations, les produits, les commandes, les devis.
+[P502|Normal] Un autre élément déterminant dans ce choix concerne l'environnement de développement. L'offre d'hébergement acheté par SOUTARAH GROUP ne prend en charge que MySQL. Le choix de ce SGBD permet ainsi d'assurer une meilleure compatibilité entre l'application développée et l'infrastructure d'hébergement.
+[P503|Normal] Enfin, MySQL dispose d'un écosystème largement utilisé dans le développement web et s'intègre facilement aux différentes technologies utilisées dans le projet. Il constitue ainsi une solution fiable, performante, accessible et adaptée.
+[P504|Normal] <image/empty>
+[P505|Normal] <image/empty>
+[P506|Heading 3] III. ARCHITECTURE GÉNÉRALE DU SYSTÈME
+[P507|Normal] Notre solution repose sur une architecture distribuée en trois niveaux (3-tiers) :
+[P508|Normal] Niveau Présentation (Clients) : Les utilisateurs interagissent avec le système via deux canaux complémentaires :
+[P509|Normal] Une application mobile (React Native / Expo) dédiée spécifiquement aux clients pour consulter la flotte des véhicules et effectuer des réservations en ligne ;
+[P510|Normal] Une plateforme web (React / Vite) permettant la gestion globale des services, la demande de devis et le suivi administratif (Back-Office).
+[P511|Normal] Niveau Réseau (Internet) : Assure la liaison sécurisée entre les clients et le serveur à travers le protocole HTTPS et des requêtes API REST échangeant des données au format JSON.
+[P512|Normal] Niveau Métier et Données (Serveur & BDD) : Un serveur d'application Node.js / Express gère la logique métier (vérification automatique de disponibilité anti-double réservation, calcul des devis, sécurité JWT) et communique avec une base de données MySQL pour la persistance des données.
+[P513|Normal] <image/empty>
+[P514|Normal] Figure 19 : Schéma de l’architecture générale du système
+[P515|Normal] <image/empty>
+[P516|Normal] <image/empty>
+[P517|Normal] <image/empty>
+[P518|Heading 1] <image/empty>
+[P519|Heading 1] <image/empty>
+[P520|Heading 1] <image/empty>
+[P521|Heading 1] <image/empty>
+[P522|Heading 1] <image/empty>
+[P523|Normal] <image/empty>
+[P524|Heading 1] PARTIE IV
+[P525|Heading 1] RÉALISATION ET MISE EN ŒUVRE
+[P526|Heading 2] <image/empty>
+[P527|Heading 2] <image/empty>
+[P528|Heading 2] <image/empty>
+[P529|Heading 2] <image/empty>
+[P530|Heading 2] <image/empty>
+[P531|Heading 2] <image/empty>
+[P532|Heading 2] <image/empty>
+[P533|Heading 2] <image/empty>
+[P534|Normal] <image/empty>
+[P535|Normal] <image/empty>
+[P536|Normal] <image/empty>
+[P537|Normal] <image/empty>
+[P538|Normal] <image/empty>
+[P539|Normal] <image/empty>
+[P540|Normal] <image/empty>
+[P541|Heading 3] <image/empty>
+[P542|Heading 3] I. MISE EN PLACE DE LA BASE DE DONNÉES MySQL
+[P543|Normal] La base de données MySQL a été conçue pour garantir la cohérence des flux transactionnels. Elle regroupe les tables principales suivantes :
+• Utilisateurs & Clients : gestion des identifiants (email, mot de passe hashé, rôle 'CLIENT' ou 'ADMIN') et liaisons vers les profils particuliers ou entreprises ;
+• Véhicules : marque, modèle, catégorie, tarif journalier, statut, photographies ;
+• Réservations : dates de début et de fin, option avec/sans chauffeur, montant total, statut ;
+• Services & Produits : catalogue général des 6 pôles avec caractéristiques techniques et tarifs ;
+• Devis : référence unique (ex: DMD-2026-XXXX), date de création, montant HT/TTC ;
+• Notifications : alertes émises à destination des clients et administrateurs.
+[P544|Normal] <image/empty>
+[P545|Normal] <image/empty>
+[P546|Normal] <image/empty>
+[P547|Normal] II. IMPLÉMENTATION DE L’ASSISTANT IA ET DU SERVICE DES NOTIFICATIONS TRANSACTIONNELLES (BREVO / SMTP)
+[P548|Normal] Pour moderniser la relation client et fluidifier la communication opérationnelle de SOUTARAH GROUP, nous avons enrichi la plateforme de deux modules : un agent conversationnel intelligent et un service d’e-mails transactionnels automatisés.
+[P549|Normal] <image/empty>
+[P550|Normal] 1. L’Assistant virtuel intelligent (Agent IA)
+[P551|Normal] Afin d'orienter les visiteurs et d'assister les gestionnaires, un agent virtuel basé sur un modèle de langage avancé (LLM) a été développé :
+[P552|Normal] Architecture technique : Il s'articule autour d'un widget interactif flottant en React connecté via une API REST sécurisée au service backend. Ce dernier sollicite le modèle OpenAI (gpt-4o-mini) en lui injectant dynamiquement en contexte les données temps réel de la base MySQL (véhicules disponibles, caractéristiques techniques, tarifs et stocks).
+[P553|Normal] Rôle pour le Client : L'assistant comprend les demandes exprimées en langage naturel (ex. : « Je cherche un véhicule pour 5 personnes climatisé pour Yamoussoukro »), propose le modèle adéquat et génère des boutons d'actions cliquables pour rediriger instantanément l'usager vers la fiche du véhicule ou vers le panier.
+[P554|Normal] Rôle pour l’Administrateur : Lorsque l'utilisateur est authentifié avec le rôle ADMIN, l'assistant se mue en outil d'aide à la décision : il exécute des requêtes d'agrégation pour répondre à des questions de gestion (produits proches du seuil de rupture, véhicules les plus loués, volume de devis en attente).
+[P555|Normal] <image/empty>
+[P556|Normal] 2. Le Service de messagerie et notifications transactionnelles (Brevo / SMTP)
+[P557|Normal] Pour garantir la traçabilité et réagir sans délai aux sollicitations commerciales, un système de notification par e-mail a été implémenté :
+[P558|Normal] Infrastructure d'envoi : Pour envoyer les e-mails, notre serveur Node.js utilise l'outil Nodemailer, qui prépare et met en forme les messages. Ces messages sont ensuite transmis au service professionnel Brevo, qui se charge de les distribuer aux destinataires. La communication avec Brevo est totalement chiffrée et sécurisée (protocole TLS).
+[P559|Normal] Notifications Clients : Le système déclenche automatiquement l'envoi d'un courriel lors de l'inscription d'un nouvel utilisateur, lors de la confirmation d'une réservation, et achemine le devis pro-forma officiel au format PDF (2 pages) dès la validation du panier.
+[P560|Normal] Alertes Administrateur : Dès qu'un client ajoute une réservation automobile ou un article à son panier, une alerte immédiate est transmise à l'équipe commerciale avec les coordonnées du client, le détail des dates et les montants estimés, permettant une prise en charge proactive.
+[P561|Normal] <image/empty>
+[P562|Normal] 3. Le Module de paiement en ligne sécurisé (Genius Pay)
+[P563|Heading 3] Pour sécuriser les règlements et automatiser la validation des commandes, une passerelle de paiement a été intégrée via Genius Pay :
+[P564|Heading 3] Infrastructure et passerelle : Notre serveur Node.js initialise la transaction via l'API REST de Genius Pay et redirige le client vers son guichet sécurisé et chiffré (TLS). Aucune donnée bancaire sensible ne transite par nos serveurs, garantissant une sécurité optimale.
+[P565|Heading 3] Modes de règlement : La plateforme accepte les cartes bancaires (Visa, Mastercard) ainsi que le Mobile Money local. La transaction est protégée par une authentification forte (code OTP/SMS) avant tout débit effectif.
+[P566|Heading 3] Validation et notifications : Après validation bancaire, Genius Pay notifie directement notre API par Webhook pour passer la commande au statut « PAYÉ » en base de données. Le service Brevo achemine aussitôt le reçu électronique au client, tandis qu'en cas de refus, une alerte invite à réessayer.
+[P567|Heading 3] <image/empty>
+[P568|Heading 3] III. RÉALISATION DES INTERFACES DE LA PLATEFORME WEB
+[P569|Normal] Le portail web a été développé dans une esthétique moderne respectant la charte graphique de SOUTARAH :
+[P570|Heading 4] 1. Page d'accueil et de connexion
+[P571|Normal] <image/empty>
+[P572|List Paragraph] La page d'accueil constitue la vitrine d'entrée. Elle présente l'histoire, les valeurs S.A.P.E, les pôles d'activités et intègre un assistant virtuel intelligent orientant les usagers.
+[P573|Normal] <image/empty>
+[P574|List Paragraph] La page de connexion permet au client d’accéder à son espace personnel en renseignant ses identifiants de connexion, notamment son adresse e-mail et son mot de passe. Après vérification de ces informations, le client est authentifié et peut accéder aux différentes fonctionnalités qui lui sont réservées.
+[P575|Heading 4] <image/empty>
+[P576|Heading 4] 2. Catalogue des produits
+[P577|Normal] Permet aux clients de parcourir les fournitures, matériels de construction et outillages, avec possibilité d’ajout direct au panier.
+[P578|Heading 4] <image/empty>
+[P579|Heading 4] 3. Module de réservation de véhicules
+[P580|Normal] Permet la sélection d'un véhicule, le choix précis des dates de prise en charge et de restitution, et l'option avec chauffeur.
+[P581|Normal] <image/empty>
+[P582|Normal] <image/empty>
+[P583|Normal] <image/empty>
+[P584|Normal] <image/empty>
+[P585|Normal] <image/empty>
+[P586|Normal] <image/empty>
+[P587|Normal] <image/empty>
+[P588|Normal] <image/empty>
+[P589|Normal] <image/empty>
+[P590|Normal] <image/empty>
+[P591|Normal] <image/empty>
+[P592|Heading 4] <image/empty>
+[P593|Heading 4] 4. Panier multi-articles et génération de devis PDF
+[P594|Normal] Le panier regroupe à la fois les réservations de véhicules et les produits physiques, calcule les taxes réglementaires et génère le devis pro-forma téléchargeable instantanément.
+[P595|Normal] Figure 25 : Interface Web : Panier multi-articles
+[P596|Normal] <image/empty>
+[P597|Heading 4] 5. Espace Client et suivi des demandes
+[P598|Normal] Offre à l'utilisateur authentifié une vue d'ensemble de ses devis en cours.
+[P599|Normal] <image/empty>
+[P600|Normal] Figure 26 : Interface Web : Espace client et suivi des demandes
+[P601|Normal] <image/empty>
+[P602|Heading 3] <image/empty>
+[P603|Heading 3] IV. RÉALISATION DE L'APPLICATION MOBILE DÉDIÉE À LA RÉSERVATION
+[P604|Normal] L'application mobile 'SOUTARAH Mobile' apporte une réponse sur mesure à la mobilité en se focalisant sur le service de location de véhicules :
+[P605|Heading 4] <image/empty>
+[P606|Heading 4] 1. Écran d'accueil et Fiche détaillée du véhicule
+[P607|Normal] L’écran d'accueil affiche les véhicules disponibles catégorisés (SUV, Berlines, Utilitaires) avec filtres dynamiques, tarif journalier et visuels haute définition. La fiche détaillée présente les caractéristiques techniques du véhicule (climatisation, boîte de vitesses, carburant), intègre un sélecteur de calendrier et calcule instantanément le coût total selon la destination et l'option chauffeur.
+[P608|Normal] <image/empty>
+[P609|Normal] <image/empty>
+[P610|Normal] Figure 27 : Application Mobile : Écran d'accueil et fiche détaillée du véhicule
+[P611|Heading 4] 2. Panier mobile
+[P612|Normal] Permet d'ajuster les quantités ou durées de location, de renseigner des instructions particulières de livraison et de valider la demande en temps réel.
+[P613|Normal] <image/empty>
+[P614|Heading 3] <image/empty>
+[P615|Heading 3] V. RÉALISATION DE L'ESPACE ADMINISTRATEUR
+[P616|Normal] Le Back-Office Web constitue la tour de contrôle de l'entreprise. Il intègre :
+• Tableau de bord : graphiques de performance, chiffre d'affaires prévisionnel, nombre de devis et réservations en cours ;
+• Gestion du parc et des articles de négoce : ajout de nouveaux véhicules, produits, mise à jour des prix journaliers ;
+[P617|Normal] <image/empty>
+[P618|Normal] <image/empty>
+[P619|Normal] <image/empty>
+[P620|Normal] <image/empty>
+[P621|Normal] <image/empty>
+[P622|Normal] <image/empty>
+[P623|Normal] <image/empty>
+[P624|Normal] <image/empty>
+[P625|Normal] <image/empty>
+[P626|Normal] <image/empty>
+[P627|Normal] <image/empty>
+[P628|Normal] <image/empty>
+[P629|Normal] <image/empty>
+[P630|Normal] <image/empty>
+[P631|Normal] <image/empty>
+[P632|Normal] <image/empty>
+[P633|Normal] <image/empty>
+[P634|Normal] <image/empty>
+[P635|Normal] <image/empty>
+[P636|Normal] Figure 29 : Interface d’administration : Gestion de la flotte et du parc de véhicules
+[P637|Normal] <image/empty>
+[P638|Normal] <image/empty>
+[P639|Normal] <image/empty>
+[P640|Heading 3] I. TESTS FONCTIONNELS ET VALIDATION
+[P641|Normal] Une campagne exhaustive de tests a été conduite afin de valider la robustesse et l'intégrité de la solution interconnectée :
+=== TABLE 642 (9x4) ===
+Module / Fonctionnalité | Scénario de test exécuté | Résultat attendu | Statut
+Authentification | Connexion utilisateur avec email et mot de passe valide | Attribution du token JWT et ouverture de session | CONFORME
+Sécurité API | Tentative d'accès à une route d'administration sans privilège | Blocage requête et réponse HTTP 403 Forbidden | CONFORME
+Catalogue Web | Navigation et filtrage des produits multi-pôles | Affichage instantané des articles correspondants | CONFORME
+Réservation Mobile | Sélection d'un véhicule et choix des dates de location | Calcul dynamique exact du tarif (durée x prix + option chauffeur) | CONFORME
+Contrôle Disponibilité | Tentative de réservation sur une période déjà attribuée | Alerte de conflit de dates et blocage de la soumission | CONFORME
+Génération Devis PDF | Validation du panier et téléchargement du document PDF | Génération automatique d'un PDF 2 pages conforme aux normes | CONFORME
+Synchronisation DB | Validation d'une commande mobile et vérification dans le Back-Office | Apparition immédiate de la commande dans la liste admin | CONFORME
+Notifications E-mail | Transmission d'une nouvelle demande de devis | Réception automatique d'un courriel d'alerte via Brevo | CONFORME
+=== END TABLE ===
+[P643|Normal] <image/empty>
+[P644|Normal] <image/empty>
+[P645|Heading 3] II. ÉTUDE FINANCIÈRE ET ESTIMATION DES COÛTS
+[P646|Heading 4] 1. Coûts matériels et logiciels
+[P647|Normal] L'ensemble des technologies de développement retenues (React, React Native, Node.js, MySQL, Expo) reposant sur des licences Open Source gratuites, les coûts logiciels de développement direct sont nuls.
+[P648|Heading 4] 2. Coûts d'hébergement et de maintenance
+[P649|Normal] Pour le déploiement en production, les coûts annuels estimés se décomposent comme suit :
+=== TABLE 650 (4x3) ===
+Poste de dépense | Description technique | Coût annuel estimé (FCFA)
+Hébergement et Nom de domaine | Nom de domaine .com + certificat SSL | 142 000
+Comptes développeurs mobiles | Google Play Store (paiement unique) + Apple Developer (abonnement annuel) | 75 000
+TOTAL ESTIMATIF ANNUEL | Budget global de fonctionnement et de maintenance | 217 000
+=== END TABLE ===
+[P651|Heading 4] <image/empty>
+[P652|Normal] <image/empty>
+[P653|Normal] <image/empty>
+[P654|Normal] <image/empty>
+[P655|Normal] III. Rentabilité, retour sur investissement (ROI) et perspectives d’évolution
+[P656|Normal] 1. Rentabilité immédiate et retour sur investissement
+[P657|Normal] L'automatisation du processus de réservation et de génération des devis permet à SOUTA-RAH GROUP de réduire de plus de 80% le temps administratif consacré au traitement d'un dossier client (passant de 45 minutes à moins de 3 minutes). Cette réactivité commerciale immédiate, conjuguée à la suppression totale des pertes d'exploitation liées aux doubles ré-servations, permet un retour sur investissement complet dès le premier trimestre d'exploita-tion.
+[P658|Normal] <image/empty>
+[P659|Normal] 2. Perspectives d’évolution de la plateforme
+[P660|Normal] Afin d'accompagner le développement de l'entreprise, l'architecture modulaire mise en place permettra de déployer à court et moyen termes :
+[P661|Normal] Les Programmes de fidélité : Attribution de points de récompense à chaque réservation ou commande, échangeables contre des remises ou des services gratuits, afin de renforcer la rétention client ;
+[P662|Normal] La télématique et le suivi GPS : Intégration de traceurs connectés sur les véhicules afin de suivre les trajets en direct et planifier les entretiens mécaniques ;
+[P663|Normal] Les notifications Push natives : Alerte instantanée sur smartphone via Firebase Cloud Messaging pour le suivi des réservations ;
+[P664|Normal] <image/empty>
+[P665|Normal] <image/empty>
+[P666|Heading 1] CONCLUSION GÉNÉRALE
+[P667|Normal] Au terme de ce stage d'application effectué au sein de l'entreprise SOUTARAH GROUP, nous avons mené à bien la conception et la réalisation intégrale d'une solution numérique unifiée, répondant au thème : « Conception et développement d’une plateforme numérique de gestion des services de SOUTARAH GROUP intégrant une application mobile dédiée à la réservation de véhicules ».
+
+Ce projet a permis de transformer en profondeur les pratiques commerciales de l'entreprise en substituant aux méthodes manuelles un écosystème logiciel moderne, cohérent et interconnecté. L'approche méthodologique rigoureuse basée sur le Processus Unifié et la modélisation UML (PU/UML) a garanti une analyse précise des besoins et une structuration sans faille de la base de données relationnelle MySQL.
+
+Sur le plan technique, la synergie entre la plateforme web développée sous React.js et l'application mobile conçue sous React Native/Expo, toutes deux articulées autour d'une API REST Node.js/Express, a permis d'atteindre l'ensemble des objectifs fixés. Les utilisateurs disposent désormais d'une visibilité totale sur les 6 pôles de l'entreprise, d'un module de réservation fluide avec algorithme anti-double-réservation, d'un panier multi-articles interactif et d'un outil de génération instantanée de devis officiels au format PDF.
+
+Sur le plan personnel et académique, ce projet a constitué une expérience particulièrement enrichissante. Il nous a permis de consolider nos acquis théoriques reçus à l'École Supérieure d’Industrie (ESI) de l'INP-HB, d'appréhender les contraintes de l'ingénierie logicielle en milieu professionnel et de maîtriser des technologies full-stack de pointe.
+[P668|Normal] <image/empty>
+[P669|Normal] <image/empty>
+[P670|Normal] <image/empty>
+[P671|Normal] <image/empty>
+[P672|Normal] <image/empty>
+[P673|Normal] <image/empty>
+[P674|Normal] <image/empty>
+[P675|Normal] BIBLIOGRAPHIE
+[P676|Normal] I. OUVRAGES DE RÉFÉRENCE ET MANUELS MÉTHODOLOGIQUES :
+[P677|List Paragraph] AUDIBERT, Laurent. « Cours UML : Modélisation objet et diagrammes », Éditions Eyrolles / Institut Universitaire, pages 21-46.
+[P678|List Paragraph] ROQUES, Pascal. « UML 2 par la pratique : Études de cas et exercices corrigés », Éditions Eyrolles, 7e édition, 2021, 394 pages.
+[P679|Normal] <image/empty>
+[P680|Normal] II. SUPPORTS DE COURS ACADÉMIQUES (INP-HB / ESI) :
+[P681|List Paragraph] Zana Yéo. « Serveur-HTTP-et-Express.js », Support de cours, STIC, ESI / INP-HB Yamoussoukro, 2025-2026.
+[P682|Normal] <image/empty>
+[P683|Normal] <image/empty>
+[P684|Normal] <image/empty>
+[P685|Normal] <image/empty>
+[P686|Normal] <image/empty>
+[P687|Normal] <image/empty>
+[P688|Normal] <image/empty>
+[P689|Normal] <image/empty>
+[P690|Normal] <image/empty>
+[P691|Normal] <image/empty>
+[P692|Normal] <image/empty>
+[P693|Normal] <image/empty>
+[P694|Normal] <image/empty>
+[P695|Normal] <image/empty>
+[P696|Normal] <image/empty>
+[P697|Normal] <image/empty>
+[P698|Normal] <image/empty>
+[P699|Normal] <image/empty>
+[P700|Normal] WEBOGRAPHIE
+[P701|List Paragraph] REACT.JS. « Documentation officielle React 18 et Virtual DOM », Meta Open Source. Accessible sur : https://react.dev (Consulté LE 30 Août 2026).
+[P702|List Paragraph] REACT NATIVE & EXPO. « Cross-Platform Native Mobile Development with Expo Framework ». Accessible sur : https://reactnative.dev et https://docs.expo.dev (Consulté le 15 Septembre 2026).
+[P703|List Paragraph] BREVO. Accessible sur : https://brevo.com (Consulté en 1 Septembre 2026).
+[P704|Normal] <image/empty>
+[P705|Normal] <image/empty>
+[P706|Normal] <image/empty>
+[P707|Normal] <image/empty>
+[P708|Normal] <image/empty>
+[P709|Normal] <image/empty>
+[P710|Normal] <image/empty>
+[P711|Normal] <image/empty>
+[P712|Normal] <image/empty>
+[P713|Normal] <image/empty>
+[P714|Normal] <image/empty>
+[P715|Normal] <image/empty>
+[P716|Normal] <image/empty>
+[P717|Normal] <image/empty>
+[P718|Normal] <image/empty>
+[P719|Normal] <image/empty>
+[P720|Normal] <image/empty>
+[P721|Normal] <image/empty>
+[P722|Heading 3] <image/empty>
+[P723|Heading 3] TABLE DES MATIÈRES
+[P724|Normal] DÉDICACE	 - 1 -
+[P725|Normal] REMERCIEMENTS	 - 2 -
+[P726|Normal] AVANT-PROPOS	 - 3 -
+[P727|Normal] SOMMAIRE	 - 5 -
+[P728|Normal] LISTE DES FIGURES	 - 6 -
+[P729|Normal] LISTE DES TABLEAUX	 - 7 -
+[P730|Normal] LISTE DES ABRÉVIATIONS	 - 8 -
+[P731|Normal] RÉSUMÉ	 - 9 -
+[P732|Normal] INTRODUCTION GÉNÉRALE	 - 10 -
+[P733|Normal] PARTIE I : CADRE ET CONTEXTE DU PROJET	 - 11 -
+[P734|Normal] Chapitre 1 : Présentation de la structure d’accueil	 - 12 -
+[P735|Normal] I. Présentation de SOUTARAH GROUP	 - 12 -
+[P736|Normal] 1. Présentation générale	 - 12 -
+[P737|Normal] 2. Mission, Vision et Valeurs	 - 12 -
+[P738|Normal] 3. Domaines d'activités et services	 - 13 -
+[P739|Normal] 4. Partenariats	 - 14 -
+[P740|Normal] Chapitre 2 : Présentation du projet	 - 15 -
+[P741|Normal] I. Contexte et justification du projet	 - 15 -
+[P742|Normal] II. Étude de l'existant, limites et problématique	 - 15 -
+[P743|Normal] III. Objectifs du projet	 - 15 -
+[P744|Normal] 1. Objectif général	 - 15 -
+[P745|Normal] 2. Objectifs spécifiques	 - 16 -
+[P746|Normal] IV. Cahier des charges du système	 - 16 -
+[P747|Normal] 1. Exigences fonctionnelles côté Client	 - 16 -
+[P748|Normal] 2. Exigences fonctionnelles côté Administrateur	 - 17 -
+[P749|Normal] 3. Exigences techniques et contraintes	 - 17 -
+[P750|Normal] V. Planification des tâches et diagramme de GANTT	 - 17 -
+[P751|Normal] 1. Planning prévisionnel	 - 17 -
+[P752|Normal] 2. Diagramme de GANTT	 - 18 -
+[P753|Normal] PARTIE II : ÉTUDE CONCEPTUELLE	 - 19 -
+[P754|Normal] Chapitre 3 : Choix de la méthode d’analyse	 - 20 -
+[P755|Normal] I. Étude comparative des méthodes d'analyse 	 - 20 -
+[P756|Normal] 1. Présentation de la méthode MERISE	 - 20 -
+[P757|Normal] 2. Présentation de la méthode PU/UML	 - 20 -
+[P758|Normal] 3. Tableau comparatif Merise et PU/UML	 - 21 -
+[P759|Normal] 4. choix de la méthode d’analyse	 - 22 -
+[P760|Normal] II. Application du PU/UML au système SOUTARAH GROUP	 - 22 -
+[P761|Normal] 1. Diagrammes des cas d'utilisation	 - 23 -
+[P762|Normal] ❖ Description textuelle des cas d’utilisation	 - 23 -
+[P763|Normal] 2. Diagrammes d'activité	 - 27 -
+[P764|Normal] 2.1. Création et gestion d’un compte client	 - 27 -
+[P765|Normal] 2.2. Réservation d’un véhicule avec contrôle de disponibilité	 - 28 -
+[P766|Normal] 2.3. Processus d’achat d’un produit	 - 30 -
+[P767|Normal] 3. Diagrammes de séquences	 - 32 -
+[P768|Normal] 3.1. Paiement en ligne sécurisé	 - 32 -
+[P769|Normal] 3.2. Réservation d'un véhicule	 - 33 -
+[P770|Normal] 3.3. Achat produit	 - 34 -
+[P771|Normal] 3.4. Inscription d'un utilisateur	 - 35 -
+[P772|Normal] 4. Diagramme de classes	 - 36 -
+[P773|Normal] PARTIE III : ÉTUDE TECHNIQUE	 - 37 -
+[P774|Normal] Chapitre 4 : Conception du système et choix technologiques	 - 38 -
+[P775|Normal] I. Analyse et justification des choix technologiques	 - 38 -
+[P776|Normal] 1. Environnement de développement	 - 38 -
+[P777|Normal] 2. Outil de maquettage UI/UX	 - 38 -
+[P778|Normal] 3. Technologies Frontend Web	 - 39 -
+[P779|Normal] 4. Technologies Mobile 	 - 39 -
+[P780|Normal] 5. Technologies Backend et API REST 	 - 40 -
+[P781|Normal] 6. Technologies de notifications et messagerie 	 - 40 -
+[P782|Normal] 7. Plateforme d’hébergement et déploiement 	 - 40 -
+[P783|Normal] II. Système de Gestion de Base de Données (SGBD)	 - 41 -
+[P784|Normal] 1. Comparaison des principaux SGBD	 - 41 -
+[P785|Normal] 2. Choix et justification de MySQL	 - 42 -
+[P786|Normal] III. Architecture générale du système 	 - 42 -
+[P787|Normal] PARTIE IV : RÉALISATION ET MISE EN ŒUVRE	 - 44 -
+[P788|Normal] Chapitre 5 : Réalisation de la plateforme web et de l’application mobile	 - 45 -
+[P789|Normal] I. Mise en place de la base de données MySQL	 - 45 -
+[P790|Normal] II. Implémentation de l'Assistant IA et des notifications (Brevo)	 - 46 -
+[P791|Normal] 1. L'Assistant virtuel intelligent (Agent IA)	 - 46 -
+[P792|Normal] 2. Le Service de messagerie et notifications (Brevo / SMTP)	 - 46 -
+[P793|Normal] 3. Le Module de paiement en ligne sécurisé (Genius Pay) 	 - 47 -
+[P794|Normal] III. Réalisation des interfaces de la plateforme Web	 - 47 -
+[P795|Normal] 1. Page d'accueil et de connexion	 - 47 -
+[P796|Normal] 2. Catalogue des produits	 - 49 -
+[P797|Normal] 3. Module de réservation de véhicules	 - 49 -
+[P798|Normal] 4. Panier multi-articles et génération de devis PDF	 - 50 -
+[P799|Normal] 5. Espace Client et suivi des demandes	 - 50 -
+[P800|Normal] IV. Réalisation de l'application mobile dédiée à la réservation	 - 51 -
+[P801|Normal] 1. Écran d'accueil et fiche détaillée du véhicule	 - 51 -
+[P802|Normal] 2. Panier mobile	 - 52 -
+[P803|Normal] V. Réalisation de l'espace administrateur (Back-Office Web)	 - 52 -
+[P804|Normal] Chapitre 6 : Mise en œuvre	 - 54 -
+[P805|Normal] I. Tests fonctionnels et validation (Cahier de recettes)	 - 54 -
+[P806|Normal] II. Étude financière et estimation des coûts	 - 55 -
+[P807|Normal] 1. Coûts matériels et logiciels	 - 55 -
+[P808|Normal] 2. Coûts d'hébergement et de maintenance annuelle	 - 55 -
+[P809|Normal] III. Rentabilité, retour sur investissement et perspectives	 - 56 -
+[P810|Normal] 1. Rentabilité immédiate et retour sur investissement (ROI)	 - 56 -
+[P811|Normal] 2. Perspectives d’évolution de la plateforme	 - 56 -
+[P812|Normal] CONCLUSION GÉNÉRALE ET PERSPECTIVES	 - 57 -
+[P813|Normal] BIBLIOGRAPHIE	 - 58 -
+[P814|Normal] I. Ouvrages et cours académiques	 - 58 -
+[P815|Normal] II. Documentations techniques et références web	 - 58 -
+[P816|Normal] WEBOGRAPHIE	 - 59 -
+[P817|Normal] TABLE DES MATIÈRES	 - 60 -
+[P818|Normal] <image/empty>
+[P819|Normal] <image/empty>

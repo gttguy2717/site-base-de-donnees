@@ -1,0 +1,49 @@
+P_IDX  90 | Page  7 | Tableau 5 : Bilan financier estimatif et investissements matériels	 - 54 -
+P_IDX 187 | Page 11 | PARTIE I
+P_IDX 205 | Page 12 | I. PRÉSENTATION DE SOUTARAH GROUP
+P_IDX 206 | Page 12 | 1. Présentation générale
+P_IDX 211 | Page 12 | 2. Mission, Vision et Valeurs
+P_IDX 212 | Page 12 | ❖ Mission
+P_IDX 220 | Page 13 | 3. Services
+P_IDX 228 | Page 14 | 4. Partenariats
+P_IDX 261 | Page 15 | I. CONTEXTE ET JUSTIFICATION DU PROJET
+P_IDX 264 | Page 15 | II. ÉTUDE DE L'EXISTANT ET LIMITES
+P_IDX 267 | Page 15 | III. OBJECTIFS DU PROJET
+P_IDX 268 | Page 15 | 1. Objectif général
+P_IDX 271 | Page 16 | 2. Objectifs spécifiques
+P_IDX 274 | Page 16 | IV. CAHIER DES CHARGES DU SYSTÈME
+P_IDX 278 | Page 17 | V. PLANIFICATION DES TÂCHES ET DIAGRAMME DE GANTT
+P_IDX 281 | Page 17 | 1. Planning
+P_IDX 332 | Page 18 | 2. Diagramme de Gantt
+P_IDX 334 | Page 18 | Figure 1 : Diagramme de GANTT
+P_IDX 345 | Page 19 | PARTIE II
+P_IDX 365 | Page 20 | I. ÉTUDE COMPARATIVE DES MÉTHODES D'ANALYSE
+P_IDX 380 | Page 21 | Tableau comparatif Merise et PU/UML
+P_IDX 415 | Page 22 | II. APPLICATION DU PU/UML AU SYSTÈME SOUTARAH GROUP
+P_IDX 418 | Page 23 | 1. Diagrammes des cas d'utilisation
+P_IDX 420 | Page 23 | Figure 2 : Diagramme global des cas d’utilisation (Web & Mobile)
+P_IDX 422 | Page 23 | ❖ Description textuelle du diagramme
+P_IDX 507 | Page 27 | 2. Diagrammes d'activité
+P_IDX 509 | Page 27 | 2.1. Diagramme d’activité : Création et gestion d’un compte client
+P_IDX 512 | Page 27 | Figure 3 : Diagramme d’activité : création et gestion d’un compte client
+P_IDX 514 | Page 28 | 2.2. Diagramme d’activité : réservation d’un véhicule
+P_IDX 520 | Page 29 | Figure 4 : Diagramme d’activité : Réservation d’un véhicule
+P_IDX 527 | Page 30 | 2.3. Diagramme d’activité : achat d’un produit
+P_IDX 533 | Page 31 | Figure 5 : Diagramme d’activité : achat d’un produit
+P_IDX 536 | Page 32 | 3. Diagrammes de séquences
+P_IDX 538 | Page 32 | 3.1. Diagramme de séquence : Paiement en ligne
+P_IDX 540 | Page 32 | Figure 6 : Diagramme de séquence : Paiement en ligne sécurisé
+P_IDX 543 | Page 33 | 3.2. Diagramme de séquence : Réservation d'un véhicule
+P_IDX 545 | Page 33 | Figure 7 : Diagramme de séquence : Réservation d'un véhicule
+P_IDX 548 | Page 34 | 3.3. Diagramme de séquence : Achat produit
+P_IDX 550 | Page 34 | Figure 8 : Diagramme de séquence : Achat produit
+P_IDX 552 | Page 35 | 3.4. Diagramme de séquence : Inscription d'un utilisateur
+P_IDX 554 | Page 35 | Figure 9 : Diagramme de séquence : Inscription d'un utilisateur
+P_IDX 556 | Page 36 | 4. Diagramme de classes
+P_IDX 568 | Page 37 | PARTIE III
+P_IDX 587 | Page 38 | I. ANALYSE ET JUSTIFICATION DES CHOIX TECHNOLOGIQUES
+P_IDX 604 | Page 39 | 3. Technologies Frontend Web
+P_IDX 610 | Page 39 | 4. Technologies Mobile
+P_IDX 633 | Page 41 | II. SYSTÈME DE GESTION DE BASE DE DONNÉES (SGBD)
+P_IDX 696 | Page 42 | 2. Choix du SGBD
+P_IDX 703 | Page 42 | III. ARCHITECTURE GÉNÉRALE DU SYSTÈME

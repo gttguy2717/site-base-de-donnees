@@ -1,4 +1,4 @@
-﻿const IMAGE_BASE_URL = 'https://soutarahgroup.ci/img';
+const IMAGE_BASE_URL = 'https://soutarahgroup.ci/img';
 
 export const CONTACT_DETAILS = {
   address: 'Riviera Palmeraie Saint Viateur, Cité Kimi',
@@ -13,8 +13,8 @@ export const CONTACT_DETAILS = {
     display: '00225 0706898989',
     href: 'tel:+2250706898989',
   },
-  email: 'infos@soutarahgroup.ci',
-  emailHref: 'mailto:infos@soutarahgroup.ci',
+  email: 'infos@soutarahgroup.com',
+  emailHref: 'mailto:infos@soutarahgroup.com',
   hours: 'Lun. – Sam. · 08h00 – 18h00',
   mapUrl: 'https://www.google.com/maps/search/?api=1&query=93J2%2BMPW+SOUTARAH+GROUP+Abidjan+C%C3%B4te+d%27Ivoire',
 };

@@ -1,0 +1,171 @@
+=== SOMMAIRE (p. 29 to 53) ===
+29: 
+SOMMAIRE
+30: DÉDICACE	 - 1 -
+31: REMERCIEMENTS	 - 2 -
+32: AVANT-PROPOS	 - 3 -
+33: SOMMAIRE	 - 5 -
+34: LISTE DES FIGURES	 - 6 -
+35: LISTE DES TABLEAUX	 - 7 -
+36: LISTE DES ABRÉVIATIONS	 - 8 -
+37: RÉSUMÉ	 - 9 -
+38: INTRODUCTION GÉNÉRALE	 - 10 -
+39: PARTIE I : CADRE ET CONTEXTE DU PROJET	 - 11 -
+40:     Chapitre 1 : Présentation de la structure d’accueil	 - 12 -
+41:     Chapitre 2 : Présentation et planification du projet	 - 15 -
+42: PARTIE II : ÉTUDE CONCEPTUELLE	 - 19 -
+43:     Chapitre 3 : Choix de la méthode d’analyse	 - 20 -
+44: PARTIE III : ÉTUDE TECHNIQUE	 - 37 -
+45:     Chapitre 4 : Conception du système et choix technologiques	 - 38 -
+46: PARTIE IV : RÉALISATION ET MISE EN ŒUVRE	 - 44 -
+47:     Chapitre 5 : Réalisation de la plateforme web et de l'application mobile	 - 45 -
+48:     Chapitre 6 : Mise en œuvre	 - 53 -
+49: CONCLUSION GÉNÉRALE	 - 56 -
+50: BIBLIOGRAPHIE 	 - 57 -
+51: WEBOGRAPHIE	 - 58 -
+52: TABLE DES MATIÈRES	 - 59 -
+53: 
+
+=== LISTE DES FIGURES (p. 54 to 84) ===
+54: 
+LISTE DES FIGURES
+55: Figure 1 : Diagramme de GANTT	 - 18 -
+56: Figure 2 : Diagramme global des cas d’utilisation (Web & Mobile)	 - 23 -
+57: Figure 3 : Diagramme d’activité de création et gestion d’un compte client	 - 27 -
+58: Figure 4 : Diagramme d’activité de réservation d’un véhicule	 - 29 -
+59: Figure 5 : Diagramme d’activité d'achat d’un produit	 - 31 -
+60: Figure 6 : Diagramme de séquence de paiement en ligne sécurisé	 - 32 -
+61: Figure 7 : Diagramme de séquence de réservation d'un véhicule	 - 33 -
+62: Figure 8 : Diagramme de séquence d'achat produit	 - 34 -
+63: Figure 9 : Diagramme de séquence d'inscription d'un utilisateur	 - 35 -
+64: Figure 10 : Diagramme des classes du système	 - 36 -
+65: Figure 11 : Logo de l’éditeur de code Visual Studio Code	 - 38 -
+66: Figure 12 : Logo de l’outil de maquettage Figma	 - 39 -
+67: Figure 13 : Logo du Framework Frontend React.js	 - 39 -
+68: Figure 14 : Logo du Framework Mobile React Native & Expo	 - 39 -
+69: Figure 15 : Logo de la technologie serveur Node.js & Express	 - 40 -
+70: Figure 16 : Logo de la plateforme transactionnelle Brevo	 - 40 -
+71: Figure 17 : Logo de la plateforme d'hébergement Hostinger	 - 40 -
+72: Figure 18 : Schéma de l'architecture générale du système	 - 43 -
+73: Figure 19 : Structure et schéma relationnel de la base de données MySQL	 - 45 -
+74: Figure 20 : Interface Web : Page d'accueil	 - 47 -
+75: Figure 21 : Interface Web : Page connexion et formulaire d'authentification	 - 48 -
+76: Figure 22 : Interface Web : Catalogue des produits	 - 48 -
+77: Figure 23 : Interface Web : Module de réservation de véhicule	 - 49 -
+78: Figure 24 : Interface Web : Panier multi-articles et devis PDF	 - 49 -
+79: Figure 25 : Interface Web : Espace client et historique des demandes	 - 50 -
+80: Figure 26 : Application Mobile : Écran d'accueil et fiche détaillée du véhicule	 - 51 -
+81: Figure 27 : Application Mobile : Panier de réservation mobile	 - 51 -
+82: Figure 28 : Interface d’administration : Tableau de bord	 - 52 -
+83: Figure 29 : Interface d’administration : Gestion du parc de véhicules et des réservations	 - 52 -
+84: 
+
+=== LISTE DES TABLEAUX (p. 85 to 91) ===
+85: 
+LISTE DES TABLEAUX
+86: Tableau 1 : Planning prévisionnel et chronogramme des tâches	 - 17 -
+87: Tableau 2 : Analyse comparative des méthodes MERISE et PU/UML	 - 21 -
+88: Tableau 3 : Analyse comparative des systèmes de gestion de bases de données 	 - 41 -
+89: Tableau 4 : Cahier de recettes et validation des tests fonctionnels (Web & Mobile)	 - 54 -
+90: Tableau 5 : Bilan financier estimatif et investissements matériels	 - 54 -
+91: 
+
+=== TABLE DES MATIERES (p. 710 to end) ===
+710: TABLE DES MATIÈRES 
+711: DÉDICACE	 - 1 -
+712: REMERCIEMENTS	 - 2 -
+713: AVANT-PROPOS	 - 3 -
+714: SOMMAIRE	 - 5 -
+715: LISTE DES FIGURES	 - 6 -
+716: LISTE DES TABLEAUX	 - 7 -
+717: LISTE DES ABRÉVIATIONS	 - 8 -
+718: RÉSUMÉ	 - 9 -
+719: INTRODUCTION GÉNÉRALE	 - 10 -
+720: PARTIE I : CADRE ET CONTEXTE DU PROJET	 - 11 -
+721: Chapitre 1 : Présentation de la structure d’accueil	 - 12 -
+722: I. Présentation de SOUTARAH GROUP	 - 12 -
+723: 1. Présentation générale	 - 12 -
+724: 2. Mission, Vision et Valeurs	 - 12 -
+725: 3. Domaines d'activités et services	 - 13 -
+726: 4. Partenariats	 - 14 -
+727: Chapitre 2 : Présentation du projet	 - 15 -
+728: I. Contexte et justification du projet	 - 15 -
+729: III. Étude de l'existant et limites	 - 15 -
+730: III. Objectifs du projet	 - 15 -
+731: 1. Objectif général	 - 15 -
+732: 2. Objectifs spécifiques	 - 16 -
+733: IV. Cahier des charges du système	 - 16 -
+734: 1. Exigences fonctionnelles côté Client	 - 16 -
+735: 2. Exigences fonctionnelles côté Administrateur	 - 17 -
+736: 3. Exigences techniques et contraintes	 - 17 -
+737: V. Planification des tâches et diagramme de GANTT	 - 17 -
+738: 1. Planning prévisionnel	 - 17 -
+739: 2. Diagramme de GANTT	 - 18 -
+740: PARTIE II : ÉTUDE CONCEPTUELLE	 - 19 -
+741: Chapitre 3 : Choix de la méthode d’analyse	 - 20 -
+742: I. Étude comparative des méthodes d'analyse 	 - 20 -
+743:      1. Présentation de la méthode MERISE	 - 20 -
+744:      2. Présentation de la méthode PU/UML	 - 20 -
+745:      3. Tableau comparatif Merise et PU/UML	 - 21 -
+746:            4. choix de la méthode d’analyse	 - 22 -
+747: II. Application du PU/UML au système SOUTARAH GROUP	 - 22 -
+748: 1. Diagrammes des cas d'utilisation	 - 23 -
+749: ❖ Description textuelle des cas d’utilisation	 - 23 -
+750: 2. Diagrammes d'activité	 - 27 -
+751: 2.1. Création et gestion d’un compte client	 - 27 -
+752: 2.2. Réservation d’un véhicule avec contrôle de disponibilité	 - 28 -
+753: 2.3. Processus d’achat d’un produit	 - 30 -
+754: 3. Diagrammes de séquences	 - 32 -
+755: 3.1. Paiement en ligne sécurisé	 - 32 -
+756: 3.2. Réservation d'un véhicule	 - 33 -
+757: 3.3. Achat produit	 - 34 -
+758: 3.4. Inscription d'un utilisateur	 - 35 -
+759: 4. Diagramme de classes	 - 36 -
+760: PARTIE III : ÉTUDE TECHNIQUE	 - 37 -
+761: Chapitre 4 : Conception du système et choix technologiques	 - 38 -
+762: I. Analyse et justification des choix technologiques	 - 38 -
+763: 1. Environnement de développement	 - 38 -
+764: 2. Outil de maquettage UI/UX	 - 38 -
+765: 3. Technologies Frontend Web	 - 39 -
+766: 4. Technologies Mobile 	 - 39 -
+767: 5. Technologies Backend et API REST 	 - 40 -
+768: 6. Technologies de notifications et messagerie 	 - 40 -
+769: 7. Plateforme d’hébergement et déploiement 	 - 40 -
+770: II. Système de Gestion de Base de Données (SGBD)	 - 41 -
+771: 1. Comparaison des principaux SGBD	 - 41 -
+772: 2. Choix et justification de MySQL	 - 42 -
+773: III. Architecture générale du système 	 - 42 -
+774: PARTIE IV : RÉALISATION ET MISE EN ŒUVRE	 - 44 -
+775: Chapitre 5 : Réalisation de la plateforme web et de l’application mobile	 - 45 -
+776: I. Mise en place de la base de données MySQL	 - 45 -
+777: II. Implémentation de l'Assistant IA et des notifications (Brevo)	 - 46 -
+778: 1. L'Assistant virtuel intelligent (Agent IA)	 - 46 -
+779: 2. Le Service de messagerie et notifications (Brevo / SMTP)	 - 46 -
+780: III. Réalisation des interfaces de la plateforme Web	 - 47 -
+781: 1. Page d'accueil et de connexion	 - 47 -
+782: 2. Catalogue des produits	 - 48 -
+783: 3. Module de réservation de véhicules	 - 49 -
+784: 4. Panier multi-articles et génération de devis PDF	 - 49 -
+785: 5. Espace Client et suivi des demandes	 - 50 -
+786: IV. Réalisation de l'application mobile dédiée à la réservation	 - 50 -
+787: 1. Écran d'accueil et fiche détaillée du véhicule	 - 50 -
+788: 2. Panier mobile	 - 51 -
+789: V. Réalisation de l'espace administrateur (Back-Office Web)	 - 52 -
+790: 1. Tableau de bord des indicateurs clés (Dashboard)	 - 52 -
+791: 2. Gestion du parc de véhicules et des réservations	 - 53 -
+792: Chapitre 6 : Mise en œuvre	 - 53 -
+793: I. Tests fonctionnels et validation (Cahier de recettes)	 - 53 -
+794: II. Étude financière et estimation des coûts	 - 54 -
+795: 1. Coûts matériels et logiciels	 - 54 -
+796: 2. Coûts d'hébergement et de maintenance annuelle	 - 54 -
+797: III. Rentabilité, retour sur investissement et perspectives	 - 55 -
+798: 1. Rentabilité immédiate et retour sur investissement (ROI)	 - 55 -
+799: 2. Perspectives d’évolution de la plateforme	 - 55 -
+800: CONCLUSION GÉNÉRALE ET PERSPECTIVES	 - 56 -
+801: BIBLIOGRAPHIE	 - 57 -
+802: I. Ouvrages et cours académiques	 - 57 -
+803: II. Documentations techniques et références web	 - 57 -
+804: WEBOGRAPHIE	 - 58 -
+805: TABLE DES MATIÈRES	 - 59 -
+806: 
+807: 

@@ -123,18 +123,27 @@ function parseSnapshot(quoteRequest) {
 function itemLines(quoteRequest) {
   const snapshot = parseSnapshot(quoteRequest);
   if (snapshot && snapshot.length > 0) {
-    return snapshot.map((item) => ({
-      name: item.name || item.vehicleName || item.productName || item.produit?.nom || item.title || 'Article',
-      vehicleName: item.vehicleName,
-      quantity: Number(item.quantity ?? item.quantite ?? 1) || 1,
-      unitPrice: Number(item.unitPrice ?? item.prixUnitaire ?? 0) || 0,
-      total: Number(item.totalPrice ?? item.totalLigne ?? 0) || 0,
-      startDate: item.startDate,
-      endDate: item.endDate,
-      days: Number(item.days ?? item.duree ?? 0) || 0,
-      withDriver: item.withDriver,
-      type: item.type || 'product',
-    }));
+    return snapshot.map((item) => {
+      // Comptage inclusif : du 23 au 24 = 2 jours (prise en charge + retour).
+      const rentalDays = (item.startDate && item.endDate)
+        ? Math.max(1, Math.round((new Date(item.endDate) - new Date(item.startDate)) / 86400000) + 1)
+        : (Number(item.days ?? item.duree ?? 0) || 0);
+      const unit = Number(item.unitPrice ?? item.prixUnitaire ?? 0) || 0;
+      return {
+        name: item.name || item.vehicleName || item.productName || item.produit?.nom || item.title || 'Article',
+        vehicleName: item.vehicleName,
+        quantity: Number(item.quantity ?? item.quantite ?? 1) || 1,
+        unitPrice: unit,
+        total: (item.startDate && item.endDate && unit > 0)
+          ? unit * rentalDays
+          : (Number(item.totalPrice ?? item.totalLigne ?? 0) || 0),
+        startDate: item.startDate,
+        endDate: item.endDate,
+        days: rentalDays,
+        withDriver: item.withDriver,
+        type: item.type || 'product',
+      };
+    });
   }
   // Fallback : description « A | B | C » comme sur l'ancien devis
   const description = quoteRequest.description || '';
@@ -242,7 +251,9 @@ async function generateQuotePdf(quoteRequest) {
       : line.name;
     y = drawWrappedText(pdfDoc, page, font, 9, label, colX[0], y, 210, 11);
     page.drawText(String(line.quantity || 1), { x: colX[1], y, size: 9, font });
-    const unit = Number(line.total) > 0 ? (Number(line.total) / (line.quantity || 1)).toFixed(0) : String(line.unitPrice || 0);
+    const unit = Number(line.unitPrice) > 0
+      ? Number(line.unitPrice).toFixed(0)
+      : (Number(line.total) > 0 ? (Number(line.total) / (line.quantity || 1)).toFixed(0) : '0');
     page.drawText(formatNumber(Number(unit)), { x: colX[2], y, size: 9, font });
     const lineTotal = Number(line.total) > 0 ? Number(line.total) : (line.unitPrice * (line.quantity || 1));
     page.drawText(formatNumber(lineTotal), { x: colX[3], y, size: 9, font });

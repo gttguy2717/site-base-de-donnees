@@ -1,5 +1,36 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { LEGRAND_CATALOG } from '../../data/legrandCatalog';
+
+// ── Alignement avec la page publique (ServiceDetailPage) ─────────────────────
+// Mêmes règles d'exclusion que le site : catégorie et noms retirés du négoce.
+const SITE_EXCLUDED_CATEGORIES = new Set(['accessoires-construction']);
+const SITE_EXCLUDED_RE = /^(?:Pav(?:é|es)\b|Brique\s|Carreleur Professionnel\b)/i;
+const norm = (v) => String(v ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+
+const siteCategories = LEGRAND_CATALOG.categories.filter((c) => !SITE_EXCLUDED_CATEGORIES.has(c.id));
+const SITE_LABELS = new Set(siteCategories.map((c) => norm(c.label)));
+
+// Produits du SITE (catalogue statique affiché aux clients) projetés dans la
+// même forme de ligne que les produits de la base.
+const siteProducts = LEGRAND_CATALOG.products
+  .filter((p) => !SITE_EXCLUDED_CATEGORIES.has(p.category) && !SITE_EXCLUDED_RE.test(p.name))
+  .map((p) => ({
+    id: p.id,
+    nom: p.name,
+    reference: p.ref,
+    description: p.desc,
+    image_url: p.image,
+    categorie: { nom: siteCategories.find((c) => c.id === p.category)?.label || 'Négoce' },
+    unite: 'unité',
+    tarifs: [],
+    source: 'site',
+  }));
+
+// Une ligne de base est-elle réellement affichée sur le site ?
+// (libellé de catégorie reconnu + non exclu par les règles du catalogue)
+const isRowVisibleOnSite = (row) =>
+  SITE_LABELS.has(norm(row.categorie?.nom)) && !SITE_EXCLUDED_RE.test(row.nom || '');
 
 export default function AdminCatalog() {
   const { token } = useAuth();
@@ -11,7 +42,7 @@ export default function AdminCatalog() {
   const [savingPhoto, setSavingPhoto] = useState(false);
   const [showAddProductModal, setShowAddProductModal] = useState(false);
   const [productForm, setProductForm] = useState({
-    nom: '', reference: '', description: '', categorie_id: '', unite: 'unité', image_preview: '',
+    nom: '', reference: '', description: '', categorie_id: '', categorie_nom: '', unite: 'unité', image_preview: '',
     tarifs: [
       { type_client: 'PARTICULIER', prix: '' },
       { type_client: 'ENTREPRISE_CLIENT', prix: '' },
@@ -38,7 +69,7 @@ export default function AdminCatalog() {
   const itemsPerPage = 7;
 
   const categories = [
-    { id: 'negoce', name: 'Négoce /', subtitle: 'Import-Export', icon: 'public', count: products.length },
+    { id: 'negoce', name: 'Négoce /', subtitle: 'Import-Export', icon: 'public', count: siteProducts.length + products.length },
     { id: 'vehicules', name: 'Location de', subtitle: 'véhicules', icon: 'directions_car', count: vehicles.length },
   ];
 
@@ -46,10 +77,22 @@ export default function AdminCatalog() {
     String(value ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 
   const search = normalize(searchTerm);
-  const productCategories = [...new Set(products.map((p) => p.categorie?.nom).filter(Boolean))].sort();
+  // Catégories du filtre : celles du SITE d'abord (dans l'ordre du site),
+  // puis les catégories de base hors site (produits non affichés).
+  const dbProductCategories = [...new Set(products.map((p) => p.categorie?.nom).filter(Boolean))].sort();
+  const productCategories = [
+    ...siteCategories.map((c) => c.label),
+    ...dbProductCategories.filter((label) => !SITE_LABELS.has(norm(label))),
+  ];
   const vehicleCategories = [...new Set(vehicles.map((v) => v.categorie).filter(Boolean))].sort();
 
-  const filteredProducts = products.filter((product) => {
+  // Catalogue affiché = CE DU SITE (statique Legrand) + produits de la base.
+  // Les articles statiques sont aussi présents en base : on déduplique par
+  // référence pour ne pas les lister deux fois.
+  const siteRefs = new Set(siteProducts.map((p) => p.reference));
+  const dbOnlyProducts = products.filter((p) => !siteRefs.has(p.reference));
+  const mergedProducts = [...siteProducts, ...dbOnlyProducts];
+  const filteredProducts = mergedProducts.filter((product) => {
     const matchSearch = !search || normalize(product.nom).includes(search) || normalize(product.reference).includes(search) || normalize(product.categorie?.nom).includes(search);
     const matchCategory = productCategoryFilter === 'all' || normalize(product.categorie?.nom) === normalize(productCategoryFilter);
     return matchSearch && matchCategory;
@@ -222,13 +265,13 @@ export default function AdminCatalog() {
     setProductFormError('');
     setSavingProduct(true);
     try {
-      const payload = { nom: productForm.nom, reference: productForm.reference, description: productForm.description, categorie_id: productForm.categorie_id || null, unite: productForm.unite, image_url: productForm.image_preview || null, tarifs: productForm.tarifs };
+      const payload = { nom: productForm.nom, reference: productForm.reference, description: productForm.description, categorie_id: productForm.categorie_id || null, categorie_nom: productForm.categorie_nom || null, unite: productForm.unite, image_url: productForm.image_preview || null, tarifs: productForm.tarifs };
       const response = await fetch('/api/admin/products', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || data.error?.message || 'Erreur lors de l\'ajout du produit');
       alert('✅ Article ajouté avec succès !');
       setShowAddProductModal(false);
-      setProductForm({ nom: '', reference: '', description: '', categorie_id: '', unite: 'unité', image_preview: '', tarifs: [{ type_client: 'PARTICULIER', prix: '' }, { type_client: 'ENTREPRISE_CLIENT', prix: '' }] });
+      setProductForm({ nom: '', reference: '', description: '', categorie_id: '', categorie_nom: '', unite: 'unité', image_preview: '', tarifs: [{ type_client: 'PARTICULIER', prix: '' }, { type_client: 'ENTREPRISE_CLIENT', prix: '' }] });
       loadProducts();
     } catch (error) { setProductFormError(error.message || 'Erreur lors de l\'ajout du produit'); }
     finally { setSavingProduct(false); }
@@ -472,14 +515,33 @@ export default function AdminCatalog() {
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">{product.reference || '-'}</td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">{product.categorie?.nom || 'Sans catégorie'}</span>
+                        <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">{product.categorie?.nom || 'Sans catégorie'}</span>{' '}
+                        {product.source === 'site' ? (
+                          <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">Site</span>
+                        ) : isRowVisibleOnSite(product) ? (
+                          <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">Base · en ligne</span>
+                        ) : (
+                          <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800" title="Catégorie non reconnue par le site : cet article n'apparaît pas dans le catalogue public">Non affiché</span>
+                        )}
                       </td>
-                      <td className="px-4 py-3 text-sm font-semibold text-gray-900">{parseFloat(tarifParticulier).toLocaleString('fr-FR')} FCFA</td>
+                      <td className="px-4 py-3 text-sm font-semibold text-gray-900">
+                        {product.source === 'site' ? (
+                          <span className="text-gray-500 font-medium">Sur devis</span>
+                        ) : (
+                          `${parseFloat(tarifParticulier).toLocaleString('fr-FR')} FCFA`
+                        )}
+                      </td>
                       <td className="px-4 py-3">
+                        {product.source === 'site' ? (
+                          <span className="p-1 text-gray-300 inline-flex" title="Article du catalogue en ligne — fourni par le site, lecture seule">
+                            <span className="material-symbols-outlined text-[20px]">lock</span>
+                          </span>
+                        ) : (
                         <div className="flex items-center gap-1">
                           <button onClick={() => openEditPhotoModal(product)} className="p-1 text-gray-400 hover:text-primary transition-colors" title="Modifier la photo"><span className="material-symbols-outlined text-[20px]">edit</span></button>
                           <button onClick={() => { if (confirm(`Supprimer "${product.nom}" du catalogue ?`)) handleDeleteProduct(product.id); }} className="p-1 text-gray-400 hover:text-red-600 transition-colors" title="Supprimer"><span className="material-symbols-outlined text-[20px]">delete</span></button>
                         </div>
+                        )}
                       </td>
                     </tr>
                   );
@@ -629,6 +691,14 @@ export default function AdminCatalog() {
                 <select name="unite" value={productForm.unite} onChange={handleProductChange} className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10">
                   <option>unité</option><option>sac</option><option>kg</option><option>tonne</option><option>mètre</option><option>litre</option><option>carton</option>
                 </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-bold text-gray-700">Catégorie (celle du site) *</label>
+                <select name="categorie_nom" value={productForm.categorie_nom} onChange={handleProductChange} required className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10">
+                  <option value="">Choisir une catégorie…</option>
+                  {siteCategories.map((c) => <option key={c.id} value={c.label}>{c.label}</option>)}
+                </select>
+                <p className="mt-1 text-[11px] text-gray-500">L'article apparaîtra dans cette catégorie du catalogue négoce public.</p>
               </div>
               <div>
                 <label className="mb-2 block text-xs font-bold text-gray-700">Prix par type de client (FCFA)</label>

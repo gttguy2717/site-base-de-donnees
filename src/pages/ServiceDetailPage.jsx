@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Navbar from '../components/Navbar';
 import CtaBanner from '../components/CtaBanner';
+import ServiceContactSection from '../components/ServiceContactSection';
 import Footer from '../components/Footer';
 import DevisModal from '../components/DevisModal';
 import CarReservationModal from '../components/CarReservationModal';
@@ -14,9 +15,29 @@ import { apiRequest } from '../lib/api';
 import RentalFleetSection from '../components/RentalFleetSection';
 import VehicleDetailModal from '../components/VehicleDetailModal';
 import NexansCatalogSection from '../components/NexansCatalogSection';
+import { LEGRAND_CATALOG } from '../data/legrandCatalog';
 
 const FUEL_TYPES = ['Essence', 'Gazole', 'Hybride', 'Diesel'];
+
+// Libellés du catalogue électrique → id de catégorie statique.
+// Sert à raccorder les produits ajoutés par l'admin (base) aux onglets du catalogue ;
+// les anciennes catégories négoce non répertoriées sont ignorées à l'affichage.
+const normalizeCategoryLabel = (label) =>
+  String(label || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+// Articles retirés du catalogue négoce : pavés, briques et prestation carreleur
+// (demandes explicites — hors offre de négoce électrique).
+const NEG_EXCLUDED_RE = /^(?:Pav(?:é|es)\b|Brique\s|Carreleur Professionnel\b)/i;
+// Catégorie entièrement retirée du catalogue négoce (demande explicite).
+const NEG_EXCLUDED_CATEGORIES = new Set(['accessoires-construction']);
+const negCatalogCategories = LEGRAND_CATALOG.categories.filter((c) => !NEG_EXCLUDED_CATEGORIES.has(c.id));
+const NEG_CATALOG_BY_LABEL = negCatalogCategories.reduce((acc, c) => {
+  acc[normalizeCategoryLabel(c.label)] = c.id;
+  return acc;
+}, {});
 const displaySpecs = (vehicle) => (vehicle.specs || []).filter((spec) => !FUEL_TYPES.includes(spec));
+// Services orientés « contact direct » (hors négoce et location qui gèrent
+// leur propre parcours).
+const isDirectContactService = (id) => id !== 'negoce' && id !== 'vehicules' && id !== '__legacy_fleet__';
 
 function OfficialImage({ src, alt, className = '', loading = 'lazy' }) {
   return (
@@ -34,12 +55,12 @@ function OfficialImage({ src, alt, className = '', loading = 'lazy' }) {
 
 const vehicleCategoryGroups = [
   { id: 'Toutes', label: 'Toutes', match: () => true },
-  { id: 'Économiques', label: 'Économiques', match: (category) => category.includes('Économiques') },
-  { id: 'SUV', label: 'SUV', match: (category) => category.includes('SUV') },
-  { id: '4x4', label: '4x4', match: (category) => category.includes('4x4') },
-  { id: 'Pick-Up', label: 'Pick-Up', match: (category) => category.includes('Pick-Up') },
-  { id: 'Utilitaires', label: 'Utilitaires', match: (category) => category.includes('Utilitaires') },
-  { id: 'Minibus', label: 'Minibus & Autocars', match: (category) => category.includes('Minibus') || category.includes('Autocar') || category.includes('Autocars') },
+  { id: 'Économiques', label: 'Économiques', match: (category) => category.includes('Économiques') || category.includes('Citadine') },
+  { id: 'Berline', label: 'Berlines', match: (category) => category.includes('Berline') || category.includes('Break') },
+  { id: 'SUV', label: 'SUV & 4x4', match: (category) => category.includes('SUV') || category.includes('4x4') },
+  { id: 'Monospace', label: 'Monospaces', match: (category) => category.includes('Monospace') },
+  { id: 'Minibus', label: 'Minibus & Utilitaires', match: (category) => category.includes('Minibus') || category.includes('Utilitaires') || category.includes('Autocar') },
+  { id: 'Luxe', label: 'Luxe', match: (category) => category.includes('Luxe') || category.includes('Cabriolet') || category.includes('Coupé') || category.includes('Pick-Up') },
 ];
 
 export default function ServiceDetailPage({ service, navigateTo, onRequestQuote }) {
@@ -77,7 +98,14 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
     return () => window.clearTimeout(t);
   }, [cartToast]);
 
-  const handleOpenDevis = () => openDevisByAuth({ user, navigateTo, onAuthed: () => setIsDevisOpen(true) });
+  const handleOpenDevis = () => {
+    // Hors négoce/location : on oriente vers le contact direct (WhatsApp / appel).
+    if (isDirectContactService(service.id)) {
+      document.getElementById('service-contact')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    openDevisByAuth({ user, navigateTo, onAuthed: () => setIsDevisOpen(true) });
+  };
 
   const handleVehicleReservation = (vehicle) => {
     if (!user) {
@@ -144,14 +172,30 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
   );
 
   const fleetCategories = useMemo(() => {
-    const vehicles = service.rentalVehicles ?? [];
+    // Compter sur la MÊME source que l'affichage : les véhicules de la base de
+    // données (dynamicVehicles) dès qu'ils sont chargés, sinon les fiches
+    // statiques en secours (avec la même déduplication par image que l'affichage).
+    // Sinon l'onglet « Toutes » affiche 42 (fichier statique) alors que la
+    // flotte réelle en base n'en contient que 21.
+    let vehicles;
+    if (dynamicVehicles.length > 0) {
+      vehicles = dynamicVehicles.map((v) => ({ category: v.categorie || 'Véhicule' }));
+    } else {
+      const usedImages = new Set();
+      vehicles = (service.rentalVehicles ?? []).filter((vehicle) => {
+        const image = vehicle.image || '';
+        if (!image.startsWith('/img/vehicles/') || usedImages.has(image)) return false;
+        usedImages.add(image);
+        return true;
+      });
+    }
     return vehicleCategoryGroups
       .map((group) => ({
         ...group,
         count: vehicles.filter((vehicle) => group.match(vehicle.category || '')).length,
       }))
       .filter((group) => group.id === 'Toutes' || group.count > 0);
-  }, [service.rentalVehicles]);
+  }, [service.rentalVehicles, dynamicVehicles]);
 
   // Charger les véhicules avec les prix dynamiques selon le profil client (base de données)
   useEffect(() => {
@@ -189,8 +233,8 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
         category: v.categorie || 'Véhicule',
         specs: [v.places ? `${v.places} personnes` : '', v.transmission || ''].filter(Boolean),
         image: v.image_url || '/img/vehicles/dusterAvant.jpg',
-        pricePerDay: Number(v.dailyPrice) || 0,
-        dynamicPricePerDay: Number(v.dailyPrice) || 0,
+        pricePerDay: Number(v.dailyPrice ?? v.prix_journalier_particulier) || 0,
+        dynamicPricePerDay: Number(v.dailyPrice ?? v.prix_journalier_particulier) || 0,
         plate: v.immatriculation || v.plaque || '',
         ...v,
       }));
@@ -604,40 +648,44 @@ export default function ServiceDetailPage({ service, navigateTo, onRequestQuote 
           </FadeInSection>
         )}
 
-        {service.id === 'negoce' && (
+        {service.id === 'negoce' && (() => {
+          // Les articles du catalogue statique sont désormais aussi en base :
+          // on déduplique par référence pour ne pas les afficher deux fois.
+          const refsSite = new Set(LEGRAND_CATALOG.products.map((p) => p.ref));
+          return (
           <NexansCatalogSection
-            categories={[
-              ...(Array.isArray(dbProducts) ? [...new Set(dbProducts.map((p) => p.categorie?.nom).filter(Boolean))].map((catName) => ({
-                id: catName,
-                label: catName,
-                icon: {
-                  'Câbles de bâtiments': 'home_work',
-                  'Câbles basse tension': 'bolt',
-                  'Câbles moyenne tension': 'power',
-                  'Lignes aériennes': 'air',
-                  'Transformateurs': 'transform',
-                  'Cellules HTA': 'electrical_services',
-                  'Infrastructures Télécom': 'router',
-                  'Accessoires d’énergie': 'settings',
-                  'Postes préfabriqués': 'home_work',
-                }[catName] || 'category',
-                image: '/img/nexans/cable_04_v_jpg.jpg',
-              })) : []),
+            categories={negCatalogCategories}
+            products={[
+              ...LEGRAND_CATALOG.products.filter(
+                (p) => !NEG_EXCLUDED_CATEGORIES.has(p.category) && !NEG_EXCLUDED_RE.test(p.name)
+              ),
+              ...(Array.isArray(dbProducts) ? dbProducts : [])
+                .filter((p) => !refsSite.has(p.reference))
+                .map((p) => {
+                  const categoryId = NEG_CATALOG_BY_LABEL[normalizeCategoryLabel(p.categorie?.nom)];
+                  if (!categoryId) return null;
+                  return {
+                    id: p.id,
+                    name: p.nom,
+                    ref: p.reference || '',
+                    desc: p.description || '',
+                    image: p.image_url || '/img/nexans/cable_04_v_jpg.jpg',
+                    pdf: '',
+                    category: categoryId,
+                  };
+                })
+                .filter(Boolean),
             ]}
-            products={(Array.isArray(dbProducts) ? dbProducts : []).map((p) => ({
-              id: p.id,
-              name: p.nom,
-              ref: p.reference || '',
-              desc: p.description || '',
-              image: p.image_url || '/img/nexans/cable_04_v_jpg.jpg',
-              pdf: '',
-              category: p.categorie?.nom || 'Négoce',
-              prixMarche: Number(p.price ?? p.tarifs?.[0]?.prix) || 0,
-            }))}
             onRequestQuote={() => setShowProductRequestModal(true)}
             onAddToCart={handleAddNexansToCart}
           />
+          );
+        })()}
+        {/* Conseil & contact — placé AVANT « Continuer votre exploration » */}
+        {isDirectContactService(service.id) && (
+          <ServiceContactSection service={service} />
         )}
+
 <FadeInSection immediate as="section" className="bg-[#f9f9f9] py-14 sm:py-16">
           <div className="max-w-[1280px] mx-auto px-4 sm:px-8">
             <div className="mb-7 flex flex-col justify-between gap-4 sm:mb-8 sm:flex-row sm:items-end">

@@ -5,7 +5,7 @@ const COMPANY_INFO = {
   header: 'Société à Responsabilité limitée SARL, Capital : 10 000 000 FCFA • Abidjan, Palmeraie Saint Viateur',
   second: '25 BP 1032 Abidjan 25 • Tél : 27 22 30 11 27 / 07 18 88 88 89 / 07 18 40 40 40 / 07 06 91 91 91 / 07 69 38 66 50',
   third: 'N°RCCM : CI-ABJ-03-2022-B12-03750 • N°CC : 2242663 T • Compte Bancaire BNI : CI092 01021 000108230000 36',
-  fourth: 'Email: infosoutarahgroup@gmail.com - info@soutarahgroup.ci • Web: www.soutarah-group.ci',
+  fourth: 'Email: infosoutarahgroup@gmail.com - infos@soutarahgroup.com • Web: www.soutarah-group.ci',
   services: [
     'Location de véhicules | Entretien d\'espaces verts',
     'Entretien de locaux | Maintenance | Installation',
@@ -86,14 +86,21 @@ export default function QuoteDocument({ quote, items = [], user = null, client =
   // Normalize rows
   const normalizedRows = rows.map((item) => {
     if (item.type === 'vehicle_rental') {
+      // Comptage inclusif : du 23 au 24 = 2 jours (prise en charge + retour).
+      const rentalDays = (item.startDate && item.endDate)
+        ? Math.max(1, Math.round((new Date(item.endDate) - new Date(item.startDate)) / 86400000) + 1)
+        : Number(item.days || item.duration || 1);
       return {
         designation: `LOCATION DE VEHICULE\nDu ${(item.startDate || '').split('-').reverse().join('/')} AU ${(item.endDate || '').split('-').reverse().join('/')}`,
         vehicleType: `${item.vehicle?.name || item.vehicleName || 'Véhicule'}\n${item.withDriver ? 'Climatisé et confortable' : 'Sans chauffeur'}`,
         destination: item.destination || 'ABIDJAN',
         unitPrice: Number(item.unitPrice || 0),
         quantity: 1,
-        days: Number(item.days || item.duration || 1),
-        total: Number(item.totalPrice || 0),
+        days: rentalDays,
+        total: Number(item.unitPrice) > 0 && item.startDate && item.endDate
+          ? Number(item.unitPrice) * rentalDays
+          : Number(item.totalPrice || 0),
+        withDriver: item.withDriver ?? item.avec_chauffeur,
       };
     }
     if (item.type === 'product' || item.produit_id || item.product_id) {
@@ -118,6 +125,13 @@ export default function QuoteDocument({ quote, items = [], user = null, client =
       total: Number(item.total || item.prix_total || 0),
     };
   });
+
+  // NB chauffeur : affiché uniquement si la location prévoit un chauffeur ;
+  // masqué quand TOUTES les lignes location sont explicitement « sans chauffeur ».
+  const nbLocationRows = normalizedRows.filter((r) => r.designation.includes('LOCATION'));
+  const nbDriverFlags = nbLocationRows.map((r) => r.withDriver).filter((v) => v === true || v === false);
+  const showDriverNote = nbLocationRows.length > 0
+    && !(nbDriverFlags.length > 0 && nbDriverFlags.every((v) => v === false));
 
   const totalHT = useMemo(() => {
     if (normalizedRows.length > 0 && normalizedRows.some((r) => r.total > 0)) {
@@ -294,14 +308,18 @@ export default function QuoteDocument({ quote, items = [], user = null, client =
         </div>
       )}
 
-      {/* NB */}
-      <div className="mt-4 px-6">
-        <p className="text-xs font-bold text-red-600">NB :</p>
-        <p className="mt-0.5 text-xs text-gray-600">- Le chauffeur est à votre disposition de 7h à 21h</p>
-        {hasVehicles && (
-          <p className="mt-0.5 text-xs text-gray-600">- Frais de carburant, péage et stationnement : à la charge du client</p>
-        )}
-      </div>
+      {/* NB — la note chauffeur n'apparaît que pour une location AVEC chauffeur */}
+      {(showDriverNote || hasVehicles) && (
+        <div className="mt-4 px-6">
+          <p className="text-xs font-bold text-red-600">NB :</p>
+          {showDriverNote && (
+            <p className="mt-0.5 text-xs text-gray-600">- Le chauffeur est à votre disposition de 7h à 21h</p>
+          )}
+          {hasVehicles && (
+            <p className="mt-0.5 text-xs text-gray-600">- Frais de carburant, péage et stationnement : à la charge du client</p>
+          )}
+        </div>
+      )}
 
       {/* Signature + conditions */}
       <div className="mt-6 px-6 pb-6 grid gap-6 sm:grid-cols-2">
@@ -328,7 +346,7 @@ export default function QuoteDocument({ quote, items = [], user = null, client =
       <div className="px-6 py-4 text-center text-[8px] leading-4 text-white" style={{ background: headerBg }}>
         <p>{COMPANY_INFO.header}</p>
         <p>{COMPANY_INFO.second}</p>
-        <p className="mt-0.5">Email: infosoutarahgroup@gmail.com - info@soutarahgroup.ci • Web: www.soutarah-group.ci</p>
+        <p className="mt-0.5">Email: infosoutarahgroup@gmail.com - infos@soutarahgroup.com • Web: www.soutarah-group.ci</p>
       </div>
     </div>
   );

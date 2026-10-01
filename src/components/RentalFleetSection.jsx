@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { resetBarMode, showBar, showNavbar, showNavbarAtTop, useBarMode, BAR_MODE } from '../lib/stickyBarMode';
 
-const categoryIcons = { Toutes: 'grid_view', Économiques: 'directions_car', Citadine: 'local_taxi', Berline: 'directions_car', SUV: 'airport_shuttle', '4x4': 'terrain', 'Pick-Up': 'local_shipping', Utilitaires: 'inventory_2', Minibus: 'groups' };
+const categoryIcons = {
+  Toutes: 'grid_view',
+  Économiques: 'directions_car',
+  Berline: 'directions_car',
+  SUV: 'airport_shuttle',
+  Monospace: 'airline_seat_recline_normal',
+  Minibus: 'groups',
+  Luxe: 'diamond',
+};
 const chipSpecs = (vehicle) => {
   const specs = vehicle.specs || [];
   const placesRaw = specs.find((s) => /personne|place/i.test(s))
@@ -15,7 +24,9 @@ const chipSpecs = (vehicle) => {
 
 export default function RentalFleetSection({ categories, activeCategory, onCategoryChange, searchQuery, onSearchChange, vehicles, onReserve, onDetails, onRequest }) {
   const [navbarHidden, setNavbarHidden] = useState(false);
-  const [barHidden, setBarHidden] = useState(false);
+  const { mode, pinned } = useBarMode();
+  // La barre se masque seulement quand la navbar a été demandée au bouton.
+  const barHidden = pinned && mode !== BAR_MODE;
   const resultsRef = useRef(null);
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
@@ -27,27 +38,33 @@ export default function RentalFleetSection({ categories, activeCategory, onCateg
     return () => window.removeEventListener('soutarah-navbar-visible', handler);
   }, []);
 
-  // Bascule navbar / barre sticky :
-  // - swipe vers le bas (descente)  → la barre recherche + onglets apparaît (la navbar se masque)
-  // - swipe vers le haut (remontée) → la navbar réapparaît (la barre sticky se masque)
+  // À l'arrivée sur la page : navbar visible et barre d'onglets affichée.
+  // Sans cette remise à zéro, le mode « navbar » choisi sur une autre page
+  // restait actif : les onglets disparaissaient et laissaient un vide.
+  useEffect(() => {
+    resetBarMode();
+  }, []);
+
+  // Descendre = les onglets reprennent la main (même après un clic sur
+  // « Menu »). Remonter ne change plus rien : les onglets restent en place,
+  // c'est le bouton « Menu » qui rappelle la navbar.
   useEffect(() => {
     const onScroll = () => {
       if (!ticking.current) {
         window.requestAnimationFrame(() => {
           const currentY = window.scrollY;
-          // Pendant le scroll programmé d'un changement de catégorie, on ne touche pas à la barre
           if (Date.now() < suppressScrollRef.current) {
             lastScrollY.current = currentY;
             ticking.current = false;
             return;
           }
           const delta = currentY - lastScrollY.current;
-          if (currentY <= 220) {
-            setBarHidden(false); // en haut de page : barre visible sous la navbar
-          } else if (delta > 3) {
-            setBarHidden(false); // descente → barre sticky visible
-          } else if (delta < -3) {
-            setBarHidden(true); // remontée → la navbar prend le relais
+          // Revenir tout en haut : la navbar doit réapparaître, sinon il reste
+          // un espace vide puisque les onglets la remplacent toujours.
+          if (currentY <= 120) {
+            showNavbarAtTop();
+          } else if (currentY > 220 && delta > 3) {
+            showBar();
           }
           lastScrollY.current = currentY;
           ticking.current = false;
@@ -63,7 +80,6 @@ export default function RentalFleetSection({ categories, activeCategory, onCateg
     onCategoryChange(catId);
     // La barre reste visible pendant le scroll vers les résultats
     suppressScrollRef.current = Date.now() + 1200;
-    setBarHidden(false);
     if (resultsRef.current) {
       const offset = navbarHidden ? 140 : 200;
       const top = resultsRef.current.getBoundingClientRect().top + window.pageYOffset - offset;
@@ -88,11 +104,23 @@ export default function RentalFleetSection({ categories, activeCategory, onCateg
       <div className={`sticky z-30 border-y-2 border-[#173d23]/45 bg-white shadow-[0_6px_20px_-8px_rgba(23,61,35,0.25)] will-change-transform ${barHidden ? '-translate-y-[110%] scale-[0.99] opacity-0 pointer-events-none' : 'translate-y-0 scale-100 opacity-100'}`} style={{ top: navbarHidden ? 0 : 116.8, transition: 'transform 520ms cubic-bezier(0.22, 1, 0.36, 1), opacity 420ms cubic-bezier(0.22, 1, 0.36, 1), top 460ms cubic-bezier(0.22, 1, 0.36, 1)' }}>
         <div className="mx-auto max-w-[1440px] px-4 py-3 sm:px-8">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <label className="relative block w-full lg:max-w-xl">
-              <span className="sr-only">Rechercher un véhicule</span>
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[20px] text-primary">search</span>
-              <input value={searchQuery} onChange={(event) => onSearchChange(event.target.value)} placeholder="Rechercher une marque, un modèle ou une caractéristique" className="min-h-12 w-full rounded-xl border border-[#e0e8dd] bg-[#f5f8f3] py-2.5 pl-12 pr-4 text-sm font-semibold text-[#1b241d] outline-none transition placeholder:text-[#879088] focus:border-primary/40 focus:bg-white focus:ring-2 focus:ring-primary/15" />
-            </label>
+            {/* Bouton « Menu » sur la même ligne que la recherche, juste avant */}
+            <div className="flex w-full items-center gap-2 lg:max-w-xl">
+              <button
+                type="button"
+                onClick={showNavbar}
+                title="Afficher le menu"
+                aria-label="Afficher le menu"
+                className="inline-flex shrink-0 items-center justify-center rounded-xl border border-[#e0e8dd] bg-[#f2f7ef] p-3 text-primary transition hover:bg-primary hover:text-white"
+              >
+                <span className="material-symbols-outlined text-[20px]">menu</span>
+              </button>
+              <label className="relative block w-full">
+                <span className="sr-only">Rechercher un véhicule</span>
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[20px] text-primary">search</span>
+                <input value={searchQuery} onChange={(event) => onSearchChange(event.target.value)} placeholder="Rechercher une marque, un modèle ou une caractéristique" className="min-h-12 w-full rounded-xl border border-[#e0e8dd] bg-[#f5f8f3] py-2.5 pl-12 pr-4 text-sm font-semibold text-[#1b241d] outline-none transition placeholder:text-[#879088] focus:border-primary/40 focus:bg-white focus:ring-2 focus:ring-primary/15" />
+              </label>
+            </div>
             <button onClick={onRequest} className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full border border-primary/20 bg-[#f2f7ef] px-4 py-3 text-xs font-black text-primary transition hover:bg-primary hover:text-white lg:w-auto"><span className="material-symbols-outlined text-[18px]">support_agent</span>Véhicule non trouvé ?</button>
           </div>
           <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-none">

@@ -465,11 +465,14 @@ export default function AdminQuotes() {
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
-                      <div className="bg-slate-50 p-2 rounded-xl border border-gray-100">
-                        <p className="text-[10px] text-gray-400">Budget Estimatif</p>
-                        <p className="font-bold text-gray-800">{formatMoney(getQuoteTotals(selectedQuote).ht) || 'Non précisé'}</p>
-                      </div>
-                      <div className="bg-slate-50 p-2 rounded-xl border border-gray-100">
+                      {/* Budget masqué sur les devis négoce (aucun montant à afficher) */}
+                      {Number(getQuoteTotals(selectedQuote).ttc) > 0 && (
+                        <div className="bg-slate-50 p-2 rounded-xl border border-gray-100">
+                          <p className="text-[10px] text-gray-400">Budget Estimatif</p>
+                          <p className="font-bold text-gray-800">{formatMoney(getQuoteTotals(selectedQuote).ht) || 'Non précisé'}</p>
+                        </div>
+                      )}
+                      <div className={`bg-slate-50 p-2 rounded-xl border border-gray-100 ${Number(getQuoteTotals(selectedQuote).ttc) > 0 ? '' : 'col-span-2'}`}>
                         <p className="text-[10px] text-gray-400">Délai Souhaité</p>
                         <p className="font-bold text-gray-800">{selectedQuote.delai || 'Non précisé'}</p>
                       </div>
@@ -508,12 +511,14 @@ export default function AdminQuotes() {
                               <p className="text-xs font-bold text-gray-800 truncate">{name}</p>
                               <p className="text-[10px] text-gray-500">
                                 {isVeh
-                                  ? `${it.destination || it.destinationLabel || 'ABIDJAN'} · ${it.days || it.duration || 1} j`
+                                  ? `${it.destination || it.destinationLabel || 'ABIDJAN'} · ${it.startDate && it.endDate ? Math.max(1, Math.round((new Date(it.endDate) - new Date(it.startDate)) / 86400000) + 1) : (it.days || it.duration || 1)} j`
                                   : 'Négoce'}
                                 {' · Qté : '}{qty}{unit > 0 ? ` · ${formatMoney(unit)}/u` : ''}
                               </p>
                             </div>
-                            <span className="text-xs font-extrabold text-gray-900 shrink-0">{formatMoney(total)}</span>
+                            {total > 0 && (
+                              <span className="text-xs font-extrabold text-gray-900 shrink-0">{formatMoney(total)}</span>
+                            )}
                           </div>
                         );
                       })}
@@ -534,41 +539,54 @@ export default function AdminQuotes() {
                   )}
                 </div>
 
-                {/* Paiement & Montant */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                  <div className="bg-slate-50 p-2.5 rounded-xl border border-gray-100">
-                    <p className="text-[10px] text-gray-400">Moyen de paiement</p>
-                    <p className="font-bold text-gray-900">{getPaymentMode(selectedQuote)}</p>
-                  </div>
-                  <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <p className="text-[10px] text-emerald-700 font-semibold">Montant HT</p>
-                      <p className="font-bold text-emerald-900 text-xs">{formatMoney(getQuoteTotals(selectedQuote).ht) || '—'}</p>
+                {/* Paiement & Montant — devis négoce sans montant : tarification sur devis */}
+                {Number(getQuoteTotals(selectedQuote).ttc) > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    <div className="bg-slate-50 p-2.5 rounded-xl border border-gray-100">
+                      <p className="text-[10px] text-gray-400">Moyen de paiement</p>
+                      <p className="font-bold text-gray-900">{getPaymentMode(selectedQuote)}</p>
                     </div>
-                    {getQuoteTotals(selectedQuote).hasItems && (
-                      <>
+                    <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[10px] text-emerald-700 font-semibold">Montant HT</p>
+                        <p className="font-bold text-emerald-900 text-xs">{formatMoney(getQuoteTotals(selectedQuote).ht) || '—'}</p>
+                      </div>
+                      {getQuoteTotals(selectedQuote).hasItems && (
+                        <>
+                          <div className="flex items-center justify-between">
+                            <p className="text-[10px] text-emerald-700 font-semibold">TVA 18%</p>
+                            <p className="font-bold text-emerald-900 text-xs">{formatMoney(getQuoteTotals(selectedQuote).tva) || '—'}</p>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <p className="text-[10px] text-emerald-700 font-semibold">TDT 2,5%</p>
+                            <p className="font-bold text-emerald-900 text-xs">{formatMoney(getQuoteTotals(selectedQuote).tdt) || '—'}</p>
+                          </div>
+                          <div className="flex items-center justify-between border-t border-emerald-200/70 pt-1">
+                            <p className="text-[10px] font-bold text-emerald-800 uppercase">Montant total</p>
+                            <p className="font-extrabold text-emerald-900 text-[13px]">{formatMoney(getQuoteTotals(selectedQuote).ttc) || '—'}</p>
+                          </div>
+                        </>
+                      )}
+                      {!getQuoteTotals(selectedQuote).hasItems && (
                         <div className="flex items-center justify-between">
-                          <p className="text-[10px] text-emerald-700 font-semibold">TVA 18%</p>
-                          <p className="font-bold text-emerald-900 text-xs">{formatMoney(getQuoteTotals(selectedQuote).tva) || '—'}</p>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <p className="text-[10px] text-emerald-700 font-semibold">TDT 2,5%</p>
-                          <p className="font-bold text-emerald-900 text-xs">{formatMoney(getQuoteTotals(selectedQuote).tdt) || '—'}</p>
-                        </div>
-                        <div className="flex items-center justify-between border-t border-emerald-200/70 pt-1">
                           <p className="text-[10px] font-bold text-emerald-800 uppercase">Montant total</p>
                           <p className="font-extrabold text-emerald-900 text-[13px]">{formatMoney(getQuoteTotals(selectedQuote).ttc) || '—'}</p>
                         </div>
-                      </>
-                    )}
-                    {!getQuoteTotals(selectedQuote).hasItems && (
-                      <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-bold text-emerald-800 uppercase">Montant total</p>
-                        <p className="font-extrabold text-emerald-900 text-[13px]">{formatMoney(getQuoteTotals(selectedQuote).ttc) || '—'}</p>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    <div className="bg-slate-50 p-2.5 rounded-xl border border-gray-100">
+                      <p className="text-[10px] text-gray-400">Nature</p>
+                      <p className="font-bold text-gray-900">Commande négoce</p>
+                    </div>
+                    <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
+                      <p className="text-[10px] text-emerald-700 font-semibold">Tarification</p>
+                      <p className="font-bold text-emerald-900">Sur devis — à établir</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Marquer comme lu */}
@@ -598,20 +616,22 @@ export default function AdminQuotes() {
 
             </div>
 
-            {/* Footer Modal Actions */}
-            <div className="bg-white px-5 py-3 border-t border-gray-100 flex items-center justify-between gap-3 flex-shrink-0">
-              <button
-                onClick={handleDownloadPdf}
-                disabled={downloadingPdf}
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-primary hover:bg-[#1b4c00] text-white rounded-xl text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {downloadingPdf ? (
-                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                ) : (
-                  <span className="material-symbols-outlined text-sm">download</span>
-                )}
-                Télécharger Fiche (PDF)
-              </button>
+            {/* Footer Modal Actions — pas de PDF pour un devis négoce (sans montant) */}
+            <div className={`bg-white px-5 py-3 border-t border-gray-100 flex items-center gap-3 flex-shrink-0 ${Number(getQuoteTotals(selectedQuote).ttc) > 0 ? 'justify-between' : 'justify-end'}`}>
+              {Number(getQuoteTotals(selectedQuote).ttc) > 0 && (
+                <button
+                  onClick={handleDownloadPdf}
+                  disabled={downloadingPdf}
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-primary hover:bg-[#1b4c00] text-white rounded-xl text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {downloadingPdf ? (
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  ) : (
+                    <span className="material-symbols-outlined text-sm">download</span>
+                  )}
+                  Télécharger Fiche (PDF)
+                </button>
+              )}
 
               <button
                 onClick={() => {

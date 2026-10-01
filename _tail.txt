@@ -1,0 +1,39 @@
+total paragraphs: 813
+601 | Heading 4 |  | 1. ├ëcran d'accueil et Fiche d├®taill├®e du v├®hicule
+602 | Normal |  | LÔÇÖ├®cran d'accueil affiche les v├®hicules disponibles cat├®goris├®s (SUV, Berlines, Utilitaires) avec filtres dynamiques, tarif journalier et visuels haut
+603 | Normal | IMG | 
+605 | Normal |  | Figure 27 : Application Mobile : ├ëcran d'accueil et fiche d├®taill├®e du v├®hicule
+606 | Heading 4 |  | 2. Panier mobile
+607 | Normal | IMG | Permet d'ajuster les quantit├®s ou dur├®es de location, de renseigner des instructions particuli├¿res de livraison et de valider la demande en temps r├®el
+610 | Heading 3 |  | V. R├ëALISATION DE L'ESPACE ADMINISTRATEUR
+611 | Normal | IMG | Le Back-Office Web constitue la tour de contr├┤le de l'entreprise. Il int├¿gre :
+ÔÇó Tableau de bord : graphiques de performance, chiffre d'affaires pr├®vi
+612 | Normal | IMG | 
+631 | Normal |  | Figure 29 : Interface dÔÇÖadministration : Gestion de la flotte et du parc de v├®hicules
+635 | Heading 3 |  | I. TESTS FONCTIONNELS ET VALIDATION
+636 | Normal |  | Une campagne exhaustive de tests a ├®t├® conduite afin de valider la robustesse et l'int├®grit├® de la solution interconnect├®e :
+639 | Heading 3 |  | II. ├ëTUDE FINANCI├êRE ET ESTIMATION DES CO├øTS
+640 | Heading 4 |  | 1. Co├╗ts mat├®riels et logiciels
+641 | Normal |  | L'ensemble des technologies de d├®veloppement retenues (React, React Native, Node.js, MySQL, Expo) reposant sur des licences Open Source gratuites, les
+642 | Heading 4 |  | 2. Co├╗ts d'h├®bergement et de maintenance
+643 | Normal |  | Pour le d├®ploiement en production, les co├╗ts annuels estim├®s se d├®composent comme suit :
+648 | Normal |  | III. Rentabilit├®, retour sur investissement (ROI) et perspectives dÔÇÖ├®volution
+649 | Normal |  | 1. Rentabilit├® imm├®diate et retour sur investissement
+650 | Normal |  | L'automatisation du processus de r├®servation et de g├®n├®ration des devis permet ├á SOUTA-RAH GROUP de r├®duire de plus de 80% le temps administratif cons
+652 | Normal |  | 2. Perspectives dÔÇÖ├®volution de la plateforme
+653 | Normal |  | Afin d'accompagner le d├®veloppement de l'entreprise, l'architecture modulaire mise en place permettra de d├®ployer ├á court et moyen termes :
+654 | Normal |  | Les Programmes de fid├®lit├® : Attribution de points de r├®compense ├á chaque r├®servation ou commande, ├®changeables contre des remises ou des services gra
+655 | Normal |  | La t├®l├®matique et le suivi GPS :┬áInt├®gration de traceurs connect├®s sur les v├®hicules afin de suivre les trajets en direct et planifier les entretiens 
+656 | Normal |  | Les notifications Push natives :┬áAlerte instantan├®e sur smartphone via Firebase Cloud Messaging pour le suivi des r├®servations ;
+659 | Heading 1 |  | CONCLUSION G├ëN├ëRALE
+660 | Normal |  | Au terme de ce stage d'application effectu├® au sein de l'entreprise SOUTARAH GROUP, nous avons men├® ├á bien la conception et la r├®alisation int├®grale d
+668 | Normal |  | BIBLIOGRAPHIE
+669 | Normal |  | I. OUVRAGES DE R├ëF├ëRENCE ET MANUELS M├ëTHODOLOGIQUES :
+670 | List Paragraph |  | AUDIBERT, Laurent. ┬½ Cours UML : Mod├®lisation objet et diagrammes ┬╗, ├ëditions Eyrolles / Institut Universitaire, pages 21-46.
+671 | List Paragraph |  | ROQUES, Pascal. ┬½ UML 2 par la pratique : ├ëtudes de cas et exercices corrig├®s ┬╗, ├ëditions Eyrolles, 7e ├®dition, 2021, 394 pages.
+673 | Normal |  | II. SUPPORTS DE COURS ACAD├ëMIQUES (INP-HB / ESI) :
+674 | List Paragraph |  | Zana Y├®o. ┬½ Serveur-HTTP-et-Express.js ┬╗, Support de cours, STIC, ESI / INP-HB Yamoussoukro, 2025-2026.
+693 | Normal |  | WEBOGRAPHIE
+694 | List Paragraph |  | REACT.JS. ┬½ Documentation officielle React 18 et Virtual DOM ┬╗, Meta Open Source. Accessible sur : https://react.dev (Consult├® LE 30 Ao├╗t 2026).
+695 | List Paragraph |  | REACT NATIVE & EXPO. ┬½ Cross-Platform Native Mobile Development with Expo Framework ┬╗. Accessible sur : https://reactnative.dev et https://docs.expo.d
+696 | List Paragraph |  | BREVO. Accessible sur : https://brevo.com (Consult├® en 1 Septembre 2026).

@@ -187,13 +187,15 @@ const getFullDocumentUrl = (docUrl?: string | null): string | null => {
   return `${baseUrl}${docUrl.startsWith('/') ? '' : '/'}${docUrl}`;
 };
 
-// Calcule la durée en jours entre deux dates ISO
+// Calcule la durée en jours entre deux dates ISO.
+// Comptage inclusif, identique au site web et au serveur :
+// du 23 au 24 = 2 jours (prise en charge + retour).
 const getDurationInDays = (startStr?: string, endStr?: string): number => {
   if (!startStr || !endStr) return 1;
   const start = new Date(startStr);
   const end = new Date(endStr);
   const diffTime = Math.abs(end.getTime() - start.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
   return Math.max(1, diffDays);
 };
 

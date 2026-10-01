@@ -13,10 +13,12 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { api } from '../api/client';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { generateAndDownloadQuotePdf } from '../services/pdfService';
 import { computeQuoteTotals } from '../lib/quoteTotals';
+import { QuoteRequestItem } from '../types';
 import { colors, API_URL } from '../theme';
 
 const formatMoney = (value: number | string | undefined | null): string => {
@@ -32,6 +34,78 @@ const getImageUrl = (url?: string | null): string | null => {
   const baseUrl = API_URL.replace('/api', '');
   return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
 };
+
+type QuoteSnapshotItem = {
+  id?: string;
+  type?: string;
+  name?: string;
+  title?: string;
+  designation?: string;
+  productName?: string;
+  vehicleName?: string;
+  vehicleId?: string;
+  vehicle?: { id?: string; name?: string } | null;
+  produit?: { nom?: string; image_url?: string | null } | null;
+  quantity?: number | string;
+  quantite?: number | string;
+  unitPrice?: number | string;
+  prixUnitaire?: number | string;
+  prix_unitaire?: number | string;
+  totalPrice?: number | string;
+  totalLigne?: number | string;
+  total?: number | string;
+  prix_total?: number | string;
+  startDate?: string;
+  endDate?: string;
+  days?: number | string;
+  duration?: number | string;
+  duree?: number | string;
+  withDriver?: boolean;
+  imageUrl?: string | null;
+  image_url?: string | null;
+};
+
+type QuoteLookupResponse = {
+  quoteRequest?: {
+    reference: string;
+    service?: string | null;
+    titre?: string | null;
+    budget?: string | number | null;
+    nom?: string | null;
+    telephone?: string | null;
+    snapshot?: QuoteSnapshotItem[] | null;
+    cree_le?: string | null;
+  } | null;
+};
+
+const isVehicleQuoteItem = (item: QuoteSnapshotItem): boolean => (
+  item.type === 'vehicle'
+  || item.type === 'vehicle_rental'
+  || item.type === 'location'
+  || String(item.type || '').startsWith('vehicle')
+  || Boolean(item.vehicleId)
+);
+
+const getQuoteRentalDays = (item: QuoteSnapshotItem): number => {
+  if (item.startDate && item.endDate) {
+    const duration = (new Date(item.endDate).getTime() - new Date(item.startDate).getTime()) / 86400000;
+    if (Number.isFinite(duration)) return Math.max(1, Math.round(duration) + 1);
+  }
+  return Math.max(1, Number(item.days ?? item.duration ?? item.duree ?? 1) || 1);
+};
+
+const getQuoteLineTotal = (item: QuoteSnapshotItem): number => {
+  const storedTotal = Number(item.totalPrice ?? item.totalLigne ?? item.total ?? item.prix_total ?? 0) || 0;
+  if (storedTotal > 0) return storedTotal;
+
+  const unitPrice = Number(item.unitPrice ?? item.prixUnitaire ?? item.prix_unitaire ?? 0) || 0;
+  return isVehicleQuoteItem(item)
+    ? unitPrice * getQuoteRentalDays(item)
+    : unitPrice * (Number(item.quantity ?? item.quantite ?? 1) || 1);
+};
+
+const formatQuoteDate = (value: string): string => value.split('T')[0].split('-').reverse().join('/');
+
 
 export default function CartScreen({ navigation }: { navigation: any }) {
   const insets = useSafeAreaInsets();
@@ -51,6 +125,9 @@ export default function CartScreen({ navigation }: { navigation: any }) {
   const [validating, setValidating] = useState(false);
   const [notes, setNotes] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [quoteReference, setQuoteReference] = useState('');
+  const [searchingQuote, setSearchingQuote] = useState(false);
+  const [quoteSearchError, setQuoteSearchError] = useState('');
 
   // Totaux conformes au modèle officiel SOUTARAH (TDT uniquement sur véhicules)
   const vehicleHT = items.filter(i => i.type === 'vehicle').reduce((s, i) => s + (i.totalLigne || 0), 0);
@@ -70,7 +147,107 @@ export default function CartScreen({ navigation }: { navigation: any }) {
     ]);
   };
 
-const handleValidate = async () => {
+  const handleSearchQuote = async () => {
+    const reference = quoteReference.trim();
+    if (!reference) return;
+
+    setQuoteSearchError('');
+    setSearchingQuote(true);
+
+    try {
+      const response = await api.get<QuoteLookupResponse>(
+        `/quote-requests/lookup?reference=${encodeURIComponent(reference)}`
+      );
+      const quote = response.quoteRequest;
+      if (!quote?.reference) {
+        throw new Error('Aucun devis trouvé avec cette référence.');
+      }
+
+      const quoteItems = Array.isArray(quote.snapshot) ? quote.snapshot : [];
+      const vehicleItems = quoteItems.filter(
+        (item) => isVehicleQuoteItem(item) && item.vehicleId && item.startDate && item.endDate
+      );
+
+      for (const item of vehicleItems) {
+        const vehicleLabel = item.vehicle?.name || item.vehicleName || 'Véhicule';
+        const unavailableMessage = `Le véhicule « ${vehicleLabel} » n'est plus disponible du ${formatQuoteDate(item.startDate!)} au ${formatQuoteDate(item.endDate!)}. Choisissez une autre période ou un autre véhicule.`;
+
+        try {
+          const availability = await api.get<{ available: boolean }>(
+            `/vehicles/${item.vehicleId}/availability?startAt=${encodeURIComponent(item.startDate!)}&endAt=${encodeURIComponent(item.endDate!)}`,
+            false
+          );
+          if (availability.available === false) {
+            setQuoteSearchError(unavailableMessage);
+            return;
+          }
+        } catch (availabilityError: any) {
+          // Une erreur réseau ne doit pas empêcher la reprise d'un devis produit.
+          // En revanche, un 404 signifie que le véhicule n'existe plus ou n'est
+          // plus actif : dans ce cas, la commande doit être bloquée.
+          if (availabilityError?.status === 404) {
+            setQuoteSearchError(unavailableMessage);
+            return;
+          }
+          console.warn('[recherche devis] disponibilité non vérifiable:', availabilityError?.message);
+        }
+      }
+
+      let ht = quoteItems.reduce((sum, item) => sum + getQuoteLineTotal(item), 0);
+      const vehicleHT = quoteItems
+        .filter(isVehicleQuoteItem)
+        .reduce((sum, item) => sum + getQuoteLineTotal(item), 0);
+      if (ht === 0 && Number(quote.budget) > 0) ht = Math.round(Number(quote.budget));
+      const totals = computeQuoteTotals(ht, vehicleHT);
+
+      const orderItems: QuoteRequestItem[] = quoteItems.map((item) => ({
+        id: item.id,
+        type: isVehicleQuoteItem(item) ? 'vehicle' : 'product',
+        name: item.name || item.vehicleName || item.productName || item.produit?.nom || item.title || item.designation || 'Article',
+        productName: item.productName || item.produit?.nom,
+        vehicleName: item.vehicleName || item.vehicle?.name,
+        quantity: Number(item.quantity ?? item.quantite ?? 1) || 1,
+        unitPrice: Number(item.unitPrice ?? item.prixUnitaire ?? item.prix_unitaire ?? 0) || 0,
+        totalPrice: getQuoteLineTotal(item),
+        startDate: item.startDate,
+        endDate: item.endDate,
+        days: isVehicleQuoteItem(item) ? getQuoteRentalDays(item) : undefined,
+        withDriver: item.withDriver,
+        imageUrl: item.imageUrl || item.image_url || item.produit?.image_url,
+      }));
+
+      const clientName = [client?.prenom, client?.nom].filter(Boolean).join(' ')
+        || quote.nom
+        || user?.email?.split('@')[0]
+        || 'Client SOUTARAH';
+      const phone = user?.telephone || quote.telephone || '';
+
+      await saveLastOrder({
+        reference: quote.reference,
+        name: clientName,
+        phone,
+        service: quote.service || 'Devis SOUTARAH',
+        ht: totals.ht,
+        tva: totals.tva,
+        tdt: totals.tdt,
+        carburant: totals.carburant,
+        peage: totals.peage,
+        ttc: totals.ttc,
+        itemCount: quoteItems.length || (ht > 0 ? 1 : 0),
+        summaryTitle: quote.titre || 'Devis SOUTARAH',
+        items: orderItems,
+        createdAt: quote.cree_le || new Date().toISOString(),
+      });
+
+      navigation.getParent()?.navigate('PasserCommande');
+    } catch (error: any) {
+      setQuoteSearchError(error?.message || 'Aucun devis trouvé avec cette référence.');
+    } finally {
+      setSearchingQuote(false);
+    }
+  };
+
+  const handleValidate = async () => {
     if (!user) {
       Alert.alert('Connexion requise', 'Veuillez vous connecter pour valider votre demande de devis.', [
         { text: 'Annuler', style: 'cancel' },
@@ -236,6 +413,64 @@ const handleValidate = async () => {
         contentContainerStyle={{ paddingBottom: Math.max(insets.bottom + 20, 30) }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
       >
+        {/* Retrouver un devis existant avec sa référence système ou imprimée sur le PDF */}
+        <View style={styles.quoteSearchCard}>
+          <View style={styles.quoteSearchHeader}>
+            <View style={styles.quoteSearchIcon}>
+              <Ionicons name="search" size={20} color={colors.primary} />
+            </View>
+            <View style={styles.quoteSearchHeaderText}>
+              <Text style={styles.quoteSearchTitle}>Rechercher un devis</Text>
+              <Text style={styles.quoteSearchDesc}>
+                Saisissez la référence de votre devis PDF pour reprendre votre commande.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.quoteSearchInputRow}>
+            <TextInput
+              style={styles.quoteSearchInput}
+              value={quoteReference}
+              onChangeText={(value) => {
+                setQuoteReference(value);
+                if (quoteSearchError) setQuoteSearchError('');
+              }}
+              placeholder="09-26/LOC/164 ou DMD-2026-1234"
+              placeholderTextColor="#94a3b8"
+              autoCapitalize="characters"
+              autoCorrect={false}
+              returnKeyType="search"
+              onSubmitEditing={handleSearchQuote}
+              editable={!searchingQuote}
+            />
+            <TouchableOpacity
+              style={[
+                styles.quoteSearchButton,
+                (searchingQuote || !quoteReference.trim()) && styles.quoteSearchButtonDisabled,
+              ]}
+              onPress={handleSearchQuote}
+              disabled={searchingQuote || !quoteReference.trim()}
+              activeOpacity={0.85}
+            >
+              {searchingQuote ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <>
+                  <Ionicons name="search-outline" size={17} color="#ffffff" />
+                  <Text style={styles.quoteSearchButtonText}>Rechercher</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          {quoteSearchError ? (
+            <View style={styles.quoteSearchError}>
+              <Ionicons name="alert-circle-outline" size={16} color="#b91c1c" />
+              <Text style={styles.quoteSearchErrorText}>{quoteSearchError}</Text>
+            </View>
+          ) : null}
+        </View>
+
         {loading && items.length === 0 ? (
           <View style={styles.centerBox}>
             <ActivityIndicator size="large" color={colors.primary} />
@@ -490,6 +725,98 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 14,
     fontWeight: '800',
+  },
+  quoteSearchCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 18,
+    padding: 16,
+    marginTop: 16,
+    borderWidth: 1,
+    borderColor: '#dbe7d5',
+  },
+  quoteSearchHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 14,
+  },
+  quoteSearchIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#eef7e9',
+  },
+  quoteSearchHeaderText: {
+    flex: 1,
+  },
+  quoteSearchTitle: {
+    color: '#0f172a',
+    fontSize: 13,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  quoteSearchDesc: {
+    color: '#64748b',
+    fontSize: 12,
+    lineHeight: 17,
+    marginTop: 3,
+  },
+  quoteSearchInputRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    gap: 10,
+  },
+  quoteSearchInput: {
+    flex: 1,
+    minWidth: 0,
+    backgroundColor: '#f8faf7',
+    borderRadius: 11,
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+    color: '#0f172a',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  quoteSearchButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    minHeight: 44,
+    paddingHorizontal: 15,
+    borderRadius: 11,
+    backgroundColor: colors.primaryDark,
+  },
+  quoteSearchButtonDisabled: {
+    backgroundColor: '#94a3b8',
+  },
+  quoteSearchButtonText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  quoteSearchError: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 7,
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#fecaca',
+    backgroundColor: '#fef2f2',
+  },
+  quoteSearchErrorText: {
+    flex: 1,
+    color: '#b91c1c',
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: '600',
   },
   itemsList: {
     gap: 12,

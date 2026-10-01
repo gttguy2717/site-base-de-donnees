@@ -126,7 +126,7 @@ export default function AboutPage({ navigateTo, onRequestQuote }) {
                     <h3 className="font-display font-bold text-lg text-[#111827]">Notre Mission</h3>
                   </div>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    Fournir des solutions innovantes et durables qui propulsent la croissance de nos partenaires tout en respectant les plus hauts standards de qualité et de sécurité.
+                    Réinventer des services de qualité, fiables et adaptés pour vous «&nbsp;soutra&nbsp;».
                   </p>
                 </div>
 
@@ -138,19 +138,24 @@ export default function AboutPage({ navigateTo, onRequestQuote }) {
                     <h3 className="font-display font-bold text-lg text-[#111827]">Notre Vision</h3>
                   </div>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    Devenir le leader mondial reconnu pour son ingéniosité dans l'intégration de technologies avancées et de pratiques respectueuses de l'environnement au sein des infrastructures industrielles.
+                    Être le partenaire privilégié de nos clients avec des solutions innovantes, une réactivité exceptionnelle et des services de qualité.
                   </p>
                 </div>
               </div>
 
               <div className="reveal-item lg:col-span-7 bg-[#f4f8f4] rounded-[32px] p-6 sm:p-8 border border-gray-200/60 shadow-xs">
-                <h3 className="font-display font-extrabold text-2xl text-[#111827] mb-6">Nos Valeurs Fondamentales</h3>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-9 h-9 rounded-xl bg-[#e8f3e6] text-[#1b4d2e] flex items-center justify-center">
+                    <span className="material-symbols-outlined text-lg">diamond</span>
+                  </div>
+                  <h3 className="font-display font-extrabold text-2xl text-[#111827]">Valeurs : S.A.P.E</h3>
+                </div>
                 <div className="reveal-stagger grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
-                    { icon: 'shield', title: 'Intégrité', desc: 'Transparence totale et éthique irréprochable dans toutes nos interactions.' },
-                    { icon: 'verified', title: 'Fiabilité', desc: 'Tenir nos promesses avec constance et livrer une qualité sans compromis.' },
-                    { icon: 'lightbulb', title: 'Innovation', desc: 'Adopter et créer de nouvelles approches pour résoudre des défis complexes.' },
-                    { icon: 'groups', title: 'Engagement', desc: 'Un dévouement total envers la réussite de nos clients.' },
+                    { icon: 'lightbulb', title: 'Solution pérenne et innovante', desc: 'Des solutions durables et innovantes pour répondre efficacement aux besoins de nos clients.' },
+                    { icon: 'extension', title: 'Adaptabilité', desc: 'Nous nous adaptons aux besoins de nos clients et aux évolutions de notre environnement professionnel.' },
+                    { icon: 'connect_without_contact', title: 'Priorité client', desc: 'La satisfaction du client au cœur de la conception et de la réalisation de nos prestations.' },
+                    { icon: 'groups', title: 'Efficacité du personnel', desc: 'Nous valorisons les compétences de nos collaborateurs pour garantir la qualité des prestations.' },
                   ].map(({ icon, title, desc }) => (
                     <div key={title} className="reveal-item motion-lift bg-white rounded-2xl p-5 border border-gray-200/70 shadow-2xs hover:border-[#1b4d2e]/30 transition-colors group">
                       <div className="w-9 h-9 rounded-xl bg-[#e8f3e6] text-[#1b4d2e] flex items-center justify-center mb-3 group-hover:bg-[#1b4d2e] group-hover:text-white transition-colors">

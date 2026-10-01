@@ -21,6 +21,19 @@ export default function AdminPage({ navigateTo }) {
   const [notificationCount, setNotificationCount] = useState(0);
   const [pendingQuotesCount, setPendingQuotesCount] = useState(0);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('soutarah_admin_dark') === '1');
+
+  // Mode sombre : classe « dark » portée par <html> (active les variantes dark:
+  // ET les surcharges CSS d'index.css ; atteint les modales portailées sur body).
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode);
+    localStorage.setItem('soutarah_admin_dark', darkMode ? '1' : '0');
+  }, [darkMode]);
+
+  // En quittant la page admin, on restaure le thème clair du site public.
+  useEffect(() => () => {
+    document.documentElement.classList.remove('dark');
+  }, []);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState([]);
   const [globalSearch, setGlobalSearch] = useState('');
@@ -497,11 +510,13 @@ export default function AdminPage({ navigateTo }) {
               </button>
 
               {/* Dark Mode Toggle */}
-              <button 
-                className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                title="Mode sombre"
+              <button
+                onClick={() => setDarkMode((v) => !v)}
+                className={`p-2 rounded-lg transition-colors ${darkMode ? 'bg-primary/10 text-primary' : 'text-gray-600 hover:bg-gray-50'}`}
+                title={darkMode ? 'Mode clair' : 'Mode sombre'}
+                aria-label={darkMode ? 'Passer en mode clair' : 'Passer en mode sombre'}
               >
-                <span className="material-symbols-outlined text-[22px]">dark_mode</span>
+                <span className="material-symbols-outlined text-[22px]">{darkMode ? 'light_mode' : 'dark_mode'}</span>
               </button>
 
               {/* User Avatar avec dropdown */}

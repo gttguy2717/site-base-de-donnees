@@ -38,7 +38,7 @@ async function serializeCart(cart, type_client, entreprise_id = null) {
 
     if (item.vehicule) {
       prix_unitaire = Number(await getVehicleDailyPrice(item.vehicule, type_client, entreprise_id));
-      const duration = Math.max(1, Math.ceil((new Date(item.termine_le) - new Date(item.commence_le)) / 86400000));
+      const duration = Math.max(1, Math.round((new Date(item.termine_le) - new Date(item.commence_le)) / 86400000) + 1);
       total = prix_unitaire * duration;
       source.days = duration;
     }

@@ -1,11 +1,36 @@
 import React from 'react';
 import SoutarahLogo from './SoutarahLogo';
 import FadeInSection from './FadeInSection';
+import { SERVICES_DATA } from '../data/servicesData';
+
+// Les 6 services réels de SOUTARAH GROUP, lus depuis la source de vérité :
+// le footer ne peut plus inventer de rubriques qui n'existent pas.
+const SERVICES = SERVICES_DATA.map(({ id, shortTitle, icon }) => ({ id, shortTitle, icon }));
+
+/* Vraies icônes des applications (couleurs officielles) servies depuis /public/img/social */
+const SOCIAL_LINKS = [
+  { name: 'LinkedIn', href: 'https://linkedin.com', icon: '/img/social/linkedin.svg' },
+  { name: 'Facebook', href: 'https://facebook.com', icon: '/img/social/facebook.svg' },
+  { name: 'Twitter / X', href: 'https://twitter.com', icon: '/img/social/x.svg' },
+  { name: 'YouTube', href: 'https://youtube.com', icon: '/img/social/youtube.svg' },
+  { name: 'Instagram', href: 'https://instagram.com', icon: '/img/social/instagram.svg' },
+];
+
 
 export default function Footer({ onNavClick }) {
   const handleNavigation = (event, target) => {
     event?.preventDefault();
     onNavClick?.(target);
+  };
+
+  // Navigation SPA vers une fiche service. On pousse l'URL puis on émet
+  // `popstate` : App.jsx écoute cet evenement et reconstruit la route, donc
+  // le footer fonctionne depuis toutes les pages sans prop speciale.
+  const goToService = (event, id) => {
+    event.preventDefault();
+    window.history.pushState({ page: 'service', slug: id }, '', `/services/${id}`);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -55,11 +80,11 @@ export default function Footer({ onNavClick }) {
             </div>
           </div>
 
-          {/* 2. Right White Block containing SERVICES, SECTEURS, ENGAGEMENT, LOCALISATION & Rectangular Restez connectés Banner */}
+          {/* 2. Right White Block containing SERVICES, ENGAGEMENT, LOCALISATION & Rectangular Restez connectés Banner */}
           <div className="lg:w-3/4 bg-white sm:bg-[#fafcf9] border border-gray-200/90 rounded-[32px] p-6 sm:p-8 shadow-xs flex-grow flex flex-col justify-between gap-6">
 
-            {/* Top row: 4 Columns (SERVICES, SECTEURS, ENGAGEMENT, LOCALISATION) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 items-start">
+            {/* Top row: 3 Columns (SERVICES, ENGAGEMENT, LOCALISATION) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
 
               {/* Col 1: SERVICES */}
               <div>
@@ -67,67 +92,22 @@ export default function Footer({ onNavClick }) {
                   SERVICES
                 </h4>
                 <ul className="space-y-3 text-xs sm:text-sm text-gray-700 font-medium">
-                  <li
-                    className="flex items-center gap-2 hover:text-[#1b4d2e] transition-colors cursor-pointer group whitespace-nowrap"
-                    onClick={() => onNavClick && onNavClick('services')}
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#265322] shrink-0 group-hover:scale-110 transition-transform">architecture</span>
-                    <span>Études et Conseils</span>
-                  </li>
-                  <li
-                    className="flex items-center gap-2 hover:text-[#1b4d2e] transition-colors cursor-pointer group whitespace-nowrap"
-                    onClick={() => onNavClick && onNavClick('services')}
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#265322] shrink-0 group-hover:scale-110 transition-transform">design_services</span>
-                    <span>Ingénierie et Design</span>
-                  </li>
-                  <li
-                    className="flex items-center gap-2 hover:text-[#1b4d2e] transition-colors cursor-pointer group whitespace-nowrap"
-                    onClick={() => onNavClick && onNavClick('services')}
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#265322] shrink-0 group-hover:scale-110 transition-transform">assignment</span>
-                    <span>Gestion de Projets</span>
-                  </li>
-                  <li
-                    className="flex items-center gap-2 hover:text-[#1b4d2e] transition-colors cursor-pointer group whitespace-nowrap"
-                    onClick={() => onNavClick && onNavClick('services')}
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#265322] shrink-0 group-hover:scale-110 transition-transform">bolt</span>
-                    <span>Énergie et Innovation</span>
-                  </li>
-                  <li
-                    className="flex items-center gap-2 hover:text-[#1b4d2e] transition-colors cursor-pointer group whitespace-nowrap"
-                    onClick={() => onNavClick && onNavClick('services')}
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#265322] shrink-0 group-hover:scale-110 transition-transform">dataset</span>
-                    <span>Digital & Data</span>
-                  </li>
-                  <li
-                    className="flex items-center gap-2 hover:text-[#1b4d2e] transition-colors cursor-pointer group whitespace-nowrap"
-                    onClick={() => onNavClick && onNavClick('services')}
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#265322] shrink-0 group-hover:scale-110 transition-transform">apartment</span>
-                    <span>Immobilier</span>
-                  </li>
+                  {SERVICES.map((service) => (
+                    <li key={service.id} className="whitespace-nowrap">
+                      <a
+                        href={`/services/${service.id}`}
+                        onClick={(event) => goToService(event, service.id)}
+                        className="flex items-center gap-2 hover:text-[#1b4d2e] transition-colors group"
+                      >
+                        <span className="material-symbols-outlined text-[18px] text-[#265322] shrink-0 group-hover:scale-110 transition-transform">{service.icon}</span>
+                        <span>{service.shortTitle}</span>
+                      </a>
+                    </li>
+                  ))}
                 </ul>
               </div>
 
-              {/* Col 2: SECTEURS */}
-              <div>
-                <h4 className="font-extrabold text-xs text-gray-900 mb-4 uppercase tracking-wider">
-                  SECTEURS
-                </h4>
-                <ul className="space-y-3 text-xs sm:text-sm text-gray-700 font-medium">
-                  <li><a href="#services" onClick={(event) => handleNavigation(event, 'services')} className="hover:text-[#1b4d2e] transition-colors whitespace-nowrap block">BTP & Infrastructures</a></li>
-                  <li><a href="#services" onClick={(event) => handleNavigation(event, 'services')} className="hover:text-[#1b4d2e] transition-colors whitespace-nowrap block">Énergie</a></li>
-                  <li><a href="#services" onClick={(event) => handleNavigation(event, 'services')} className="hover:text-[#1b4d2e] transition-colors whitespace-nowrap block">Industrie</a></li>
-                  <li><a href="#services" onClick={(event) => handleNavigation(event, 'services')} className="hover:text-[#1b4d2e] transition-colors whitespace-nowrap block">Environnement</a></li>
-                  <li><a href="#services" onClick={(event) => handleNavigation(event, 'services')} className="hover:text-[#1b4d2e] transition-colors whitespace-nowrap block">Transport</a></li>
-                  <li><a href="#services" onClick={(event) => handleNavigation(event, 'services')} className="hover:text-[#1b4d2e] transition-colors whitespace-nowrap block">Services</a></li>
-                </ul>
-              </div>
-
-              {/* Col 3: ENGAGEMENT */}
+              {/* Col 2: ENGAGEMENT */}
               <div>
                 <h4 className="font-extrabold text-xs text-gray-900 mb-4 uppercase tracking-wider">
                   ENGAGEMENT
@@ -140,7 +120,7 @@ export default function Footer({ onNavClick }) {
                 </ul>
               </div>
 
-              {/* Col 4: LOCALISATION */}
+              {/* Col 3: LOCALISATION */}
               <div>
                 <h4 className="font-extrabold text-xs text-gray-900 mb-4 uppercase tracking-wider">
                   LOCALISATION
@@ -156,7 +136,7 @@ export default function Footer({ onNavClick }) {
                   </li>
                   <li className="flex items-center gap-2 whitespace-nowrap">
                     <span className="material-symbols-outlined text-[18px] text-[#265322] shrink-0">mail</span>
-                    <span>contact@soutarah.ci</span>
+                    <span>infos@soutarahgroup.com</span>
                   </li>
                 </ul>
               </div>
@@ -177,53 +157,28 @@ export default function Footer({ onNavClick }) {
                   </p>
                 </div>
 
-                {/* Social Circles in a sleek line */}
-                <div className="flex items-center gap-2">
-                  <a
-                    href="https://linkedin.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-emerald-300/40 flex items-center justify-center text-white hover:bg-white/20 transition-all hover:scale-105 text-xs font-bold"
-                    title="LinkedIn"
-                  >
-                    in
-                  </a>
-                  <a
-                    href="https://facebook.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-emerald-300/40 flex items-center justify-center text-white hover:bg-white/20 transition-all hover:scale-105 text-xs font-bold"
-                    title="Facebook"
-                  >
-                    f
-                  </a>
-                  <a
-                    href="https://twitter.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-emerald-300/40 flex items-center justify-center text-white hover:bg-white/20 transition-all hover:scale-105 text-xs font-bold"
-                    title="Twitter / X"
-                  >
-                    𝕏
-                  </a>
-                  <a
-                    href="https://youtube.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-emerald-300/40 flex items-center justify-center text-white hover:bg-white/20 transition-all hover:scale-105"
-                    title="YouTube"
-                  >
-                    <span className="material-symbols-outlined text-sm">play_arrow</span>
-                  </a>
-                  <a
-                    href="https://instagram.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-emerald-300/40 flex items-center justify-center text-white hover:bg-white/20 transition-all hover:scale-105"
-                    title="Instagram"
-                  >
-                    <span className="material-symbols-outlined text-sm">photo_camera</span>
-                  </a>
+                {/* Vraies icônes des applications (couleurs officielles) */}
+                <div className="flex items-center gap-2 sm:gap-2.5">
+                  {SOCIAL_LINKS.map(({ name, href, icon }) => (
+                    <a
+                      key={name}
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={name}
+                      aria-label={name}
+                      className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center drop-shadow-md transition-all duration-200 hover:scale-110 hover:-translate-y-0.5"
+                    >
+                      <img
+                        src={icon}
+                        alt={name}
+                        width="36"
+                        height="36"
+                        loading="lazy"
+                        className="w-full h-full object-contain"
+                      />
+                    </a>
+                  ))}
                 </div>
               </div>
 
@@ -250,7 +205,7 @@ export default function Footer({ onNavClick }) {
       {/* Bottom Full Screen Width Legal / Copyright Bar en VERT FONCÉ (#143e22) */}
       <div className="w-full bg-[#143e22] text-white py-4 border-t border-[#0e2d19]">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-medium">
-          <p>© 2025 SOUTARAH GROUP. Tous droits réservés.</p>
+          <p>© 2026 SOUTARAH GROUP. Tous droits réservés.</p>
           <div className="flex items-center gap-6 text-emerald-100">
             <a href="#contact" onClick={(event) => handleNavigation(event, 'contact')} className="hover:text-white transition-colors">
               Contact & Support

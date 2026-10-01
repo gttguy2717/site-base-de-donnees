@@ -3,7 +3,7 @@ import { useAuth } from '../../hooks/useAuth';
 import AvatarUploader from '../AvatarUploader';
 
 export default function AdminSettings({ navigateTo }) {
-  const { user, token, logout } = useAuth();
+  const { user, token, logout, updateProfile } = useAuth();
   const [activeSection, setActiveSection] = useState('profile');
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -21,7 +21,7 @@ export default function AdminSettings({ navigateTo }) {
     name: 'SOUTARAH GROUP',
     address: 'Riviera Palmeraie Saint Viateur, Cité Kimi',
     phone: '+225 07 18 38 38 38',
-    email: 'contact@soutarah.com',
+    email: 'infos@soutarahgroup.com',
     website: 'www.soutarah.com',
     description: 'Négoce de quincaillerie, plomberie, fournitures BTP, énergie solaire, location de véhicules et gestion de projets.',
   });
@@ -36,7 +36,7 @@ export default function AdminSettings({ navigateTo }) {
 
   // Emails de réception des devis
   const [quoteEmails, setQuoteEmails] = useState([
-    'contact@soutarah.com',
+    'infos@soutarahgroup.com',
   ]);
   const [newQuoteEmail, setNewQuoteEmail] = useState('');
 
@@ -47,6 +47,8 @@ export default function AdminSettings({ navigateTo }) {
     confirmPassword: '',
     twoFactor: false,
   });
+  const [securityError, setSecurityError] = useState('');
+  const [securitySuccess, setSecuritySuccess] = useState('');
 
   // Paramètres boutique
   const [shop, setShop] = useState({
@@ -103,7 +105,43 @@ export default function AdminSettings({ navigateTo }) {
     }
   }, [user]);
 
+  const handleSaveSecurity = async () => {
+    setSecurityError('');
+    setSecuritySuccess('');
+    if (!security.currentPassword.trim()) {
+      setSecurityError('Le mot de passe actuel est requis.');
+      return;
+    }
+    if (security.newPassword.trim().length < 8) {
+      setSecurityError('Le nouveau mot de passe doit contenir au moins 8 caractères.');
+      return;
+    }
+    if (security.newPassword !== security.confirmPassword) {
+      setSecurityError('Les mots de passe ne correspondent pas.');
+      return;
+    }
+    setSaving(true);
+    try {
+      await updateProfile({
+        currentPassword: security.currentPassword,
+        newPassword: security.newPassword.trim(),
+      });
+      setSecurity((prev) => ({ currentPassword: '', newPassword: '', confirmPassword: '', twoFactor: prev.twoFactor }));
+      setSecuritySuccess('Mot de passe modifié avec succès.');
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (error) {
+      setSecurityError(error.message || 'Impossible de modifier le mot de passe.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSave = async () => {
+    if (activeSection === 'security') {
+      await handleSaveSecurity();
+      return;
+    }
     setSaving(true);
     try {
       const response = await fetch('/api/admin/settings', {
@@ -514,6 +552,16 @@ export default function AdminSettings({ navigateTo }) {
                       className={inputClass}
                     />
                   </div>
+                  {securityError && (
+                    <p className="sm:col-span-2 rounded-xl bg-red-50 border border-red-200 px-4 py-2.5 text-xs font-bold text-red-700">
+                      {securityError}
+                    </p>
+                  )}
+                  {securitySuccess && (
+                    <p className="sm:col-span-2 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2.5 text-xs font-bold text-emerald-700">
+                      {securitySuccess}
+                    </p>
+                  )}
                 </div>
               </div>
 

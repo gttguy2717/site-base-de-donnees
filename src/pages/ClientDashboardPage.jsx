@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 import AvatarUploader from '../components/AvatarUploader';
 import { useAuth } from '../hooks/useAuth';
 import { apiRequest } from '../lib/api';
-import { generateQuotePdf } from '../lib/quotePdf';
+import { generateQuotePdf, buildLocationReference, buildNegoceReference, detectQuoteType } from '../lib/quotePdf';
 import { computeQuoteTotals } from '../lib/quoteTotals';
 
 const formatMoneyClient = (val) => new Intl.NumberFormat('fr-FR').format(Number(val) || 0);
@@ -40,6 +40,7 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
     responsibleName: '',
     identificationNumber: '',
     newPassword: '',
+    currentPassword: '',
   });
 
   const [activeModal, setActiveModal] = useState(null);
@@ -94,6 +95,7 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
         responsibleName: client.entreprise?.nom_responsable || client.company?.responsibleName || '',
         identificationNumber: client.entreprise?.numero_identification || client.company?.identificationNumber || '',
         newPassword: '',
+        currentPassword: '',
       });
     }
   }, [user, client]);
@@ -119,7 +121,7 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
     try {
       await updateProfile(formData);
       setSaveSuccess(true);
-      setFormData((prev) => ({ ...prev, newPassword: '' }));
+      setFormData((prev) => ({ ...prev, newPassword: '', currentPassword: '' }));
       setActiveModal(null);
       setTimeout(() => setSaveSuccess(false), 4500);
     } catch (err) {
@@ -197,6 +199,16 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
     // Aucun article détaillé : on retombe sur le budget fourni
     const budget = Number(String(quote?.budget ?? '').replace(/\D/g, '')) || 0;
     return { ht: budget, tva: 0, tdt: 0, ttc: budget, hasItems };
+  };
+
+  // Vrai numéro du devis (celui imprimé sur le PDF, ex. 09-26/LOC/969)
+  // au lieu de la référence interne DMD-2026-XXXX.
+  const getDisplayReference = (quote) => {
+    if (!quote?.reference) return '';
+    const items = getSnapshotItems(quote);
+    const type = detectQuoteType(quote, items);
+    const now = new Date();
+    return type === 'negoce' ? buildNegoceReference(quote, now) : buildLocationReference(quote, now);
   };
 
   const handleDownloadQuotePdf = async (quote) => {
@@ -438,7 +450,7 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="rounded-full bg-primary/10 px-3 py-0.5 font-mono text-xs font-extrabold text-primary">
-                              {quote.reference || 'DEMANDE DE DEVIS'}
+                              {getDisplayReference(quote) || 'DEMANDE DE DEVIS'}
                             </span>
                             <span className="text-xs font-medium text-gray-400">
                               • {new Date(quote.cree_le || quote.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })} à {new Date(quote.cree_le || quote.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
@@ -606,7 +618,7 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
             <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-100 bg-gradient-to-r from-[#173d23] to-green-700 px-6 py-4">
               <div>
                 <span className="rounded-full bg-emerald-100/20 px-2.5 py-0.5 font-mono text-[10px] font-extrabold text-emerald-100">
-                  {selectedQuote.reference || 'DEVIS'}
+                  {getDisplayReference(selectedQuote) || 'DEVIS'}
                 </span>
                 <h3 className="mt-1 font-display text-lg font-extrabold text-white">
                   {selectedQuote.titre || selectedQuote.title}
@@ -685,7 +697,7 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
                               <p className="text-xs font-bold text-gray-800 truncate">{name}</p>
                               <p className="text-[10px] text-gray-500">
                                 {isVeh
-                                  ? `${it.destination || it.destinationLabel || 'ABIDJAN'} · ${it.days || it.duration || 1} j`
+                                  ? `${it.destination || it.destinationLabel || 'ABIDJAN'} · ${it.startDate && it.endDate ? Math.max(1, Math.round((new Date(it.endDate) - new Date(it.startDate)) / 86400000) + 1) : (it.days || it.duration || 1)} j`
                                   : 'Négoce'}
                                 {' · Qté : '}{qty}{unit > 0 ? ` · ${formatMoneyClient(unit)}/u` : ''}
                               </p>
@@ -817,6 +829,7 @@ export default function ClientDashboardPage({ navigateTo, initialTab = 'account'
 
               {activeModal === 'security' && (
                 <>
+                  <ModalField label="Mot de passe actuel" name="currentPassword" type="password" value={formData.currentPassword} onChange={handleInputChange} placeholder="Votre mot de passe actuel" required />
                   <ModalField label="Nouveau mot de passe" name="newPassword" type="password" value={formData.newPassword} onChange={handleInputChange} minLength={8} placeholder="Au moins 8 caractères" required />
                 </>
               )}

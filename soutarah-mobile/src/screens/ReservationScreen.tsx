@@ -58,8 +58,10 @@ export default function ReservationScreen({ route, navigation }: { route: any; n
   }, [vehicleId]);
 
   const handleSubmit = async () => {
-    if (startDate >= endDate) {
-      Alert.alert('Dates invalides', 'La date de fin doit être après la date de début.');
+    // Comme sur le site, une location d'une seule journée est valide :
+    // seule une date de fin antérieure à la date de début est refusée.
+    if (startDate > endDate) {
+      Alert.alert('Dates invalides', 'La date de fin doit être postérieure ou égale à la date de début.');
       return;
     }
 
@@ -70,7 +72,8 @@ export default function ReservationScreen({ route, navigation }: { route: any; n
         service: 'Location de véhicules',
         title: `${vehicle?.marque} ${vehicle?.modele} - ${formatDateFR(startDate)} au ${formatDateFR(endDate)}`,
         budget: String(vehicle?.prix_journalier_particulier || 0),
-        timeline: `${Math.ceil((endDate.getTime() - startDate.getTime()) / 86400000)} jour(s)`,
+        // Comptage inclusif, identique au site web et au serveur.
+        timeline: `${Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / 86400000) + 1)} jour(s)`,
         description: [
           `Véhicule : ${vehicle?.marque} ${vehicle?.modele}`,
           `Catégorie : ${vehicle?.categorie}`,
@@ -146,8 +149,10 @@ export default function ReservationScreen({ route, navigation }: { route: any; n
             setShowStartPicker(false);
             if (selected) {
               setStartDate(selected);
-              if (selected >= endDate) {
-                setEndDate(new Date(selected.getTime() + 86400000));
+              // Comme sur le site, une location d'une seule journée reste
+              // possible : la date de fin peut être égale à la date de début.
+              if (selected > endDate) {
+                setEndDate(selected);
               }
             }
           }}
@@ -166,7 +171,9 @@ export default function ReservationScreen({ route, navigation }: { route: any; n
           value={endDate}
           mode="date"
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          minimumDate={new Date(startDate.getTime() + 86400000)}
+          // Comme sur le site, la date de fin peut être égale à la date de
+          // début (location d'une seule journée = 1 jour facturé).
+          minimumDate={startDate}
           onChange={(event, selected) => {
             setShowEndPicker(false);
             if (selected) setEndDate(selected);

@@ -7,7 +7,7 @@ html_gantt = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <title>Diagramme de GANTT - Soutarah Group</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
 
   * {
     box-sizing: border-box;
@@ -16,12 +16,12 @@ html_gantt = """<!DOCTYPE html>
   }
 
   body {
-    width: 1550px;
-    height: 820px;
+    width: 1600px;
+    height: 860px;
     background: #ffffff;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #1e293b;
-    padding: 30px 45px;
+    padding: 28px 40px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -31,14 +31,14 @@ html_gantt = """<!DOCTYPE html>
   .header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     border-bottom: 2px solid #e2e8f0;
     padding-bottom: 16px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
   .header-left h1 {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 800;
     color: #0f172a;
     letter-spacing: -0.5px;
@@ -49,37 +49,42 @@ html_gantt = """<!DOCTYPE html>
 
   .header-left h1 span.highlight {
     color: #144627;
+    background: #ecfdf5;
+    padding: 2px 10px;
+    border-radius: 8px;
+    border: 1px solid #a7f3d0;
   }
 
   .header-left p {
     font-size: 13.5px;
     color: #64748b;
     font-weight: 600;
-    margin-top: 4px;
+    margin-top: 5px;
   }
 
   .project-badge {
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    border-radius: 8px;
-    padding: 8px 16px;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 1.5px solid #86efac;
+    border-radius: 10px;
+    padding: 10px 18px;
     text-align: right;
-    max-width: 580px;
+    max-width: 600px;
+    box-shadow: 0 2px 6px rgba(20, 70, 39, 0.06);
   }
 
   .project-badge .badge-title {
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     color: #166534;
   }
 
   .project-badge .badge-text {
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
     color: #14532d;
-    line-height: 1.35;
+    line-height: 1.4;
     margin-top: 2px;
   }
 
@@ -88,7 +93,7 @@ html_gantt = """<!DOCTYPE html>
     border: 1.5px solid #cbd5e1;
     border-radius: 12px;
     background: #ffffff;
-    box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.05);
+    box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06);
     overflow: hidden;
     position: relative;
   }
@@ -96,7 +101,7 @@ html_gantt = """<!DOCTYPE html>
   /* Timeline Grid Header */
   .gantt-header-row {
     display: grid;
-    grid-template-columns: 540px 1fr;
+    grid-template-columns: 580px 1fr;
     background: #f8fafc;
     border-bottom: 2px solid #cbd5e1;
   }
@@ -105,11 +110,11 @@ html_gantt = """<!DOCTYPE html>
     display: grid;
     grid-template-columns: 45px 1fr 95px 65px 95px;
     align-items: center;
-    padding: 10px 16px;
+    padding: 12px 16px;
     font-size: 11.5px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     color: #475569;
     border-right: 2px solid #cbd5e1;
   }
@@ -121,18 +126,18 @@ html_gantt = """<!DOCTYPE html>
 
   .months-row {
     display: grid;
-    grid-template-columns: 52.7% 47.3%;
-    border-bottom: 1px solid #cbd5e1;
+    grid-template-columns: 52.73% 47.27%;
+    border-bottom: 1.5px solid #cbd5e1;
     text-align: center;
     font-size: 12px;
     font-weight: 800;
     color: #0f172a;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
   }
 
   .month-cell {
-    padding: 6px 0;
+    padding: 7px 0;
     background: #f1f5f9;
   }
   .month-cell.aout {
@@ -149,7 +154,7 @@ html_gantt = """<!DOCTYPE html>
   }
 
   .week-cell {
-    padding: 5px 0;
+    padding: 6px 0;
     border-right: 1px solid #e2e8f0;
     background: #f8fafc;
   }
@@ -160,11 +165,12 @@ html_gantt = """<!DOCTYPE html>
   /* Task Rows */
   .task-row {
     display: grid;
-    grid-template-columns: 540px 1fr;
+    grid-template-columns: 580px 1fr;
     border-bottom: 1px solid #e2e8f0;
-    height: 52px;
+    height: 55px;
     align-items: center;
     position: relative;
+    transition: background 0.15s ease;
   }
 
   .task-row:last-child {
@@ -172,7 +178,7 @@ html_gantt = """<!DOCTYPE html>
   }
 
   .task-row:nth-child(even) {
-    background: #fbfcfd;
+    background: #fcfdfe;
   }
 
   /* Left Table Columns */
@@ -191,9 +197,9 @@ html_gantt = """<!DOCTYPE html>
     color: #144627;
     background: #f0fdf4;
     border: 1px solid #bbf7d0;
-    width: 26px;
-    height: 26px;
-    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -208,16 +214,33 @@ html_gantt = """<!DOCTYPE html>
     font-size: 12.5px;
   }
 
+  .tag-badge {
+    display: inline-block;
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-left: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
   .tag-mobile {
     background: #dcfce7;
     color: #15803d;
-    font-size: 9.5px;
-    font-weight: 800;
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin-left: 6px;
-    display: inline-block;
-    border: 1px solid #bbf7d0;
+    border: 1px solid #86efac;
+  }
+
+  .tag-web {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #7dd3fc;
+  }
+
+  .tag-back {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
   }
 
   .task-date {
@@ -225,20 +248,22 @@ html_gantt = """<!DOCTYPE html>
     color: #334155;
     font-weight: 600;
     text-align: center;
-    font-variant-numeric: tabular-nums;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
   }
 
   .task-duration {
     font-weight: 800;
-    color: #0369a1;
+    color: #0284c7;
     background: #f0f9ff;
     border: 1px solid #bae6fd;
-    padding: 3px 6px;
-    border-radius: 5px;
+    padding: 3px 8px;
+    border-radius: 6px;
     font-size: 11px;
     text-align: center;
     width: fit-content;
     margin: 0 auto;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   /* Right Timeline Bar Container */
@@ -272,7 +297,7 @@ html_gantt = """<!DOCTYPE html>
   /* Gantt Bar Styles */
   .gantt-bar {
     position: absolute;
-    height: 28px;
+    height: 30px;
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -283,11 +308,11 @@ html_gantt = """<!DOCTYPE html>
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     z-index: 2;
     letter-spacing: 0.3px;
-    gap: 6px;
+    padding: 0 10px;
   }
 
   /* Exact calendar offsets on 55 days timeline (03/08 to 26/09) */
-  /* Day 0 = 03/08, Day 55 = 26/09 */
+  /* Day 0 = 03/08, Total = 55 days */
   .bar-1 {
     left: 0.0%;
     width: 9.09%; /* 5 days */
@@ -335,11 +360,14 @@ html_gantt = """<!DOCTYPE html>
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
 
   .milestone-badge {
     position: absolute;
-    right: 6px;
+    right: 8px;
     top: 50%;
     transform: translateY(-50%);
     background: #fef2f2;
@@ -353,6 +381,7 @@ html_gantt = """<!DOCTYPE html>
     align-items: center;
     gap: 4px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    z-index: 3;
   }
 
   /* Footer Legend & Summary */
@@ -361,12 +390,12 @@ html_gantt = """<!DOCTYPE html>
     justify-content: space-between;
     align-items: center;
     padding-top: 14px;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1.5px solid #e2e8f0;
   }
 
   .legend-items {
     display: flex;
-    gap: 18px;
+    gap: 16px;
     align-items: center;
   }
 
@@ -395,15 +424,15 @@ html_gantt = """<!DOCTYPE html>
 
   .summary-stats {
     display: flex;
-    gap: 14px;
+    gap: 12px;
     align-items: center;
   }
 
   .stat-pill {
     background: #f8fafc;
     border: 1px solid #cbd5e1;
-    padding: 5px 12px;
-    border-radius: 6px;
+    padding: 6px 14px;
+    border-radius: 7px;
     font-size: 12px;
     color: #334155;
     font-weight: 600;
@@ -420,12 +449,12 @@ html_gantt = """<!DOCTYPE html>
   <!-- Header -->
   <div class="header">
     <div class="header-left">
-      <h1><span class="highlight">Diagramme de GANTT</span> &bull; Planning d'Exécution du Projet</h1>
+      <h1><span class="highlight">Diagramme de GANTT</span> Planning d'Exécution du Projet</h1>
       <p>Calendrier chronologique des tâches du 03 Août au 26 Septembre 2026 (55 jours calendaires)</p>
     </div>
     <div class="project-badge">
       <div class="badge-title">SOUTARAH GROUP &bull; STAGE TS STIC 2</div>
-      <div class="badge-text">Conception &amp; Développement d'une Plateforme Numérique de Gestion intégrant une Application Mobile de Réservation</div>
+      <div class="badge-text">Conception &amp; Développement d'une Plateforme Numérique de Gestion avec Application Mobile de Réservation</div>
     </div>
   </div>
 
@@ -504,7 +533,7 @@ html_gantt = """<!DOCTYPE html>
     <div class="task-row">
       <div class="table-data">
         <div class="task-num">3</div>
-        <div class="task-name">Modélisation conceptuelle PU/UML et conception de la base</div>
+        <div class="task-name">Modélisation conceptuelle PU/UML</div>
         <div class="task-date">12/08/2026</div>
         <div class="task-duration">6 j</div>
         <div class="task-date">17/08/2026</div>
@@ -515,7 +544,7 @@ html_gantt = """<!DOCTYPE html>
           <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
         </div>
         <div class="gantt-bar bar-3">
-          <span class="bar-text">6 j</span>
+          <span class="bar-text">Modélisation UML (6 j)</span>
         </div>
       </div>
     </div>
@@ -524,7 +553,10 @@ html_gantt = """<!DOCTYPE html>
     <div class="task-row">
       <div class="table-data">
         <div class="task-num">4</div>
-        <div class="task-name">Développement de l'API Backend Node.js / Express &amp; MySQL</div>
+        <div class="task-name">
+          Développement de l'API Backend Node.js / Express et base de données
+          <span class="tag-badge tag-back">Backend</span>
+        </div>
         <div class="task-date">18/08/2026</div>
         <div class="task-duration">10 j</div>
         <div class="task-date">27/08/2026</div>
@@ -535,7 +567,7 @@ html_gantt = """<!DOCTYPE html>
           <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
         </div>
         <div class="gantt-bar bar-4">
-          <span class="bar-text">API Backend (10 j)</span>
+          <span class="bar-text">API Backend Node.js &amp; BDD (10 j)</span>
         </div>
       </div>
     </div>
@@ -544,7 +576,10 @@ html_gantt = """<!DOCTYPE html>
     <div class="task-row">
       <div class="table-data">
         <div class="task-num">5</div>
-        <div class="task-name">Développement de la Plateforme Web React.js &amp; CSS</div>
+        <div class="task-name">
+          Développement de la Plateforme Web React.js &amp; CSS
+          <span class="tag-badge tag-web">Web</span>
+        </div>
         <div class="task-date">28/08/2026</div>
         <div class="task-duration">12 j</div>
         <div class="task-date">08/09/2026</div>
@@ -555,7 +590,7 @@ html_gantt = """<!DOCTYPE html>
           <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
         </div>
         <div class="gantt-bar bar-5">
-          <span class="bar-text">Plateforme Web (12 j)</span>
+          <span class="bar-text">Plateforme Web React (12 j)</span>
         </div>
       </div>
     </div>
@@ -566,7 +601,7 @@ html_gantt = """<!DOCTYPE html>
         <div class="task-num" style="background: #144627; color: #ffffff; border-color: #144627;">6</div>
         <div class="task-name">
           Développement de l'Application Mobile React Native / Expo
-          <span class="tag-mobile">APPLICATION MOBILE</span>
+          <span class="tag-badge tag-mobile">Mobile</span>
         </div>
         <div class="task-date">09/09/2026</div>
         <div class="task-duration">12 j</div>
@@ -578,7 +613,7 @@ html_gantt = """<!DOCTYPE html>
           <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
         </div>
         <div class="gantt-bar bar-6">
-          <span class="bar-text">App Mobile Réservation (12 j)</span>
+          <span class="bar-text">Application Mobile Expo (12 j)</span>
         </div>
       </div>
     </div>
@@ -587,7 +622,7 @@ html_gantt = """<!DOCTYPE html>
     <div class="task-row">
       <div class="table-data">
         <div class="task-num">7</div>
-        <div class="task-name">Tests d'intégration, recette logicielle et corrections</div>
+        <div class="task-name">Tests d'intégration et corrections</div>
         <div class="task-date">21/09/2026</div>
         <div class="task-duration">6 j</div>
         <div class="task-date">26/09/2026</div>
@@ -598,10 +633,10 @@ html_gantt = """<!DOCTYPE html>
           <div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div><div class="grid-column"></div>
         </div>
         <div class="gantt-bar bar-7">
-          <span class="bar-text">Recette (6 j)</span>
+          <span class="bar-text">Tests &amp; Corrections (6 j)</span>
         </div>
         <div class="milestone-badge">
-          <span>🏁</span>
+          <span>&#127937;</span>
           <span>LIVRAISON 26/09</span>
         </div>
       </div>
@@ -622,30 +657,30 @@ html_gantt = """<!DOCTYPE html>
       </div>
       <div class="legend-item">
         <div class="legend-color c-uml"></div>
-        <span>Modélisation UML &amp; BDD</span>
+        <span>Modélisation UML</span>
       </div>
       <div class="legend-item">
         <div class="legend-color c-back"></div>
-        <span>API Backend (Node/MySQL)</span>
+        <span>API Backend &amp; BDD</span>
       </div>
       <div class="legend-item">
         <div class="legend-color c-web"></div>
-        <span>Plateforme Web (React)</span>
+        <span>Plateforme Web</span>
       </div>
       <div class="legend-item">
         <div class="legend-color c-mob"></div>
-        <span>Application Mobile (Expo)</span>
+        <span>Application Mobile</span>
       </div>
       <div class="legend-item">
         <div class="legend-color c-rec"></div>
-        <span>Recette &amp; Tests</span>
+        <span>Tests &amp; Corrections</span>
       </div>
     </div>
 
     <div class="summary-stats">
       <div class="stat-pill">Période : <strong>03/08 au 26/09/2026</strong></div>
       <div class="stat-pill">Durée totale : <strong>55 jours</strong></div>
-      <div class="stat-pill">Avancement : <strong>100% Réalisé</strong></div>
+      <div class="stat-pill">Statut : <strong>100% Finalisé</strong></div>
     </div>
   </div>
 
@@ -653,7 +688,36 @@ html_gantt = """<!DOCTYPE html>
 </html>
 """
 
-with open("diagrammes/gantt/diagramme-gantt.html", "w", encoding="utf-8") as f:
-    f.write(html_gantt)
+base_dir = os.path.dirname(os.path.abspath(__file__))
+html_path = os.path.join(base_dir, "diagramme-gantt.html")
+png_path = os.path.join(base_dir, "diagramme-gantt.png")
 
-print("diagramme-gantt.html updated!")
+with open(html_path, "w", encoding="utf-8") as f:
+    f.write(html_gantt)
+print(f"Écrit : {html_path}")
+
+# Export direct en PNG haute résolution avec Chrome ou Edge
+chrome_paths = [
+    r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+    r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+]
+
+browser_exe = next((p for p in chrome_paths if os.path.exists(p)), None)
+
+if browser_exe:
+    cmd = [
+        browser_exe,
+        "--headless",
+        "--disable-gpu",
+        "--force-device-scale-factor=2",
+        f"--screenshot={png_path}",
+        "--window-size=1600,860",
+        f"file:///{html_path.replace(os.sep, '/')}"
+    ]
+    res = subprocess.run(cmd, capture_output=True, text=True)
+    if os.path.exists(png_path) and os.path.getsize(png_path) > 1000:
+        print(f"Capture PNG HD générée avec succès ({os.path.getsize(png_path)} octets) : {png_path}")
+    else:
+        print("Erreur lors de la capture :", res.stderr)
+else:
+    print("Aucun navigateur trouvé pour la capture d'écran.")

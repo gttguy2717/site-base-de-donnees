@@ -1,0 +1,175 @@
+=== P 112 (Heading 1) ===
+PARTIE I
+
+=== P 113 (Heading 1) ===
+CADRE ET CONTEXTE DU PROJET
+
+=== P 130 (Heading 3) ===
+I. PRÉSENTATION DE SOUTARAH GROUP
+
+=== P 131 (Heading 4) ===
+1. Présentation générale
+
+=== P 132 (Normal) ===
+SOUTARAH GROUP est une entreprise polyvalente proposant une gamme diversifiée de services destinés aussi bien aux professionnels qu'aux particuliers. Grâce à son expertise multisectorielle, l'entreprise met à la disposition de sa clientèle des solutions intégrées et adaptées à différents besoins, tout en veillant à maintenir un niveau de qualité uniforme auprès d'un même prestataire.
+
+=== P 133 (Normal) ===
+Les activités de SOUTARAH GROUP couvrent plusieurs domaines, notamment des services liés à la location de véhicules, au négoce et à l’import-export ainsi qu’à l’accompagnement et à la réalisation de projets. Cette diversité constitue l'une des principales forces de SOUTARAH GROUP. Elle lui permet d'accompagner ses clients dans différents projets et de leur proposer des solutions correspondant à leurs besoins spécifiques.
+
+=== P 134 (Normal) ===
+Dans un environnement marqué par l'évolution constante des besoins des clients et le développement des technologies numériques, SOUTARAH GROUP ambitionne de révolutionner le domaine de la prestation de services. L'entreprise souhaite ainsi renforcer son positionnement grâce à son expertise multisectorielle, son innovation constante et son engagement envers la satisfaction de sa clientèle.
+
+=== P 136 (Heading 4) ===
+2. Mission, Vision et Valeurs
+
+=== P 137 (Normal) ===
+❖ Mission 
+
+=== P 138 (Normal) ===
+La mission de SOUTARAH GROUP est de réinventer des services de qualité, fiables et adaptés. Cette mission traduit la volonté de l'entreprise de proposer à ses clients des solutions adaptées à leurs besoins, tout en recherchant constamment l'amélioration de la qualité et de la fiabilité de ses prestations.
+
+❖ Vision 
+
+=== P 139 (Normal) ===
+La vision de SOUTARAH GROUP est d’être le partenaire privilégié de nos clients avec des solutions innovantes, une réactivité exceptionnelle et des services de qualité.
+
+❖ Valeurs (S.A.P.E) 
+  Les valeurs de SOUTARAH GROUP sont regroupées autour de l'acronyme S.A.P.E :
+
+=== P 140 (Normal) ===
+S — Solution pérenne et innovante
+L'entreprise privilégie la mise en œuvre de solutions durables et innovantes permettant de répondre efficacement aux besoins de ses clients.
+
+=== P 141 (Normal) ===
+A — Adaptabilité
+SOUTARAH GROUP s'adapte aux différents besoins de ses clients ainsi qu'aux évolutions de son environnement professionnel.
+
+=== P 142 (Normal) ===
+P — Priorité client
+La satisfaction du client constitue un élément essentiel dans la conception et la réalisation des prestations proposées3. Domaines d'activités
+
+=== P 143 (Normal) ===
+E — Efficacité du personnel
+L'entreprise valorise les compétences et l'efficacité de ses collaborateurs afin de garantir la qualité des prestations réalisées.
+
+=== P 145 (Normal) ===
+3. Services 
+
+=== P 146 (Normal) ===
+SOUTARAH GROUP intervient dans plusieurs domaines d'activités.
+
+=== P 147 (Normal) ===
+➢ Location de véhicules : Le service de location de véhicules propose des solutions de mobilité adaptées aux différents besoins des clients, que ce soit pour des déplacements ponctuels ou pour des périodes plus longues.
+
+=== P 148 (Normal) ===
+➢ Négoce / Import-Export : Faciliter l'approvisionnement et la distribution de différents biens.
+
+=== P 149 (Normal) ===
+➢ Technique : L'installation, la maintenance et le support des équipements et installations.
+
+=== P 150 (Normal) ===
+➢ Énergies renouvelables : Optimiser la consommation énergétique et favoriser l'utilisation des énergies renouvelables.
+
+=== P 151 (Normal) ===
+➢ Agropastorale : La production agricole et l'élevage.
+
+=== P 152 (Normal) ===
+➢ Immobilier : la vente, la location et la gestion de biens.
+
+=== P 153 (Heading 4) ===
+4. Partenariats 
+
+=== P 154 (Normal) ===
+Soutarah Group entretient des collaborations avec plusieurs entreprises dont :
+
+=== P 155 (List Paragraph) ===
+BESSAC
+
+=== P 156 (List Paragraph) ===
+DM Company
+
+=== P 157 (List Paragraph) ===
+CIM IVOIRE
+
+=== P 158 (List Paragraph) ===
+Southcomp Polaris
+
+=== P 159 (List Paragraph) ===
+Enabel
+
+=== P 186 (Heading 3) ===
+I. CONTEXTE ET JUSTIFICATION DU PROJET
+
+=== P 187 (Normal) ===
+La croissance continue des activités de SOUTARAH GROUP et la diversification de ses pôles ont engendré un volume considérable de demandes de devis et de réservations. Face à cette montée en charge, les mécanismes traditionnels de traitement manuel (courriels isolés, échanges téléphoniques informels, tenue de registres physiques) ont montré leurs limites opérationnelles. L'absence de visibilité en temps réel sur la disponibilité des véhicules de location et le manque de synchronisation entre les services commerciaux et techniques ont motivé la direction à engager la transition numérique intégrale de son écosystème commercial.
+
+=== P 189 (Heading 3) ===
+II. ÉTUDE DE L'EXISTANT ET LIMITES
+
+=== P 190 (Normal) ===
+L'analyse préalable de l'infrastructure existante a révélé que SOUTARAH GROUP disposait uniquement d'un site web vitrine statique. Ce dernier présentait succinctement l'entreprise mais ne disposait d'aucune composante dynamique de gestion de base de données, ni d'espace d'authentification client, ni de mécanisme de calcul tarifaire automatisé. Les demandes formulées via des formulaires de contact basiques aboutissaient dans une boîte mail générique sans traçabilité, rendant impossible la production de statistiques fiables et occasionnant des retards dans l'édition des devis officiels.
+
+=== P 192 (Heading 3) ===
+III. OBJECTIFS DU PROJET
+
+=== P 193 (Heading 4) ===
+1. Objectif général
+
+=== P 194 (Normal) ===
+L’objectif général est de concevoir et de développer une solution logicielle unifiée comprenant une plateforme web de gestion globale des services et une application mobile dédiée à la réservation de véhicules, toutes deux synchronisées en temps réel via une API REST sécurisée.
+
+=== P 196 (Heading 4) ===
+2. Objectifs spécifiques
+
+=== P 197 (Normal) ===
+De façon opérationnelle, le projet vise à :
+• Développer un portail web moderne présentant de manière interactive l'ensemble des 6 pôles de services et le catalogue de produits ;
+• Développer une application mobile native (Android / iOS) dédiée à la consultation en direct du parc automobile, à la réservation fluide avec tarification dynamique et au suivi des états de commandes ;
+• Mettre en place un panier multi-articles hybride (véhicules et fournitures) avec moteur de calcul automatisé des taxes (HT, TVA 18%, TDT 2.5%) ;
+• Automatiser la génération de devis pro-forma officiels au format PDF sur 2 pages (avec fiches techniques et visuels) prêts pour impression ou signature électronique ;
+• Développer un tableau de bord d'administration (Back-Office) centralisé pour le pilotage des devis, véhicules, clients et notifications ;
+• Intégrer un système de notification transactionnelle par courrier électronique.
+
+=== P 199 (Heading 3) ===
+IV. CAHIER DES CHARGES DU SYSTÈME
+
+=== P 200 (Normal) ===
+Le cahier des charges formalise les exigences fonctionnelles et non-fonctionnelles du système interconnecté :
+
+1. Exigences fonctionnelles côté Client (Web & Mobile) :
+  • Consultation détaillée du catalogue des véhicules et produits par catégorie ;
+  • Filtrage multicritère des véhicules (marque, type, transmission, climatisation) ;
+  • Sélection des dates de location avec calcul dynamique selon le barème de destination (Abidjan / Hors Abidjan) et l'option chauffeur ;
+  • Gestion du panier d'achats / réservations et validation en un clic ;
+  • Téléchargement instantané du devis pro-forma officiel PDF respectant la charte juridique de l'entreprise ;
+  • Espace personnel de gestion des devis ;
+
+2. Exigences fonctionnelles côté Administrateur :
+  • Supervision globale des indicateurs clés (CA estimé, réservations actives) ;
+  • Gestion complète du parc automobile (ajout, modification, statut de maintenance) ;
+
+=== P 201 (Normal) ===
+  • Gestion complète des articles negoce (ajout de produits, modification des prix) ;
+  • Gestion des comptes clients et attribution de remises partenaires.
+
+3. Exigences techniques et contraintes :
+  • Sécurité ;
+  • Disponibilité et performance ;
+  • Portabilité : Compatibilité navigateurs modernes (Chrome, Safari, Edge) et mobiles.
+
+=== P 203 (Heading 3) ===
+V. PLANIFICATION DES TÂCHES ET DIAGRAMME DE GANTT
+
+=== P 204 (Normal) ===
+Le projet s'est déroulé sur une période de deux mois (du 03 Août au 03 Octobre 2026), selon la décomposition chronologique suivante :
+
+=== P 206 (Normal) ===
+1. Planning
+
+=== P 210 (Normal) ===
+2. Diagramme de Gantt
+
+=== P 212 (Normal) ===
+Figure 1 : Diagramme de GANTT 
+
+

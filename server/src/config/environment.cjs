@@ -30,6 +30,8 @@ function booleanFromEnv(value, defaultValue = false) {
 module.exports = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: Number(process.env.PORT || 5000),
+  // Domaine officiel : les autres formes (ex. www) y sont redirigées en 301
+  canonicalHost: process.env.CANONICAL_HOST || 'soutarahgroup.com',
   clientOrigins: (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
     .split(',')
     .map((origin) => origin.trim())

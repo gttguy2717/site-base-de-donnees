@@ -1,0 +1,482 @@
+[
+  {
+    "idx": 644,
+    "style": "Normal",
+    "text": "WEBOGRAPHIE"
+  },
+  {
+    "idx": 645,
+    "style": "List Paragraph",
+    "text": "REACT.JS. « Documentation officielle React 18 et Virtual DOM », Meta Open Source. Accessible sur : https://react.dev (Consulté LE 30 Août 2026)."
+  },
+  {
+    "idx": 646,
+    "style": "List Paragraph",
+    "text": "REACT NATIVE & EXPO. « Cross-Platform Native Mobile Development with Expo Framework ». Accessible sur : https://reactnative.dev et https://docs.expo.dev (Consulté le 15 Septembre 2026)."
+  },
+  {
+    "idx": 647,
+    "style": "List Paragraph",
+    "text": "BREVO. Accessible sur : https://brevo.com (Consulté en 1 Septembre 2026)."
+  },
+  {
+    "idx": 667,
+    "style": "Heading 3",
+    "text": "TABLE DES MATIÈRES "
+  },
+  {
+    "idx": 668,
+    "style": "Normal",
+    "text": "DÉDICACE\t - 1 -"
+  },
+  {
+    "idx": 669,
+    "style": "Normal",
+    "text": "REMERCIEMENTS\t - 2 -"
+  },
+  {
+    "idx": 670,
+    "style": "Normal",
+    "text": "AVANT-PROPOS\t - 3 -"
+  },
+  {
+    "idx": 671,
+    "style": "Normal",
+    "text": "SOMMAIRE\t - 5 -"
+  },
+  {
+    "idx": 672,
+    "style": "Normal",
+    "text": "LISTE DES FIGURES\t - 6 -"
+  },
+  {
+    "idx": 673,
+    "style": "Normal",
+    "text": "LISTE DES TABLEAUX\t - 7 -"
+  },
+  {
+    "idx": 674,
+    "style": "Normal",
+    "text": "LISTE DES ABRÉVIATIONS\t - 8 -"
+  },
+  {
+    "idx": 675,
+    "style": "Normal",
+    "text": "RÉSUMÉ\t - 9 -"
+  },
+  {
+    "idx": 676,
+    "style": "Normal",
+    "text": "INTRODUCTION GÉNÉRALE\t - 10 -"
+  },
+  {
+    "idx": 677,
+    "style": "Normal",
+    "text": "PARTIE I : CADRE ET CONTEXTE DU PROJET\t - 11 -"
+  },
+  {
+    "idx": 678,
+    "style": "Normal",
+    "text": "Chapitre 1 : Présentation de la structure d’accueil\t - 12 -"
+  },
+  {
+    "idx": 679,
+    "style": "Normal",
+    "text": "I. Présentation de SOUTARAH GROUP\t - 12 -"
+  },
+  {
+    "idx": 680,
+    "style": "Normal",
+    "text": "1. Présentation générale\t - 12 -"
+  },
+  {
+    "idx": 681,
+    "style": "Normal",
+    "text": "2. Mission, Vision et Valeurs\t - 12 -"
+  },
+  {
+    "idx": 682,
+    "style": "Normal",
+    "text": "3. Domaines d'activités et services\t - 13 -"
+  },
+  {
+    "idx": 683,
+    "style": "Normal",
+    "text": "4. Partenariats\t - 14 -"
+  },
+  {
+    "idx": 684,
+    "style": "Normal",
+    "text": "Chapitre 2 : Présentation du projet\t - 15 -"
+  },
+  {
+    "idx": 685,
+    "style": "Normal",
+    "text": "I. Contexte et justification du projet\t - 15 -"
+  },
+  {
+    "idx": 686,
+    "style": "Normal",
+    "text": "III. Étude de l'existant et limites\t - 15 -"
+  },
+  {
+    "idx": 687,
+    "style": "Normal",
+    "text": "III. Objectifs du projet\t - 15 -"
+  },
+  {
+    "idx": 688,
+    "style": "Normal",
+    "text": "1. Objectif général\t - 15 -"
+  },
+  {
+    "idx": 689,
+    "style": "Normal",
+    "text": "2. Objectifs spécifiques\t - 16 -"
+  },
+  {
+    "idx": 690,
+    "style": "Normal",
+    "text": "IV. Cahier des charges du système\t - 16 -"
+  },
+  {
+    "idx": 691,
+    "style": "Normal",
+    "text": "1. Exigences fonctionnelles côté Client\t - 17 -"
+  },
+  {
+    "idx": 692,
+    "style": "Normal",
+    "text": "2. Exigences fonctionnelles côté Administrateur\t - 16 -"
+  },
+  {
+    "idx": 693,
+    "style": "Normal",
+    "text": "3. Exigences techniques et contraintes\t - 17 -"
+  },
+  {
+    "idx": 694,
+    "style": "Normal",
+    "text": "V. Planification des tâches et diagramme de GANTT\t - 17 -"
+  },
+  {
+    "idx": 695,
+    "style": "Normal",
+    "text": "1. Planning prévisionnel\t - 17 -"
+  },
+  {
+    "idx": 696,
+    "style": "Normal",
+    "text": "2. Diagramme de GANTT\t - 18 -"
+  },
+  {
+    "idx": 697,
+    "style": "Normal",
+    "text": "PARTIE II : ÉTUDE CONCEPTUELLE\t - 19 -"
+  },
+  {
+    "idx": 698,
+    "style": "Normal",
+    "text": "Chapitre 3 : Choix de la méthode d’analyse\t - 20 -"
+  },
+  {
+    "idx": 699,
+    "style": "Normal",
+    "text": "I. Étude comparative des méthodes d'analyse \t - 20 -"
+  },
+  {
+    "idx": 700,
+    "style": "Normal",
+    "text": "II. Application du PU/UML au système SOUTARAH GROUP\t - 21 -"
+  },
+  {
+    "idx": 701,
+    "style": "Normal",
+    "text": "1. Diagrammes des cas d'utilisation\t - 21 -"
+  },
+  {
+    "idx": 702,
+    "style": "Normal",
+    "text": "❖ Description textuelle des cas d’utilisation\t - 22 -"
+  },
+  {
+    "idx": 703,
+    "style": "Normal",
+    "text": "2. Diagrammes d'activité\t - 25 -"
+  },
+  {
+    "idx": 704,
+    "style": "Normal",
+    "text": "2.1. Création et gestion d’un compte client\t - 25 -"
+  },
+  {
+    "idx": 705,
+    "style": "Normal",
+    "text": "2.2. Réservation d’un véhicule avec contrôle de disponibilité\t - 27 -"
+  },
+  {
+    "idx": 706,
+    "style": "Normal",
+    "text": "2.3. Processus d’achat d’un produit\t - 29 -"
+  },
+  {
+    "idx": 707,
+    "style": "Normal",
+    "text": "3. Diagrammes de séquences\t - 31 -"
+  },
+  {
+    "idx": 708,
+    "style": "Normal",
+    "text": "3.1. Paiement en ligne sécurisé\t - 31 -"
+  },
+  {
+    "idx": 709,
+    "style": "Normal",
+    "text": "3.2. Réservation d'un véhicule\t - 32 -"
+  },
+  {
+    "idx": 710,
+    "style": "Normal",
+    "text": "3.3. Achat produit\t - 33 -"
+  },
+  {
+    "idx": 711,
+    "style": "Normal",
+    "text": "3.4. Inscription d'un utilisateur\t - 34 -"
+  },
+  {
+    "idx": 712,
+    "style": "Normal",
+    "text": "4. Diagramme de classes\t - 35 -"
+  },
+  {
+    "idx": 713,
+    "style": "Normal",
+    "text": "PARTIE III : ÉTUDE TECHNIQUE\t - 36 -"
+  },
+  {
+    "idx": 714,
+    "style": "Normal",
+    "text": "Chapitre 4 : Conception du système et choix technologiques\t - 37 -"
+  },
+  {
+    "idx": 715,
+    "style": "Normal",
+    "text": "I. Analyse et justification des choix technologiques\t - 37 -"
+  },
+  {
+    "idx": 716,
+    "style": "Normal",
+    "text": "1. Environnement de développement\t - 37 -"
+  },
+  {
+    "idx": 717,
+    "style": "Normal",
+    "text": "2. Outil de maquettage UI/UX\t - 38 -"
+  },
+  {
+    "idx": 718,
+    "style": "Normal",
+    "text": "3. Technologies Frontend Web\t - 38 -"
+  },
+  {
+    "idx": 719,
+    "style": "Normal",
+    "text": "4. Technologies Mobile \t - 38 -"
+  },
+  {
+    "idx": 720,
+    "style": "Normal",
+    "text": "5. Technologies Backend et API REST \t - 39 -"
+  },
+  {
+    "idx": 721,
+    "style": "Normal",
+    "text": "6. Technologies de notifications et messagerie \t - 39 -"
+  },
+  {
+    "idx": 722,
+    "style": "Normal",
+    "text": "7. Plateforme d’hébergement et déploiement \t - 39 -"
+  },
+  {
+    "idx": 723,
+    "style": "Normal",
+    "text": "II. Système de Gestion de Base de Données (SGBD)\t - 40 -"
+  },
+  {
+    "idx": 724,
+    "style": "Normal",
+    "text": "1. Comparaison des principaux SGBD\t - 40 -"
+  },
+  {
+    "idx": 725,
+    "style": "Normal",
+    "text": "2. Choix et justification de MySQL\t - 41 -"
+  },
+  {
+    "idx": 726,
+    "style": "Normal",
+    "text": "III. Architecture générale du système \t - 41 -"
+  },
+  {
+    "idx": 727,
+    "style": "Normal",
+    "text": "PARTIE IV : RÉALISATION ET MISE EN ŒUVRE\t - 43 -"
+  },
+  {
+    "idx": 728,
+    "style": "Normal",
+    "text": "Chapitre 5 : Réalisation de la plateforme web et de l’application mobile\t - 44 -"
+  },
+  {
+    "idx": 729,
+    "style": "Normal",
+    "text": "I. Mise en place de la base de données MySQL\t - 44 -"
+  },
+  {
+    "idx": 730,
+    "style": "Normal",
+    "text": "II. Implémentation de l'Assistant IA et des notifications (Brevo)\t - 45 -"
+  },
+  {
+    "idx": 731,
+    "style": "Normal",
+    "text": "1. L'Assistant virtuel intelligent (Agent IA)\t - 45 -"
+  },
+  {
+    "idx": 732,
+    "style": "Normal",
+    "text": "2. Le Service de messagerie et notifications (Brevo / SMTP)\t - 45 -"
+  },
+  {
+    "idx": 733,
+    "style": "Normal",
+    "text": "III. Réalisation des interfaces de la plateforme Web\t - 46 -"
+  },
+  {
+    "idx": 734,
+    "style": "Normal",
+    "text": "1. Page d'accueil et de connexion\t - 46 -"
+  },
+  {
+    "idx": 735,
+    "style": "Normal",
+    "text": "2. Catalogue des produits\t - 47 -"
+  },
+  {
+    "idx": 736,
+    "style": "Normal",
+    "text": "3. Module de réservation de véhicules\t - 48 -"
+  },
+  {
+    "idx": 737,
+    "style": "Normal",
+    "text": "4. Panier multi-articles et génération de devis PDF\t - 48 -"
+  },
+  {
+    "idx": 738,
+    "style": "Normal",
+    "text": "5. Espace Client et suivi des demandes\t - 49 -"
+  },
+  {
+    "idx": 739,
+    "style": "Normal",
+    "text": "IV. Réalisation de l'application mobile dédiée à la réservation\t - 49 -"
+  },
+  {
+    "idx": 740,
+    "style": "Normal",
+    "text": "1. Écran d'accueil et fiche détaillée du véhicule\t - 49 -"
+  },
+  {
+    "idx": 741,
+    "style": "Normal",
+    "text": "2. Panier mobile\t - 50 -"
+  },
+  {
+    "idx": 742,
+    "style": "Normal",
+    "text": "V. Réalisation de l'espace administrateur (Back-Office Web)\t - 51 -"
+  },
+  {
+    "idx": 743,
+    "style": "Normal",
+    "text": "1. Tableau de bord des indicateurs clés (Dashboard)\t - 51 -"
+  },
+  {
+    "idx": 744,
+    "style": "Normal",
+    "text": "2. Gestion du parc de véhicules et des réservations\t - 51 -"
+  },
+  {
+    "idx": 745,
+    "style": "Normal",
+    "text": "Chapitre 6 : Mise en œuvre\t - 52 -"
+  },
+  {
+    "idx": 746,
+    "style": "Normal",
+    "text": "I. Tests fonctionnels et validation (Cahier de recettes)\t - 52 -"
+  },
+  {
+    "idx": 747,
+    "style": "Normal",
+    "text": "II. Étude financière et estimation des coûts\t - 53 -"
+  },
+  {
+    "idx": 748,
+    "style": "Normal",
+    "text": "1. Coûts matériels et logiciels\t - 53 -"
+  },
+  {
+    "idx": 749,
+    "style": "Normal",
+    "text": "2. Coûts d'hébergement et de maintenance annuelle\t - 53 -"
+  },
+  {
+    "idx": 750,
+    "style": "Normal",
+    "text": "III. Rentabilité, retour sur investissement et perspectives\t - 54 -"
+  },
+  {
+    "idx": 751,
+    "style": "Normal",
+    "text": "1. Rentabilité immédiate et retour sur investissement (ROI)\t - 54 -"
+  },
+  {
+    "idx": 752,
+    "style": "Normal",
+    "text": "2. Perspectives d’évolution de la plateforme\t - 54 -"
+  },
+  {
+    "idx": 753,
+    "style": "Normal",
+    "text": "CONCLUSION GÉNÉRALE ET PERSPECTIVES\t - 55 -"
+  },
+  {
+    "idx": 754,
+    "style": "Normal",
+    "text": "BIBLIOGRAPHIE\t - 56 –"
+  },
+  {
+    "idx": 755,
+    "style": "Normal",
+    "text": "I. Ouvrages et cours académiques\t - 56 -"
+  },
+  {
+    "idx": 756,
+    "style": "Normal",
+    "text": "II. Documentations techniques et références web\t - 56 -"
+  },
+  {
+    "idx": 757,
+    "style": "Normal",
+    "text": "WEBOGRAPHIE\t - 57 -"
+  },
+  {
+    "idx": 758,
+    "style": "Normal",
+    "text": "TABLE DES MATIÈRES\t - 58 -"
+  }
+]

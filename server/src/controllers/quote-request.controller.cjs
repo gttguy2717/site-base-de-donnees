@@ -261,4 +261,77 @@ async function confirmQuoteRequest(request, response, next) {
   }
 }
 
-module.exports = { createQuoteRequest, getMyQuoteRequests, deleteQuoteRequest, confirmQuoteRequest, downloadQuotePdf };
+// Hash identique à src/lib/quotePdf.js — buildLocationReference() (seq du devis imprimé).
+function locationSeqFromSeed(seed) {
+  let hash = 0;
+  for (let i = 0; i < String(seed).length; i += 1) hash = (hash * 31 + String(seed).charCodeAt(i)) % 997;
+  return String(hash + 1).padStart(3, '0');
+}
+
+/**
+ * Recherche d'un devis par référence pour reprendre « Passer commande ».
+ * Accepte la référence brute (DMD-2026-1234) ou la référence imprimée sur le
+ * PDF téléchargeable (09-26/LOC/164, 09-26/UFO/LOC/164 hérité, 09-26/NEG/164).
+ * Périmètre : uniquement les devis du demandeur (comme /my).
+ */
+async function findQuoteByReference(request, response, next) {
+  try {
+    const raw = String(request.query.reference || '').trim();
+    if (!raw || raw.length < 3 || raw.length > 60) {
+      return response.status(400).json({ message: 'Référence de devis invalide.' });
+    }
+    const user = request.auth.user;
+    const normalized = raw.replace(/^n°\s*/i, '').replace(/\s+/g, '').toUpperCase();
+
+    const quoteRequests = await QuoteRequest.findAll({
+      where: { [Op.or]: [{ utilisateur_id: user.id }, { email: user.email }] },
+      order: [['cree_le', 'DESC']],
+      limit: 2000,
+    });
+
+    // 1) Référence brute du système (DMD-2026-XXXX)
+    let found = quoteRequests.find((q) => String(q.reference || '').toUpperCase() === normalized);
+
+    // 2) Référence affichée sur le PDF : MM-YY/(UFO/)LOC/NNN ou MM-YY/NEG/NNN
+    if (!found) {
+      const mLoc = normalized.match(/^(\d{2})-(\d{2})\/(?:UFO\/)?LOC\/(\d{1,3})$/);
+      const mNeg = normalized.match(/^(\d{2})-(\d{2})\/NEG\/(\d{1,3})$/);
+      const mBare = normalized.match(/^(?:LOC|NEG)\/(\d{1,3})$/);
+      const mm = mLoc ? mLoc[1] : (mNeg ? mNeg[1] : null);
+      const yy = mLoc ? mLoc[2] : (mNeg ? mNeg[2] : null);
+      const seqRaw = mLoc ? mLoc[3] : (mNeg ? mNeg[3] : (mBare ? mBare[1] : null));
+      if (seqRaw) {
+        const padded = seqRaw.padStart(3, '0');
+        const candidates = quoteRequests.filter((q) => {
+          const yearPart = /^DMD-(\d{4})-/.exec(String(q.reference || ''));
+          if (yy && yearPart && yearPart[1].slice(-2) !== yy) return false;
+          const last = String(q.reference || '').split('-').pop() || '';
+          if (mNeg && last.slice(-3).padStart(3, '0') === padded) return true;
+          if (locationSeqFromSeed(q.reference) === padded) return true;
+          if (locationSeqFromSeed(q.id) === padded) return true;
+          return false;
+        });
+        const monthOk = (q) => !mm
+          || String(new Date(q.cree_le).getMonth() + 1).padStart(2, '0') === mm;
+        found = candidates.find(monthOk) || candidates[0];
+      }
+    }
+
+    if (!found) {
+      return response.status(404).json({ message: 'Aucun devis trouvé avec cette référence.' });
+    }
+
+    const data = found.toJSON();
+    let snapshot = null;
+    try {
+      snapshot = data.snapshot ? JSON.parse(data.snapshot) : null;
+    } catch (parseError) {
+      snapshot = null;
+    }
+    return response.json({ quoteRequest: { ...data, snapshot } });
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = { createQuoteRequest, getMyQuoteRequests, deleteQuoteRequest, confirmQuoteRequest, downloadQuotePdf, findQuoteByReference };

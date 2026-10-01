@@ -302,6 +302,22 @@ function PasserCommandePage({ navigateTo }) {
                 </button>
               </div>
             </div>
+          ) : !order ? (
+            <div className="mt-8 rounded-[28px] border border-primary/10 bg-white p-8 text-center shadow-xl">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Aucune commande en cours</p>
+              <h2 className="mt-3 font-display text-2xl font-extrabold text-[#173d23]">Retrouvez votre devis depuis le panier</h2>
+              <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-gray-600">
+                Ouvrez <strong>Mon panier</strong> puis utilisez l'onglet « Rechercher un devis » avec la référence de votre devis
+                PDF : cette page Passer commande s'ouvrira automatiquement.
+              </p>
+              <button
+                type="button"
+                onClick={() => navigateTo('cart')}
+                className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-primary/20 transition hover:bg-[#1b4c00]"
+              >
+                <ArrowLeft size={16} /> Aller au panier
+              </button>
+            </div>
           ) : (
             <form onSubmit={submitOrder} className="mt-8 space-y-6">
               {order && (

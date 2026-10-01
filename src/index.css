@@ -460,6 +460,265 @@ a[href]:active {
   background: #9ca3af;
 }
 
+/* ═══════════════ MODE SOMBRE — PAGE ADMIN (icône du header) ═══════════════
+   La classe « dark » est posée sur <html> UNIQUEMENT depuis AdminPage (et
+   retirée en quittant l'écran admin). Spécificité (0,2,1) > utilitaires Tailwind
+   (0,1,0) : pas de !important nécessaire. Palette bleu-gris profond, accents
+   verts conservés. Les modales portailées sur document.body sont couvertes. */
+html.dark body {
+  background-color: #0e1116;
+  color: #e7eaef;
+}
+
+/* Fonds principaux */
+html.dark .bg-white,
+html.dark .bg-white\/70,
+html.dark .bg-white\/80,
+html.dark .bg-white\/90,
+html.dark .bg-white\/95 {
+  background-color: #161b22;
+}
+html.dark .bg-\[\#f8f9fa\],
+html.dark .bg-\[\#f9f9f9\],
+html.dark .bg-\[\#f4f7f2\],
+html.dark .bg-\[\#f5f7f4\],
+html.dark .bg-\[\#f8faf7\],
+html.dark .bg-\[\#f4f8f4\] {
+  background-color: #0e1116;
+}
+html.dark .bg-gray-50,
+html.dark .bg-slate-50,
+html.dark .bg-\[\#f2f6f1\] {
+  background-color: #1b212a;
+}
+html.dark .bg-gray-100 {
+  background-color: #232a34;
+}
+html.dark .bg-gray-200 {
+  background-color: #2b333f;
+}
+
+/* Panneaux d'information (détail devis, statuts) */
+html.dark .bg-emerald-50,
+html.dark .bg-emerald-50\/60,
+html.dark .bg-emerald-50\/70 {
+  background-color: #0f2a20;
+}
+html.dark .bg-emerald-100 {
+  background-color: #123d2c;
+}
+html.dark .bg-red-50 {
+  background-color: #2b1519;
+}
+html.dark .bg-amber-50 {
+  background-color: #2c2412;
+}
+
+/* Bordures & séparateurs */
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-gray-200\/80,
+html.dark .border-\[\#dbe6d6\],
+html.dark .border-\[\#e0e6de\],
+html.dark .border-\[\#e0e8dd\],
+html.dark .divide-gray-100 > * + * {
+  border-color: #2a323d;
+}
+
+/* Textes */
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-\[\#173d23\],
+html.dark .text-\[\#172019\],
+html.dark .text-\[\#111827\],
+html.dark .text-\[\#1b241d\],
+html.dark .text-on-surface,
+html.dark .text-on-surface-variant {
+  color: #e7eaef;
+}
+html.dark .text-gray-700,
+html.dark .text-gray-600,
+html.dark .text-gray-500 {
+  color: #9aa6b2;
+}
+html.dark .text-gray-400,
+html.dark .text-gray-300 {
+  color: #6d7684;
+}
+html.dark .text-emerald-900,
+html.dark .text-emerald-950 {
+  color: #d1fae5;
+}
+html.dark .text-emerald-800,
+html.dark .text-emerald-700 {
+  color: #6ee7b7;
+}
+html.dark .text-primary {
+  color: #9ae06b;
+}
+
+/* Champs de saisie */
+html.dark input,
+html.dark select,
+html.dark textarea {
+  color: #e7eaef;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #6d7684;
+}
+
+/* Survols courants (listes, tables, menus) */
+html.dark .hover\:bg-gray-50:hover {
+  background-color: #1b212a;
+}
+html.dark .hover\:bg-gray-100:hover {
+  background-color: #232a34;
+}
+html.dark .hover\:bg-red-50:hover {
+  background-color: #2b1519;
+}
+html.dark .hover\:bg-white:hover {
+  background-color: #1b212a;
+}
+
+/* Couleurs de statut — fonds (cartes, badges, lignes de tableaux) */
+html.dark .bg-\[\#f9fbf9\] {
+  background-color: #141a21;
+}
+html.dark .bg-blue-50,
+html.dark .bg-blue-50\/50,
+html.dark .bg-blue-100 {
+  background-color: #16283a;
+}
+html.dark .bg-green-50,
+html.dark .bg-green-100 {
+  background-color: #10251a;
+}
+html.dark .bg-amber-50\/50,
+html.dark .bg-amber-100 {
+  background-color: #2c2412;
+}
+html.dark .bg-orange-50,
+html.dark .bg-orange-100,
+html.dark .hover\:bg-orange-100:hover {
+  background-color: #2d1b0e;
+}
+html.dark .bg-red-100 {
+  background-color: #2b1519;
+}
+html.dark .bg-purple-50,
+html.dark .bg-purple-100 {
+  background-color: #22192e;
+}
+html.dark .bg-teal-100 {
+  background-color: #10262a;
+}
+html.dark .bg-indigo-50,
+html.dark .bg-indigo-100 {
+  background-color: #1b1f38;
+}
+html.dark .bg-pink-100 {
+  background-color: #2b1420;
+}
+html.dark .bg-slate-50\/60 {
+  background-color: #1b212a;
+}
+html.dark .bg-emerald-50\/50 {
+  background-color: #0f2a20;
+}
+html.dark .bg-gray-300 {
+  background-color: #374151;
+}
+html.dark .bg-gray-400 {
+  background-color: #4b5563;
+}
+html.dark .hover\:bg-gray-200:hover {
+  background-color: #2b333f;
+}
+html.dark .focus\:bg-white:focus {
+  background-color: #1b212a;
+}
+
+/* Couleurs de statut — textes */
+html.dark .text-blue-600 {
+  color: #8ab4f8;
+}
+html.dark .text-blue-700,
+html.dark .text-blue-800 {
+  color: #a5c8ff;
+}
+html.dark .text-green-600 {
+  color: #7ee2a0;
+}
+html.dark .text-green-700 {
+  color: #86efac;
+}
+html.dark .text-amber-600,
+html.dark .text-amber-700,
+html.dark .text-amber-800 {
+  color: #f3c26b;
+}
+html.dark .text-orange-600 {
+  color: #f2a066;
+}
+html.dark .text-orange-900 {
+  color: #ffd7b3;
+}
+html.dark .text-red-600 {
+  color: #f87171;
+}
+html.dark .text-red-700 {
+  color: #fca5a5;
+}
+html.dark .text-purple-600 {
+  color: #c4a5ff;
+}
+html.dark .text-teal-700 {
+  color: #5eead4;
+}
+html.dark .text-emerald-600 {
+  color: #6ee7b7;
+}
+html.dark .hover\:text-gray-600:hover {
+  color: #cbd5e1;
+}
+html.dark .hover\:text-primary:hover {
+  color: #9ae06b;
+}
+
+/* Couleurs de statut — bordures & séparateurs */
+html.dark .border-gray-300 {
+  border-color: #3a434f;
+}
+html.dark .border-blue-100,
+html.dark .border-blue-200 {
+  border-color: #2b4257;
+}
+html.dark .border-green-200,
+html.dark .border-emerald-100,
+html.dark .border-emerald-200 {
+  border-color: #24483a;
+}
+html.dark .border-amber-200 {
+  border-color: #4a3c1c;
+}
+html.dark .border-red-200 {
+  border-color: #4a2226;
+}
+html.dark .divide-gray-200 > * + * {
+  border-color: #2a323d;
+}
+
+/* Bordures/séparateurs sans classe de couleur (défaut Tailwind #e5e7eb).
+   Spécificité 0 (:where) : ne surcharge jamais les bordures colorées. */
+:where(html.dark) :where(.border-t, .border-b, .border-l, .border-r, .border) {
+  border-color: #2a323d;
+}
+:where(html.dark) :where(.divide-y, .divide-x) > :not([hidden]) ~ :not([hidden]) {
+  border-color: #2a323d;
+}
+
 /* Shimmer Button Effect */
 .shimmer-btn {
   position: relative;
