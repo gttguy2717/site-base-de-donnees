@@ -1,3 +1,39 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  PÉRIMÈTRE DU DÉPÔT — « tout sauf l'essentiel »
+#
+#  Ce dépôt ne contient QUE ce qui sert à faire tourner le site et l'app
+#  mobile. Tout ce qui se trouve à la racine du projet en dehors de cette
+#  liste est ignoré : rapports de stage, soutenances, présentations,
+#  schémas, outils du stage, sorties de build, journaux de déploiement.
+#
+#  Ces fichiers ne sont pas supprimés du disque : ils restent sur le poste de
+#  travail, seule leur versionisation est désactivée.
+# ─────────────────────────────────────────────────────────────────────────────
+/*
+
+# Ré-inclusion explicite : le code indispensable
+!/.env.example
+!/.gitignore
+!/.oxlintrc.json
+!/index.html
+!/package.json
+!/package-lock.json
+!/postcss.config.js
+!/tailwind.config.js
+!/tsconfig.json
+!/vite.config.js
+!/README.md
+
+# Ré-inclusion des sources et ressources des deux applications
+!/src/
+!/public/
+!/server/
+!/shared/
+!/soutarah-mobile/
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  RÈGLES APPLICABLES PARTOUT DANS LE DÉPÔT
+# ─────────────────────────────────────────────────────────────────────────────
 # Logs
 logs
 *.log
@@ -6,84 +42,46 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-# Assets de deploy / runtime (déjà en ligne sur Hostinger)
-*.jar
-/public/pdf/
-/dist/pdf/
-/public/img/kete/
-/dist/img/kete/
-/public/img/nexans/
-/dist/img/nexans/
-/server/uploads/
-/rapport/
-/Rapport_de_Stage_*.docx
-/Soutenance_Stage_*.pptx
-/public/fond-home.png
-/dist/fond-home.png
-/public/img/espacevert.jpg
-/dist/img/espacevert.jpg
-/public/img/installation.jpg
-/dist/img/installation.jpg
-# Artefacts Python / deploy / IDE
+
+# Dépendances et artefacts
+node_modules
+dist-ssr
 __pycache__/
 *.pyc
 *.tar.gz
 .expo/
-_build*.txt
-# Dossiers locaux volumineux / artefacts (ancre a la racine)
-/public/img/Web_Plan*.png
-/dist/img/Web_Plan*.png
-/mobile/
-/tmp/
-/out/
-/inspect_40_images/
-/extracted_docx_images/
-/extracted_pptx_images/
 ~$*
+_build*.txt
 
-_b.txt
-
-node_modules
-dist-ssr
-*.local
+# Secrets : jamais de credentials dans un depot, meme privé
 .env
 .env.*
 !.env.example
-# ─────────────────────────────────────────────────────────────────────────────
-#  SECRETS — NE JAMAIS POUSSER SUR GITHUB
-#  Le dépôt est PUBLIC : ces scripts contiennent le mot de passe SSH et/ou le
-#  mot de passe MySQL de la production. Ils restent sur le poste local.
-#  Pour les régénérer, réutiliser le compte-rendu de déploiement ou un gestionnaire
-#  de secrets (variables d'environnement), jamais un mot de passe en dur.
-# ─────────────────────────────────────────────────────────────────────────────
-/env2
-/env
-.envrc
 
-# Scripts d'exploitation / déploiement Hostinger (accès SSH en dur)
-/deploy_*.py
-/verify_*.py
-/fix_503_final.py
-/fix_config_env.py
-/fix_encodings_db.py
-/fix_server.py
-/fix_orphaned_clients.cjs
-/force_restart.py
-/inspect_env.py
-/restart_passenger.py
-/run_seed_complete.py
-/count_products_db.py
-/db_delete_a8.py
-/delete_david.py
-/delete_legacy_clients.py
-/find_david.py
-/test_https.py
-/check_deploy_state.py
-/server/tmp/deploy-*.py
-/server/tmp/remote-restart.cjs.py
-/rsvp-soutarah/config.php
-/SETUP_DATABASE.md
-/DIAGNOSTIC-ACCES-SITE.md
+# Assets de deploy / runtime (déjà en ligne sur Hostinger)
+*.jar
+/public/pdf/
+/public/img/kete/
+/public/img/nexans/
+/server/uploads/
+/server/tmp/
+/public/fond-home.png
+/public/img/espacevert.jpg
+/public/img/installation.jpg
+/public/img/Web_Plan*.png
+# ─────────────────────────────────────────────────────────────────────────────
+#  SECRETS — ne jamais commiter d'identifiants
+#  Le dépôt est PUBLIC. Les scripts de déploiement lisent leurs identifiants
+#  dans des variables d'environnement ; aucun mot de passe ne doit apparaître
+#  dans un fichier versionné. Si un secret est poussé un jour par erreur, il
+#  faut le faire tourner : l'historique Git conserve l'ancien secret.
+# ─────────────────────────────────────────────────────────────────────────────
+.envrc
+MOT_DE_PASSE*.md
+
+# Fichiers de configuration locaux sensibles
+/env
+/env2
 
 # Editor directories and files
 .vscode/*

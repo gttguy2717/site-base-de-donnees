@@ -1,9 +1,0 @@
-# RSVP SOUTARAH GROUP — Configuration Apache (Hostinger)
-
-# Interdit de lister le contenu des répertoires
-Options -Indexes
-
-# Protège les fichiers sensibles
-<FilesMatch "^(config\.php|database\.sql)$">
-  Require all denied
-</FilesMatch>

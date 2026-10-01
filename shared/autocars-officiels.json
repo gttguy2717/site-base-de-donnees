@@ -1,0 +1,19 @@
+{
+  "_commentaire": "Autocars SOUTARAH — conservés TOUJOURS, même absents de la liste blanche (consigne client explicite : « garde les cars de 32 25 Places »). Ce fichier est la source de vérité : clean-vehicle-catalog.cjs RECRÉE automatiquement ces fiches si elles manquent en base, pour qu'un 25/32 places ne puisse plus jamais disparaître.",
+  "vehicules": [
+    {
+      "id": "d6aa2dbf-24d2-4128-b82c-fe6abfff0a3e",
+      "marque": "Hyundai",
+      "modele": "32 Places",
+      "categorie": "Autocar",
+      "description": "32 places assises • Manuel • Avec chauffeur",
+      "image_url": "/img/vehicles/h1ec.jpg",
+      "places": 32,
+      "carburant": "Essence",
+      "transmission": "Manuel",
+      "prix": 135000,
+      "prix_journalier_entreprise": 135000,
+      "prix_journalier_entreprise_client": 135000
+    }
+  ]
+}
