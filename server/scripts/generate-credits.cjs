@@ -21,10 +21,11 @@ const rows = Object.entries(credits)
 
 const md = `# Crédits photos — Catalogue véhicules SOUTARAH
 
-Les ${Object.keys(credits).length} photos de véhicules de ce catalogue proviennent de
-**Wikimedia Commons** et sont sous licence libre (CC0 / CC BY / CC BY-SA).
-Elles ont été téléchargées localement dans \`public/img/vehicles/\` : aucun
-hotlinking externe, aucune image sous droits de Trip.com.
+Les ${Object.keys(credits).length} photos de cars de transport du personnel de ce
+catalogue proviennent de **Wikimedia Commons** et sont sous licence libre
+(CC0 / CC BY / CC BY-SA). Elles ont été téléchargées localement dans
+\`public/img/vehicles/cars/\` : aucun hotlinking externe, aucun bus urbain
+allemand (ancienne source bus-bild.de retirée à la demande du client).
 
 Les licences **CC BY** et **CC BY-SA** imposent de citer l'auteur et la licence :
 ce fichier satisfait cette obligation. Toute redistribution doit conserver ces

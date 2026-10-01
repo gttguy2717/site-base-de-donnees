@@ -12,10 +12,11 @@
  *     « Isuzu D-Max » couvre « D-Max 2024 »…).
  *  2. `variantesExclues` gagne toujours : « Mazda CX-30 » ne doit PAS être
  *     confondu avec « Mazda CX-3 » (modèle différent).
- *  3. Les autocars de groupe (20/22/25/30/32 places) et les cars issus de la
- *     galerie bus-bild.de sont TOUJOURS conservés, même absents de la liste
- *     (consigne explicite du client). Ils sont déclarés dans
- *     shared/autocars-officiels.json et shared/cars-officiels.json.
+ *  3. Les autocars de groupe (20/22/25/30/32 places) et les cars de transport du
+ *     personnel (Toyota Coaster, Hyundai County, Higer, King Long, Golden
+ *     Dragon, Yutong — photos Wikimedia Commons) sont TOUJOURS conservés, même
+ *     absents de la liste (consigne explicite du client). Ils sont déclarés
+ *     dans shared/autocars-officiels.json et shared/cars-officiels.json.
  *
  * Ce module est voluntarily sans dépendance Sequelize : il sert aussi bien
  * aux contrôleurs API qu'au script de nettoyage de la base.

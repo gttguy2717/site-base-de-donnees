@@ -33,8 +33,10 @@ const DRY_RUN = !process.argv.includes('--restore');
  * Les véhicules « toujours gardés » ne figurent pas dans la liste blanche mais
  * doivent TOUJOURS exister au catalogue :
  *   - les autocars de groupe (20 / 22 / 25 / 30 / 32 places) ;
- *   - les cars issus de la galerie bus-bild.de (5 modèles après retrait du
- *     Volvo 8700 et du Yutong E-Bus).
+ *   - les cars de transport du personnel (6 modèles : Toyota Coaster, Hyundai
+ *     County, Higer KLQ 6896Q, King Long XMQ6127, Golden Dragon Navigator,
+ *     Yutong ZK6122 — photos Wikimedia Commons, ancienne source bus-bild.de
+ *     retirée).
  * Si l'un d'eux a disparu, on le recrée ici : impossible de le perdre.
  */
 async function assurerToujoursGardes(liste, libelle) {
@@ -170,12 +172,12 @@ async function main() {
     }
   }
 
-  // ── 5. Véhicules « toujours gardés » (autocars 20/25/30/32 + cars bus-bild) ──
+  // ── 5. Véhicules « toujours gardés » (autocars 20/25/30/32 + cars personnel) ──
   let autocarsCrees = 0;
   let autocarsReactives = 0;
   if (!DRY_RUN) {
     const r1 = await assurerToujoursGardes(AUTOCARS, 'groupe');
-    const r2 = await assurerToujoursGardes(CARS, 'bus-bild');
+    const r2 = await assurerToujoursGardes(CARS, 'transport du personnel');
     autocarsCrees = r1.crees + r2.crees;
     autocarsReactives = r1.reactives + r2.reactives;
   }
