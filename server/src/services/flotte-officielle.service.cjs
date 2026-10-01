@@ -12,8 +12,10 @@
  *     « Isuzu D-Max » couvre « D-Max 2024 »…).
  *  2. `variantesExclues` gagne toujours : « Mazda CX-30 » ne doit PAS être
  *     confondu avec « Mazda CX-3 » (modèle différent).
- *  3. Les autocars de 25 et 32 places sont TOUJOURS conservés, même absents de
- *     la liste (consigne explicite du client).
+ *  3. Les autocars de groupe (20/22/25/30/32 places) et les cars issus de la
+ *     galerie bus-bild.de sont TOUJOURS conservés, même absents de la liste
+ *     (consigne explicite du client). Ils sont déclarés dans
+ *     shared/autocars-officiels.json et shared/cars-officiels.json.
  *
  * Ce module est voluntarily sans dépendance Sequelize : il sert aussi bien
  * aux contrôleurs API qu'au script de nettoyage de la base.
@@ -33,6 +35,15 @@ function normaliser(valeur) {
 }
 
 const NOMS_AUTORISES = new Set((CONFIG.vehicules || []).map(normaliser));
+
+// Les listes « toujours gardées » sont explicitement approuvées par le client :
+// on injecte leurs noms dans la liste blanche pour qu'ils passent le filtre.
+const AUTOCARS_OFFICIELS = require(path.resolve(__dirname, '../../../shared/autocars-officiels.json'));
+const CARS_OFFICIELS = require(path.resolve(__dirname, '../../../shared/cars-officiels.json'));
+for (const v of [...(AUTOCARS_OFFICIELS.vehicules || []), ...(CARS_OFFICIELS.vehicules || [])]) {
+  const nom = normaliser(`${v.marque} ${v.modele}`);
+  if (nom) NOMS_AUTORISES.add(nom);
+}
 const PREFIXES_AUTORISES = (CONFIG.variantesPrefixe || []).map(normaliser).sort((a, b) => b.length - a.length);
 const NOMS_EXCLUS = new Set((CONFIG.variantesExclues || []).map(normaliser));
 const PLACES_GARDEES = new Set((CONFIG.placesToujoursGardes || []).map(Number));
@@ -44,7 +55,7 @@ const EQUIVALENTS = new Map(
 );
 
 /** Message unique affiché au client quand son véhicule n'est pas au catalogue. */
-const MESSAGE_INDISPONIBLE = "Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez tout choisir un autre véhicule ou nous contacter";
+const MESSAGE_INDISPONIBLE = "Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez choisir un autre véhicule ou nous contacter.";
 
 function nomComplet(vehicule) {
   if (!vehicule) return '';

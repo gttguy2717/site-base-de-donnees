@@ -23,8 +23,51 @@
  */
 const { sequelize, Vehicle, Reservation, CartItem } = require('../src/models/index.cjs');
 const { estDansLaFlotte, CONFIG } = require('../src/services/flotte-officielle.service.cjs');
+// server/scripts/ -> server/ -> racine du projet -> shared/
+const AUTOCARS = require('../../shared/autocars-officiels.json');
+const CARS = require('../../shared/cars-officiels.json');
 
 const DRY_RUN = !process.argv.includes('--restore');
+
+/**
+ * Les véhicules « toujours gardés » ne figurent pas dans la liste blanche mais
+ * doivent TOUJOURS exister au catalogue :
+ *   - les autocars de groupe (20 / 22 / 25 / 30 / 32 places) ;
+ *   - les cars issus de la galerie bus-bild.de (7 modèles).
+ * Si l'un d'eux a disparu, on le recrée ici : impossible de le perdre.
+ */
+async function assurerToujoursGardes(liste, libelle) {
+  let crees = 0;
+  let reactives = 0;
+  for (const a of liste.vehicules || []) {
+    const existant = await Vehicle.findOne({ where: { marque: a.marque, modele: a.modele } });
+    const donnees = {
+      categorie: a.categorie,
+      description: a.description,
+      image_url: a.image_url,
+      places: a.places,
+      carburant: a.carburant,
+      transmission: a.transmission,
+      prix_journalier_particulier: a.prix,
+      prix_journalier_entreprise: a.prix_journalier_entreprise,
+      prix_journalier_entreprise_client: a.prix_journalier_entreprise_client,
+      disponibilite: true,
+      statut: 'ACTIVE',
+    };
+    if (existant) {
+      if (existant.statut !== 'ACTIVE' || existant.disponibilite === false) {
+        await existant.update(donnees);
+        reactives += 1;
+        console.log(`   ↻ ${a.marque} ${a.modele} (${a.places} places) — réactivé`);
+      }
+    } else {
+      await Vehicle.create({ id: a.id, marque: a.marque, modele: a.modele, ...donnees });
+      crees += 1;
+      console.log(`   + ${a.marque} ${a.modele} (${a.places} places) — créé [${libelle}]`);
+    }
+  }
+  return { crees, reactives };
+}
 
 async function main() {
   console.log('🚗 SOUTARAH — Purge du catalogue hors flotte officielle');
@@ -126,15 +169,26 @@ async function main() {
     }
   }
 
+  // ── 5. Véhicules « toujours gardés » (autocars 20/25/30/32 + cars bus-bild) ──
+  let autocarsCrees = 0;
+  let autocarsReactives = 0;
+  if (!DRY_RUN) {
+    const r1 = await assurerToujoursGardes(AUTOCARS, 'groupe');
+    const r2 = await assurerToujoursGardes(CARS, 'bus-bild');
+    autocarsCrees = r1.crees + r2.crees;
+    autocarsReactives = r1.reactives + r2.reactives;
+  }
+
   const restant = await Vehicle.count();
-  const actifs = await Vehicle.count({ where: { statut: 'ACTIVE', disponibilite: true } });
+  const total = await Vehicle.count({ where: { statut: 'ACTIVE', disponibilite: true } });
 
   console.log('\n' + '─'.repeat(66));
   console.log(`🗑️  ${supprimes} véhicule(s) supprimé(s) de la base`);
   console.log(`🔒 ${neutralises} véhicule(s) neutralisé(s) (réservation en cours)`);
   console.log(`🧹 ${lignesPanier} ligne(s) de panier purgée(s)`);
   console.log(`↻ ${reactives} véhicule(s) réactivé(s)`);
-  console.log(`📦 Flotte publique : ${actifs} modèle(s) actif(s) / ${restant} en base`);
+  console.log(`🚌 ${autocarsCrees} véhicule(s) « toujours gardé(s) » créé(s), ${autocarsReactives} réactivé(s)`);
+  console.log(`📦 Flotte publique : ${total} modèle(s) actif(s) / ${restant} en base`);
 
   await sequelize.close();
   process.exit(0);

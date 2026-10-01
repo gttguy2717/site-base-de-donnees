@@ -100,7 +100,10 @@
     "Mitsubishi L200 New": "Mitsubishi L200"
   },
   "placesToujoursGardes": [
+    20,
+    22,
     25,
+    30,
     32
   ]
 }

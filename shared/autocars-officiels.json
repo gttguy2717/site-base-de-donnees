@@ -1,5 +1,6 @@
 {
-  "_commentaire": "Autocars SOUTARAH — conservés TOUJOURS, même absents de la liste blanche (consigne client explicite : « garde les cars de 32 25 Places »). Ce fichier est la source de vérité : clean-vehicle-catalog.cjs RECRÉE automatiquement ces fiches si elles manquent en base, pour qu'un 25/32 places ne puisse plus jamais disparaître.",
+  "_commentaire": "Grands vehicules de transport de groupe SOUTARAH — conservés TOUJOURS, même absents de la liste blanche (consigne client : « garde les cars de 20 25 30 32 Places »). Ce fichier est la source de vérité : clean-vehicle-catalog.cjs RECRÉE automatiquement ces fiches si elles manquent en base, pour qu'un 20/25/30/32 places ne puisse plus jamais disparaître du catalogue.",
+  "_tarifs": "⚠️ Tarifs journaliers indicatifs, À CONFIRMER par l'exploitation avant facturation. Images provisoires : remplacer par les photos réelles des véhicules.",
   "vehicules": [
     {
       "id": "d6aa2dbf-24d2-4128-b82c-fe6abfff0a3e",
@@ -14,6 +15,34 @@
       "prix": 135000,
       "prix_journalier_entreprise": 135000,
       "prix_journalier_entreprise_client": 135000
+    },
+    {
+      "id": "a1c72e10-4f3b-4d21-9c65-7b0d2e5f8101",
+      "marque": "Mercedes-Benz",
+      "modele": "Sprinter 20 Places",
+      "categorie": "Autocar",
+      "description": "20 places assises • Automatique • Avec chauffeur",
+      "image_url": "/img/vehicles/h1ec.jpg",
+      "places": 20,
+      "carburant": "Gazole",
+      "transmission": "Automatique",
+      "prix": 120000,
+      "prix_journalier_entreprise": 120000,
+      "prix_journalier_entreprise_client": 120000
+    },
+    {
+      "id": "b2d83f21-5a4c-4e32-8d76-8c1e3f609112",
+      "marque": "Mercedes-Benz",
+      "modele": "Sprinter 30 Places",
+      "categorie": "Autocar",
+      "description": "30 places assises • Automatique • Avec chauffeur",
+      "image_url": "/img/vehicles/h1ec.jpg",
+      "places": 30,
+      "carburant": "Gazole",
+      "transmission": "Automatique",
+      "prix": 150000,
+      "prix_journalier_entreprise": 150000,
+      "prix_journalier_entreprise_client": 150000
     }
   ]
 }

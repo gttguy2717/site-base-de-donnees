@@ -318,7 +318,7 @@ export default function CartPage({ navigateTo }) {
     // Garde-fou : un véhicule devenu indisponible (retiré du catalogue ou déjà
     // réservé) interdit de valider le panier tant qu'il est présent.
     if (hasUnavailableVehicles) {
-      setError("Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez tout choisir un autre véhicule ou nous contacter");
+      setError("Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez choisir un autre véhicule ou nous contacter.");
       return;
     }
     // Garde anti double-clic : évite de créer 2 devis et de télécharger 2 fois.
@@ -646,7 +646,7 @@ export default function CartPage({ navigateTo }) {
                         >
                           {indisponible && (
                             <p className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700">
-                              ⚠️ Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez tout choisir un autre véhicule ou nous contacter.
+                              ⚠️ Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez choisir un autre véhicule ou nous contacter.
                             </p>
                           )}
                           <div className="grid gap-4 sm:grid-cols-[100px_1fr_auto] sm:items-center">

@@ -108,7 +108,7 @@ export default function VehicleReservations({ vehicle, onClose, navigateTo }) {
 
     const vehicleUnavailableMessage =
       "🚗 Ce véhicule n'est pas disponible à la location pour le moment.\n" +
-      'Vous pouvez tout choisir un autre véhicule ou nous contacter.';
+      'Vous pouvez choisir un autre véhicule ou nous contacter.';
 
     try {
       // Étape 1 : Vérifier la disponibilité du véhicule AVANT d'ajouter au panier
@@ -118,13 +118,13 @@ export default function VehicleReservations({ vehicle, onClose, navigateTo }) {
         return;
       }
     } catch (availError) {
-      // 404 = véhicule retiré du catalogue ou déjà réservé : on bloque l'ajout.
-      if (availError?.statusCode === 404 || /indisponible/i.test(availError?.message || '')) {
-        setAvailabilityError(vehicleUnavailableMessage);
-        return;
-      }
-      // Réseau / serveur : on laisse la validation notify-vehicle s'en charger
-      console.warn('Endpoint disponibilité non joignable, vérification via notify-vehicle:', availError.message);
+      // ⛔ 404 (véhicule retiré / déjà réservé), 5xx ou panne réseau : la
+      // disponibilité n'est PAS confirmée, donc on BLOQUE l'ajout au panier et
+      // on affiche le message. Un véhicule non disponible ne doit jamais entrer
+      // dans le panier, même si l'API est momentanément injoignable.
+      console.warn('Disponibilité non vérifiable, ajout bloqué :', availError?.message);
+      setAvailabilityError(vehicleUnavailableMessage);
+      return;
     }
 
     // Étape 2 : Envoyer la notification au serveur (vérifie à nouveau les conflits)

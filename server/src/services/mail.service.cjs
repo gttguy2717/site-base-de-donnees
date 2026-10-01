@@ -288,4 +288,57 @@ async function sendQuoteRequestEmail({ quoteRequest }) {
   return { sent: true };
 }
 
-module.exports = { sendProductRequestEmail, sendCartNotificationEmail, sendQuoteRequestEmail, sendNewAccountEmail, sendReservationEmail };
+/**
+ * Alerte admin : un client a tenté d'ajouter au panier un véhicule qui n'est
+ * pas disponible (retiré du catalogue, désactivé ou déjà réservé).
+ * Sert de signal commercial : la demande existe, il faut la reprendre.
+ */
+async function sendVehicleUnavailableEmail({ clientName, contact, customerType, vehicleName, vehicleId, startDate, endDate, days, reason }) {
+  if (!mailIsConfigured()) return { sent: false, reason: 'SMTP non configuré' };
+  const transporter = createTransporter();
+  const subject = `🚫 Demande de véhicule indisponible — ${vehicleName || 'véhicule'}`;
+
+  const textBody = [
+    'DEMANDE DE VEHICULE NON SATISFAITE — SOUTARAH GROUP',
+    '================================================',
+    '',
+    `Client      : ${clientName || 'Client'}`,
+    `Contact     : ${contact || '—'}`,
+    `Type client : ${customerType || '—'}`,
+    '',
+    `Véhicule demandé : ${vehicleName || '—'}`,
+    `Identifiant      : ${vehicleId || '—'}`,
+    `Dates demandées  : ${startDate || '—'} → ${endDate || '—'} (${days || 1} jour(s))`,
+    `Motif du refus   : ${reason || 'Véhicule indisponible'}`,
+    '',
+    'Le client a reçu le message :',
+    `"Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez choisir un autre véhicule ou nous contacter."`,
+    '',
+    '=> Un conseiller peut le rappeler pour proposer un véhicule équivalent.',
+    '',
+    '================================================',
+    'Ceci est un email automatique depuis la plateforme SOUTARAH GROUP.',
+  ].join('\n');
+
+  await transporter.sendMail({
+    from: senderFrom(),
+    to: environment.mail.managerEmails,
+    replyTo: environment.mail.managerEmails[0],
+    subject,
+    text: textBody,
+    headers: {
+      'X-Mailer': 'SOUTARAH GROUP Notification System',
+      'X-Priority': 'high',
+    },
+  });
+  return { sent: true };
+}
+
+module.exports = {
+  sendProductRequestEmail,
+  sendCartNotificationEmail,
+  sendQuoteRequestEmail,
+  sendNewAccountEmail,
+  sendReservationEmail,
+  sendVehicleUnavailableEmail,
+};

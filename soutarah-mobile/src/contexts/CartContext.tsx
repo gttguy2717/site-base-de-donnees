@@ -65,7 +65,7 @@ interface CartContextType {
 
 // ─── Message affiché au client quand le véhicule n'est pas disponible ────
 const VEHICULE_INDISPONIBLE =
-  "Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez tout choisir un autre véhicule ou nous contacter";
+  "Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez choisir un autre véhicule ou nous contacter.";
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -198,24 +198,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       // la flotte officielle et être libre sur la période. Un 404 signifie
       // « ce n'est pas disponible » — on refuse l'ajout au panier.
       try {
+        // Auth=true : le serveur reçoit le jeton et l'email envoyé aux
+        // administrateurs peut nommer le client qui a tenté la réservation.
         const availability = await api.get<{ available?: boolean; message?: string }>(
           `/vehicles/${vehicle.id}/availability?startAt=${encodeURIComponent(vehicle.startDate)}&endAt=${encodeURIComponent(vehicle.endDate)}`,
-          false,
+          true,
         );
         if (!availability?.available) {
           setLastError(availability?.message || VEHICULE_INDISPONIBLE);
           return false;
         }
       } catch (e: any) {
-        const isNotFound = e?.status === 404 || /indisponible/i.test(e?.message || '');
-        // 404 = hors catalogue / indisponible : refus définitif.
-        if (isNotFound) {
-          setLastError(VEHICULE_INDISPONIBLE);
-          return false;
-        }
-        // Panne réseau : on ne bloque pas l'utilisateur, la validation serveur
-        // du devis prendra le relais.
-        console.warn('Vérification de disponibilité impossible:', e?.message);
+        // ⛔ 404 (hors catalogue / déjà réservé) OU panne réseau : la
+        // disponibilité n'est PAS confirmée, donc on refuse l'ajout. Un véhicule
+        // non disponible ne doit jamais entrer dans le panier.
+        console.warn('Disponibilité non vérifiable, ajout bloqué :', e?.message);
+        setLastError(VEHICULE_INDISPONIBLE);
+        return false;
       }
 
       const driverFeePerDay = vehicle.withDriver ? 10000 : 0;

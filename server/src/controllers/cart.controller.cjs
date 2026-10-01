@@ -4,6 +4,60 @@ const { Op } = require('sequelize');
 const { sendQuoteRequestEmail, sendCartNotificationEmail } = require('../services/mail.service.cjs');
 const { vehiculeDisponible, MESSAGE_INDISPONIBLE } = require('../services/flotte-officielle.service.cjs');
 
+/**
+ * Alerte « véhicule indisponible » envoyée à l'administration.
+ *
+ * ⚠️ Volontairement NON bloquante et jamais attendue : le client a attendu
+ * trop longtemps le message parce que l'envoi SMTP bloquait la réponse HTTP.
+ * Ici la notification en base et l'email partent en tâche de fond ; si l'un des
+ * deux échoue, le client a déjà reçu sa réponse et le refus n'est jamais levé
+ * par une erreur d'envoi.
+ */
+function signalerVehiculeIndisponible({ userId, vehicle, vehicleId, vehicleName, startDate, endDate, days, withDriver, raison }) {
+  // Ne jamais laisser une alerte faire tomber la requête en cours.
+  setImmediate(async () => {
+    try {
+      const user = await User.findByPk(userId);
+      const client = await Client.findOne({ where: { utilisateur_id: userId } });
+      const clientName = [client?.prenom, client?.nom].filter(Boolean).join(' ').trim() || user?.email || 'Client';
+      const contact = `${user?.telephone || 'N/A'} / ${user?.email || 'N/A'}`;
+      const libelle = vehicleName || (vehicle ? `${vehicle.marque} ${vehicle.modele}` : 'Véhicule inconnu');
+
+      const admins = await User.findAll({
+        where: { role: { [Op.in]: ['ADMIN', 'MANAGER'] }, est_actif: true },
+        attributes: ['id'],
+      });
+
+      if (admins.length) {
+        await Notification.create({
+          utilisateur_destinataire_id: admins[0].id,
+          type: 'VEHICULE_INDISPONIBLE',
+          titre: 'Véhicule indisponible demandé',
+          message: `${clientName} a tenté d'ajouter « ${libelle} » au panier du ${startDate || '—'} au ${endDate || '—'} (${days || 1} j, ${withDriver ? 'avec chauffeur' : 'sans chauffeur'}) — ${raison}. Contact : ${contact}`,
+          lien: '/admin/clients',
+          est_lu: false,
+        });
+      }
+
+      const { sendVehicleUnavailableEmail } = require('../services/mail.service.cjs');
+      const mail = await sendVehicleUnavailableEmail({
+        clientName,
+        contact,
+        customerType: client?.type_client || 'N/A',
+        vehicleName: libelle,
+        vehicleId: vehicle?.id || vehicleId || null,
+        startDate,
+        endDate,
+        days,
+        reason: raison,
+      });
+      console.log(`🚫 Véhicule indisponible demandé par ${clientName} (${libelle}) — email : ${mail.sent ? 'envoyé' : 'non envoyé'}`);
+    } catch (erreur) {
+      console.error('Alerte véhicule indisponible non aboutie :', erreur.message);
+    }
+  });
+}
+
 function makeRef() {
   return `DMD-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 }
@@ -95,6 +149,23 @@ async function notifyVehicleAdded(request, response, next) {
     // panier avec un message explicite (le client voit alors la même phrase que
     // sur le site et dans l'app).
     if (!vehicle || !vehiculeDisponible(vehicle)) {
+      // Alerte commerciale : la demande existe, l'admin doit la voir et la
+      // reprendre. Tout est déclenché SANS ATTENDRE : la réponse au client part
+      // immédiatement, l'email part en tâche de fond (SMTP peut être lent).
+      signalerVehiculeIndisponible({
+        userId,
+        vehicle,
+        vehicleId,
+        vehicleName,
+        startDate,
+        endDate,
+        days,
+        withDriver,
+        raison: vehicle
+          ? (vehicle.statut !== 'ACTIVE' ? 'Véhicule désactivé' : 'Véhicule retiré du catalogue')
+          : 'Véhicule introuvable',
+      });
+
       return response.status(404).json({
         error: {
           message: MESSAGE_INDISPONIBLE,
@@ -165,7 +236,10 @@ async function notifyVehicleAdded(request, response, next) {
       const lineTotal = unitPrice != null ? unitPrice * duration : null;
       const cartTotal = 0; // Le panier de location est géré côté localStorage — estimé avec la ligne
       
-      const mail = await sendCartNotificationEmail({
+      // ⚠️ Envoi en tâche de fond : on n'attend PAS la connexion SMTP. Le client
+      // a attendu plusieurs secondes parce que la réponse HTTP était bloquée
+      // derrière l'envoi d'email.
+      sendCartNotificationEmail({
         clientName,
         contact,
         customerType: client?.type_client || 'N/A',
@@ -180,10 +254,11 @@ async function notifyVehicleAdded(request, response, next) {
         startDate,
         endDate,
         withDriver,
-      });
-      console.log(`✅ Email location ajoutée envoyé à ${mail.sent ? 'managers' : 'N/A'}`);
+      })
+        .then((mail) => console.log(`✅ Email location ajoutée envoyé à ${mail.sent ? 'managers' : 'N/A'}`))
+        .catch((mailError) => console.error('❌ Erreur envoi email location ajoutée:', mailError.message));
     } catch (mailError) {
-      console.error('❌ Erreur envoi email location ajoutée:', mailError.message);
+      console.error('❌ Préparation email location ajoutée:', mailError.message);
     }
 
     response.status(201).json({ ok: true, notified: admins.length });

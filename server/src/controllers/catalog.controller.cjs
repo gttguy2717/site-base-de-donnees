@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const { Client, Company, Category, Product, Vehicle, Reservation } = require('../models/index.cjs');
 const { getProductPrice, getVehicleDailyPrice } = require('../services/pricing.service.cjs');
 const { estDansLaFlotte, MESSAGE_INDISPONIBLE } = require('../services/flotte-officielle.service.cjs');
+const { signalerVehiculeIndisponible } = require('../services/alerte-vehicule.service.cjs');
 
 async function resolveCustomerType(utilisateur_id) {
   if (!utilisateur_id) return null;
@@ -76,12 +77,51 @@ async function getVehicleAvailability(request, response, next) {
       throw error;
     }
     const vehicle = await Vehicle.findByPk(request.params.vehicleId);
-    // Hors flotte officielle = indisponible, même si la fiche existe en base.
+    const startLabel = typeof startAt === 'string' ? startAt.slice(0, 10) : null;
+    const endLabel = typeof endAt === 'string' ? endAt.slice(0, 10) : null;
+    const duree = (startLabel && endLabel)
+      ? Math.max(1, Math.round((new Date(endAt) - new Date(startAt)) / 86400000) + 1)
+      : 1;
+
+    // Hors flotte officielle, désactivé, ou réservé : le client reçoit le
+    // message « pas disponible ». C'est ICI que l'administrateur doit être
+    // prévenu : c'est l'appel que le frontend fait réellement au clic sur
+    // « Réserver », et il est bloquant côté client. L'alerte part donc
+    // d'ici, en tâche de fond, sans ralentir la réponse.
+    const user = request.auth?.user || null;
     if (!vehicle || !estDansLaFlotte(vehicle) || vehicle.statut !== 'ACTIVE' || !vehicle.disponibilite) {
+      signalerVehiculeIndisponible({
+        userId: user?.id || null,
+        vehicle,
+        vehicleId: request.params.vehicleId,
+        vehicleName: vehicle ? `${vehicle.marque} ${vehicle.modele}` : null,
+        startDate: startLabel,
+        endDate: endLabel,
+        days: duree,
+        raison: !vehicle
+          ? 'Véhicule introuvable'
+          : (vehicle.statut !== 'ACTIVE' ? 'Véhicule désactivé' : 'Véhicule retiré du catalogue'),
+      });
       return response.status(404).json({ available: false, reason: 'HORS_CATALOGUE', message: MESSAGE_INDISPONIBLE });
     }
+
     const overlappingReservation = await Reservation.findOne({ where: { vehicule_id: vehicle.id, statut: { [Op.in]: ['PENDING', 'CONFIRMED'] }, commence_le: { [Op.lt]: new Date(endAt) }, termine_le: { [Op.gt]: new Date(startAt) } } });
-    response.json({ available: !overlappingReservation });
+
+    // Déjà réservé sur la période : même alerte, même message.
+    if (overlappingReservation) {
+      signalerVehiculeIndisponible({
+        userId: user?.id || null,
+        vehicle,
+        vehicleName: `${vehicle.marque} ${vehicle.modele}`,
+        startDate: startLabel,
+        endDate: endLabel,
+        days: duree,
+        raison: 'Véhicule déjà réservé sur cette période',
+      });
+      return response.status(404).json({ available: false, reason: 'DEJA_RESERVE', message: MESSAGE_INDISPONIBLE });
+    }
+
+    response.json({ available: true });
   } catch (error) { next(error); }
 }
 

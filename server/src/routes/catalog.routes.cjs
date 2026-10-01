@@ -9,6 +9,9 @@ const router = Router();
 router.get('/categories', listCategories);
 router.get('/products', optionalAuthenticate, [query('categoryId').optional().isUUID(), query('search').optional().isString().trim().isLength({ max: 120 }), validateRequest], listProducts);
 router.get('/vehicles', optionalAuthenticate, listVehicles);
-router.get('/vehicles/:vehicleId/availability', [param('vehicleId').isUUID(), query('startAt').isISO8601(), query('endAt').isISO8601(), validateRequest], getVehicleAvailability);
+// optionalAuthenticate : la route reste publique (visiteur non connecté), mais
+// si un jeton est présent on connaît le client et l'alerte « véhicule
+// indisponible » peut le nommer dans l'email à l'administrateur.
+router.get('/vehicles/:vehicleId/availability', optionalAuthenticate, [param('vehicleId').isUUID(), query('startAt').isISO8601(), query('endAt').isISO8601(), validateRequest], getVehicleAvailability);
 
 module.exports = router;

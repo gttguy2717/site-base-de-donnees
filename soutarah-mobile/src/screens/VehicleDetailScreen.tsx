@@ -154,7 +154,7 @@ export default function VehicleDetailScreen({ route, navigation }: { route: any;
       Alert.alert(
         'Véhicule indisponible',
         lastError ||
-          "Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez tout choisir un autre véhicule ou nous contacter",
+          "Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez choisir un autre véhicule ou nous contacter.",
         [{ text: 'OK' }]
       );
     }
