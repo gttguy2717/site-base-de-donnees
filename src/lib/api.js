@@ -65,6 +65,13 @@ export async function apiRequest(path, { token, retries = MAX_RETRIES, ...option
     }
   }
 
-  if (!response.ok) throw new Error(payload.error?.message || payload.error || payload.message || 'Une erreur est survenue.');
+  if (!response.ok) {
+    // Le code HTTP est indispensable côté UI : il permet de distinguer un
+    // véhicule retiré du catalogue (404) d'une panne réseau, que l'on ne
+    // traite pas de la même façon dans le panier et les modales de réservation.
+    const error = new Error(payload.error?.message || payload.error || payload.message || 'Une erreur est survenue.');
+    error.statusCode = response.status;
+    throw error;
+  }
   return payload;
 }

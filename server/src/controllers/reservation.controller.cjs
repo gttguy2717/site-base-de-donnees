@@ -22,6 +22,7 @@ const {
 } = require('../models/index.cjs');
 const { getVehicleDailyPrice } = require('../services/pricing.service.cjs');
 const { sendCartNotificationEmail, sendReservationEmail } = require('../services/mail.service.cjs');
+const { estDansLaFlotte, vehiculeDisponible, MESSAGE_INDISPONIBLE } = require('../services/flotte-officielle.service.cjs');
 
 /**
  * Vérifie si un véhicule est disponible sur une période donnée.
@@ -36,8 +37,9 @@ async function getVehicleAvailability(request, response, next) {
       throw error;
     }
     const vehicle = await Vehicle.findByPk(request.params.vehicleId);
-    if (!vehicle || vehicle.statut !== 'ACTIVE' || !vehicle.disponibilite) {
-      return response.status(404).json({ available: false, message: 'Véhicule indisponible.' });
+    // Hors flotte officielle ou désactivé : le client doit lire « pas disponible ».
+    if (!vehicle || !vehiculeDisponible(vehicle)) {
+      return response.status(404).json({ available: false, reason: 'HORS_CATALOGUE', message: MESSAGE_INDISPONIBLE });
     }
     const overlappingReservation = await Reservation.findOne({
       where: {
@@ -76,8 +78,8 @@ async function createReservation(request, response, next) {
     }
 
     const vehicle = await Vehicle.findByPk(vehiculeId, { transaction });
-    if (!vehicle || vehicle.statut !== 'ACTIVE' || !vehicle.disponibilite) {
-      const error = new Error('Véhicule indisponible.');
+    if (!vehicle || !vehiculeDisponible(vehicle)) {
+      const error = new Error(MESSAGE_INDISPONIBLE);
       error.statusCode = 404;
       throw error;
     }
@@ -204,44 +206,53 @@ async function notifyVehicleAdded(request, response, next) {
     const userId = request.auth.user.id;
     const { vehicleId, vehicleName, startDate, endDate, days, withDriver } = request.body || {};
 
-    // Vérifier si le véhicule est déjà réservé sur la période demandée
-    if ((vehicleId || vehicleName) && startDate && endDate) {
-      // Priorité à l'ID réel du véhicule envoyé par le frontend
-      const vehicle = vehicleId
+    // Résolution du véhicule demandé. Priorité à l'ID réel envoyé par le
+    // frontend, sinon recherche par nom (l'app mobile envoie le nom).
+    const vehicle = (vehicleId || vehicleName)
+      ? (vehicleId
         ? await Vehicle.findByPk(vehicleId)
         : await Vehicle.findOne({
-            where: {
-              [Op.or]: [
-                { marque: vehicleName },
-                { modele: vehicleName },
-                { [Op.and]: [{ marque: { [Op.like]: `%${vehicleName.split(' ')[0] || ''}%` } }, { modele: { [Op.like]: `%${vehicleName.split(' ')[1] || ''}%` } }] },
-              ],
-            },
-          });
-
-      if (vehicle) {
-        const requestedStart = new Date(startDate);
-        const requestedEnd = new Date(endDate);
-        requestedEnd.setDate(requestedEnd.getDate() + 1); // Inclure la fin de journée
-
-        const conflict = await Reservation.findOne({
           where: {
-            vehicule_id: vehicle.id,
-            statut: { [Op.in]: ['PENDING', 'CONFIRMED'] },
-            [Op.and]: [
-              { commence_le: { [Op.lt]: requestedEnd } },
-              { termine_le: { [Op.gt]: requestedStart } },
+            [Op.or]: [
+              { marque: vehicleName },
+              { modele: vehicleName },
+              { [Op.and]: [{ marque: { [Op.like]: `%${(vehicleName || '').split(' ')[0] || ''}%` } }, { modele: { [Op.like]: `%${(vehicleName || '').split(' ')[1] || ''}%` } }] },
             ],
           },
-        });
+        }))
+      : null;
 
-        if (conflict) {
-          return response.status(409).json({
-            error: {
-              message: 'Ce véhicule est déjà réservé sur cette période. Choisissez une autre période ou un autre véhicule.',
-            },
-          });
-        }
+    // Véhicule inconnu OU hors flotte officielle : l'ajout au panier est refusé
+    // avec le message affiché au client (« ce n'est pas disponible »).
+    if (!vehicle || !vehiculeDisponible(vehicle)) {
+      return response.status(404).json({
+        error: { message: MESSAGE_INDISPONIBLE, code: 'VEHICULE_INDISPONIBLE' },
+      });
+    }
+
+    // Vérifier si le véhicule est déjà réservé sur la période demandée
+    if (startDate && endDate) {
+      const requestedStart = new Date(startDate);
+      const requestedEnd = new Date(endDate);
+      requestedEnd.setDate(requestedEnd.getDate() + 1); // Inclure la fin de journée
+
+      const conflict = await Reservation.findOne({
+        where: {
+          vehicule_id: vehicle.id,
+          statut: { [Op.in]: ['PENDING', 'CONFIRMED'] },
+          [Op.and]: [
+            { commence_le: { [Op.lt]: requestedEnd } },
+            { termine_le: { [Op.gt]: requestedStart } },
+          ],
+        },
+      });
+
+      if (conflict) {
+        return response.status(409).json({
+          error: {
+            message: 'Ce véhicule est déjà réservé sur cette période. Choisissez une autre période ou un autre véhicule.',
+          },
+        });
       }
     }
 
@@ -275,7 +286,6 @@ async function notifyVehicleAdded(request, response, next) {
     // Envoyer un email de notification admin
     try {
       const company = client ? await Company.findOne({ where: { client_id: client.id } }) : null;
-      const vehicle = vehicleName ? await Vehicle.findOne({ where: { [Op.or]: [{ marque: vehicleName }, { modele: vehicleName }, { marque: { [Op.like]: `%${vehicleName.split(' ')[0] || ''}%` } }] } }) : null;
       const unitPrice = vehicle && client ? await getVehicleDailyPrice(vehicle, client.type_client, company?.id || null) : null;
       const duration = Number(days || 1);
       const lineTotal = unitPrice != null ? unitPrice * duration : null;

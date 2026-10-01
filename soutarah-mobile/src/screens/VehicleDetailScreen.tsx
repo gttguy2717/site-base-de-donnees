@@ -73,7 +73,7 @@ const getDynamicPrice = (vehicle: Vehicle, dest: string): number => {
 export default function VehicleDetailScreen({ route, navigation }: { route: any; navigation: any }) {
   const insets = useSafeAreaInsets();
   const { vehicleId } = route.params;
-  const { cartCount, addVehicleToCart } = useCart();
+  const { cartCount, addVehicleToCart, lastError } = useCart();
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -93,7 +93,9 @@ export default function VehicleDetailScreen({ route, navigation }: { route: any;
     return `${day}/${month}/${year}`;
   };
 
-  const computedDays = Math.max(1, Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
+  // Comptage inclusif, identique au site web et au serveur :
+  // du 23 au 24 = 2 jours (prise en charge + retour).
+  const computedDays = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1);
 
   const loadVehicle = useCallback(async () => {
     try {
@@ -146,6 +148,14 @@ export default function VehicleDetailScreen({ route, navigation }: { route: any;
           { text: 'Continuer', style: 'cancel' },
           { text: 'Passer commande', onPress: () => navigation.navigate('PasserCommande') },
         ]
+      );
+    } else {
+      // Ajout refusé : véhicule retiré du catalogue ou déjà réservé sur la période.
+      Alert.alert(
+        'Véhicule indisponible',
+        lastError ||
+          "Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez tout choisir un autre véhicule ou nous contacter",
+        [{ text: 'OK' }]
       );
     }
   };
@@ -283,8 +293,10 @@ export default function VehicleDetailScreen({ route, navigation }: { route: any;
                     setShowStartPicker(false);
                     if (selected) {
                       setStartDate(selected);
-                      if (selected >= endDate) {
-                        setEndDate(new Date(selected.getTime() + 86400000));
+                      // Comme sur le site, une location d'une seule journée reste
+                      // possible : la date de fin peut être égale à la date de début.
+                      if (selected > endDate) {
+                        setEndDate(selected);
                       }
                     }
                   }}
@@ -303,7 +315,9 @@ export default function VehicleDetailScreen({ route, navigation }: { route: any;
                   value={endDate}
                   mode="date"
                   display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  minimumDate={new Date(startDate.getTime() + 86400000)}
+                  // Comme sur le site, la date de fin peut être égale à la date
+                  // de début (location d'une seule journée = 1 jour facturé).
+                  minimumDate={startDate}
                   onChange={(event, selected) => {
                     setShowEndPicker(false);
                     if (selected) setEndDate(selected);

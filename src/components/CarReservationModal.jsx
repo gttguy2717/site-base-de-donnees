@@ -81,7 +81,8 @@ export default function CarReservationModal({ vehicle, onClose, navigateTo }) {
     const end = new Date(formData.endDate);
     const diffTime = end - start;
     if (diffTime <= 0) return 1;
-    return Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+    // Comptage inclusif : du 23 au 24 = 2 jours (prise en charge + retour).
+    return Math.max(1, Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1);
   };
 
   const days = calculateDays();
@@ -94,21 +95,23 @@ export default function CarReservationModal({ vehicle, onClose, navigateTo }) {
     const totalPrice = getVehicleRentalTotal(vehicle, { withDriver: formData.withDriver, zoneId: formData.zoneId, days });
 
     const vehicleUnavailableMessage =
-      '🚗 Ce véhicule est déjà réservé sur la période sélectionnée.\n' +
-      'Vous pouvez :\n' +
-      '• Choisir une autre période (modifier les dates de début et de fin)\n' +
-      '• Sélectionner un autre véhicule\n' +
-      '• Contacter notre équipe pour une solution alternative.';
+      "🚗 Ce véhicule n'est pas disponible à la location pour le moment.\n" +
+      'Vous pouvez tout choisir un autre véhicule ou nous contacter.';
 
     try {
       // Étape 1 : Vérifier la disponibilité du véhicule AVANT d'ajouter au panier
       const availabilityResponse = await apiRequest(`/vehicles/${vehicle.id}/availability?startAt=${encodeURIComponent(formData.startDate)}&endAt=${encodeURIComponent(formData.endDate)}`, { token, retries: 0 });
       if (!availabilityResponse.available) {
-        setAvailabilityError(vehicleUnavailableMessage);
+        setAvailabilityError(availabilityResponse.message || vehicleUnavailableMessage);
         return;
       }
     } catch (availError) {
-      // Si l'endpoint de disponibilité échoue, on laisse la validation notify-vehicle s'en charger
+      // 404 = véhicule retiré du catalogue ou déjà réservé : on bloque l'ajout.
+      if (availError?.statusCode === 404 || /indisponible/i.test(availError?.message || '')) {
+        setAvailabilityError(vehicleUnavailableMessage);
+        return;
+      }
+      // Réseau / serveur : on laisse la validation notify-vehicle s'en charger
       console.warn('Endpoint disponibilité non joignable, vérification via notify-vehicle:', availError.message);
     }
 

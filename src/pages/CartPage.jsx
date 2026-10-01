@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Car, CheckCircle2, Minus, PackageCheck, Plus, ShoppingCart, Trash2 } from 'lucide-react';
+import { Car, CheckCircle2, Minus, PackageCheck, Plus, Search, ShoppingCart, Trash2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { apiRequest } from '../lib/api';
@@ -26,6 +26,53 @@ function customerPhone(user, client) {
     || client?.telephone
     || client?.phone
     || '';
+}
+
+/**
+ * Champ de quantité éditable : l'utilisateur peut TAPER le nombre directement
+ * (en plus des boutons − / +). Le commit se fait au blur ou sur Entrée pour
+ * ne pas re-render / appeler l'API à chaque frappe.
+ */
+function QuantityInput({ value, onCommit, min = 1, ariaLabel = 'Quantité' }) {
+  const qty = Number(value) || min;
+  const [draft, setDraft] = useState(String(qty));
+
+  // Resynchronise le brouillon quand la quantité change (boutons − / +).
+  useEffect(() => {
+    setDraft(String(qty));
+  }, [qty]);
+
+  const commit = () => {
+    const parsed = parseInt(draft, 10);
+    if (Number.isNaN(parsed)) {
+      setDraft(String(qty));
+      return;
+    }
+    const next = Math.max(min, parsed);
+    setDraft(String(next));
+    if (next !== qty) onCommit(next);
+  };
+
+  return (
+    <input
+      type="number"
+      inputMode="numeric"
+      min={min}
+      value={draft}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          commit();
+          e.currentTarget.blur();
+        }
+      }}
+      onClick={(e) => e.currentTarget.select()}
+      aria-label={ariaLabel}
+      className="w-10 rounded-md border border-transparent bg-transparent text-center text-sm font-extrabold text-[#172019] [appearance:textfield] focus:border-primary focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+    />
+  );
 }
 
 /**
@@ -59,7 +106,41 @@ export default function CartPage({ navigateTo }) {
   const [notice, setNotice] = useState('');
   const [busyItem, setBusyItem] = useState(null);
   const [lastQuoteRef, setLastQuoteRef] = useState('');
+  const [negoceSent, setNegoceSent] = useState(''); // réf. si demande négoce envoyée
+  const [sendingNegoce, setSendingNegoce] = useState(false);
+  const [devRef, setDevRef] = useState('');
+  const [devBusy, setDevBusy] = useState(false);
+  const [devError, setDevError] = useState('');
   const validatingRef = useRef(false);
+  // Ids des locations du panier devenues indisponibles (véhicule retiré du
+  // catalogue ou déjà réservé). Le client doit être prévenu avant de valider.
+  const [unavailableVehicleIds, setUnavailableVehicleIds] = useState([]);
+
+  /**
+   * Vérifie chaque location du panier contre l'API de disponibilité.
+   * Un 404 signifie « ce n'est pas disponible » : la ligne est signalée et la
+   * validation du panier est bloquée tant qu'elle est présente.
+   */
+  const checkVehicleAvailability = useCallback(async (items) => {
+    const checks = items
+      .filter((item) => item?.vehicleId && item?.startDate && item?.endDate)
+      .map(async (item) => {
+        try {
+          const res = await apiRequest(
+            `/vehicles/${item.vehicleId}/availability?startAt=${encodeURIComponent(item.startDate)}&endAt=${encodeURIComponent(item.endDate)}`,
+            { token, retries: 0 },
+          );
+          if (res?.available === false) return item.vehicleId;
+        } catch (e) {
+          // 404 = hors catalogue ou indisponible. Réseau/serveur : on ne bloque pas.
+          if (e?.statusCode === 404) return item.vehicleId;
+          console.warn('[panier] disponibilité non vérifiable:', e?.message);
+        }
+        return null;
+      });
+    const results = await Promise.all(checks);
+    setUnavailableVehicleIds(results.filter(Boolean));
+  }, [token]);
 
   const loadVehicleCart = useCallback(() => {
     try {
@@ -112,6 +193,19 @@ export default function CartPage({ navigateTo }) {
     window.addEventListener('soutarah-cart-updated', handleCartUpdated);
     return () => window.removeEventListener('soutarah-cart-updated', handleCartUpdated);
   }, [loadCart, loadVehicleCart, loadNegoceCart]);
+
+  // Contrôle de disponibilité des locations à chaque changement du panier :
+  // un véhicule retiré du catalogue ou déjà réservé doit être signalé.
+  useEffect(() => {
+    if (!vehicleCartItems.length) {
+      setUnavailableVehicleIds([]);
+      return undefined;
+    }
+    checkVehicleAvailability(vehicleCartItems).catch(() => {});
+    return undefined;
+  }, [vehicleCartItems, checkVehicleAvailability]);
+
+  const hasUnavailableVehicles = unavailableVehicleIds.length > 0;
 
   const changeQuantity = async (item, quantity) => {
     setBusyItem(item.id);
@@ -216,11 +310,21 @@ export default function CartPage({ navigateTo }) {
     itemCount: totalItemCount,
   };
 
-  const validateCart = async () => {
+  // mode 'checkout' : panier avec locations → devis + page « Passer commande ».
+  // mode 'send' : panier négoce seul → création de la demande (notifications
+  // admin déclenchées côté serveur) puis écran « demande transmise », sans prix.
+  const validateCart = async (mode = 'checkout') => {
     if (!totalItemCount) return;
+    // Garde-fou : un véhicule devenu indisponible (retiré du catalogue ou déjà
+    // réservé) interdit de valider le panier tant qu'il est présent.
+    if (hasUnavailableVehicles) {
+      setError("Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez tout choisir un autre véhicule ou nous contacter");
+      return;
+    }
     // Garde anti double-clic : évite de créer 2 devis et de télécharger 2 fois.
     if (validatingRef.current) return;
     validatingRef.current = true;
+    if (mode === 'send') setSendingNegoce(true);
     try {
 
     // La création du devis en base exige un compte : on redirige l'invité vers
@@ -265,7 +369,7 @@ export default function CartPage({ navigateTo }) {
         service: serviceLabel,
         title: titleLabel,
         name: customerName(user, client),
-        email: user?.email || 'client@soutarah.ci',
+        email: user?.email || 'infos@soutarahgroup.com',
         phone: customerPhone(user, client) || '0700000000',
         location: client?.adresse || client?.address || 'Abidjan',
         description: description.slice(0, 3000) || 'Devis panier client',
@@ -286,12 +390,29 @@ export default function CartPage({ navigateTo }) {
     }
 
     // 3. Générer et télécharger le PDF avec le snapshot + la référence serveur
-    try {
+    // Pas de génération de devis PDF côté client pour l'envoi négoce :
+    // l'admin reçoit simplement la notification de la commande.
+    if (mode !== 'send') try {
       await generateCartQuotePdf(cartSnapshot, user, client, serverRef, quoteTotals);
       setLastQuoteRef(serverRef);
     } catch (pdfError) {
       console.error('Erreur génération PDF', pdfError);
       setError(`Erreur lors de la génération du PDF : ${pdfError?.message || 'erreur inconnue'}. Votre commande est bien enregistrée (${serverRef}) ; vous pourrez retélécharger le devis depuis « Mes Devis ».`);
+    }
+
+    if (mode === 'send') {
+      // Demande envoyée : on vide le panier négoce (la demande + ses notifications
+      // sont enregistrées côté serveur) puis on affiche la confirmation.
+      try {
+        const userId = user?.id || user?.userId || 'guest';
+        localStorage.removeItem(`soutarah_negoce_cart_${userId}`);
+        if (token) await apiRequest('/cart', { token, method: 'DELETE' }).catch(() => {});
+      } catch (cartError) {
+        console.warn('[envoi] Vidage panier négoce:', cartError.message);
+      }
+      setNegoceSent(serverRef);
+      window.dispatchEvent(new Event('soutarah-cart-updated'));
+      return;
     }
 
     // 4. NE PAS vider le panier : les articles restent si le client revient sans payer
@@ -319,6 +440,7 @@ export default function CartPage({ navigateTo }) {
     if (navigateTo) navigateTo('commande');
     } finally {
       validatingRef.current = false;
+      setSendingNegoce(false);
     }
   };
 
@@ -326,6 +448,89 @@ export default function CartPage({ navigateTo }) {
     if (!totalItemCount || !lastQuoteRef) return;
     const reference = await generateCartQuotePdf(combinedCart, user, client, lastQuoteRef, quoteTotals);
     setLastQuoteRef(reference);
+  };
+
+  // Onglet « Rechercher un devis » du panier : retrouver un devis téléchargeable
+  // et ouvrir « Passer commande ». Pour une location, le véhicule doit être disponible.
+  const searchDevis = async (event) => {
+    event.preventDefault();
+    const ref = devRef.trim();
+    if (!ref) return;
+    setDevError('');
+    if (!token) {
+      setDevError('Connectez-vous avec le compte utilisé lors de votre demande de devis.');
+      return;
+    }
+    setDevBusy(true);
+    try {
+      const res = await apiRequest(`/quote-requests/lookup?reference=${encodeURIComponent(ref)}`, { token });
+      const q = res.quoteRequest || {};
+      const items = Array.isArray(q.snapshot) ? q.snapshot : [];
+
+      // Location : le véhicule doit être encore disponible sur les dates du devis
+      const vehicleItems = items.filter((it) => it && it.type === 'vehicle_rental' && it.vehicleId && it.startDate && it.endDate);
+      for (const it of vehicleItems) {
+        const vehicleLabel = it.vehicle?.name || it.vehicleName || 'Véhicule';
+        const fmtDate = (d) => String(d).split('-').reverse().join('/');
+        try {
+          const avail = await apiRequest(
+            `/vehicles/${it.vehicleId}/availability?startAt=${encodeURIComponent(it.startDate)}&endAt=${encodeURIComponent(it.endDate)}`,
+            { token, retries: 0 },
+          );
+          if (avail && avail.available === false) {
+            setDevError(`Le véhicule « ${vehicleLabel} » n'est plus disponible du ${fmtDate(it.startDate)} au ${fmtDate(it.endDate)}. Choisissez une autre période ou un autre véhicule.`);
+            return;
+          }
+        } catch (availError) {
+          if (availError?.statusCode === 404) {
+            setDevError(`Le véhicule « ${vehicleLabel} » n'est plus disponible du ${fmtDate(it.startDate)} au ${fmtDate(it.endDate)}. Choisissez une autre période ou un autre véhicule.`);
+            return;
+          }
+          // Réseau / serveur : on ne bloque pas (comme la modale de réservation)
+          console.warn('[recherche devis] disponibilité non vérifiable:', availError.message);
+        }
+      }
+
+      // Totaux officiels recalculés depuis le snapshot du devis
+      let ht = 0;
+      let vehicleHT = 0;
+      items.forEach((it) => {
+        const unit = Number(it.unitPrice ?? it.prix_unitaire ?? 0) || 0;
+        const qty = Number(it.quantity ?? it.quantite ?? 1) || 1;
+        const days = (it.startDate && it.endDate)
+          ? Math.max(1, Math.round((new Date(it.endDate) - new Date(it.startDate)) / 86400000) + 1)
+          : (Number(it.days ?? it.duration ?? 1) || 1);
+        const lineTotal = (Number(it.totalPrice ?? it.total ?? it.prix_total ?? 0) || 0)
+          || (it.type === 'vehicle_rental' ? unit * days : unit * qty);
+        ht += lineTotal;
+        if (it.type === 'vehicle_rental') vehicleHT += lineTotal;
+      });
+      if (ht === 0 && Number(q.budget) > 0) ht = Math.round(Number(q.budget));
+      const totals = computeQuoteTotals(ht, vehicleHT);
+      const orderData = {
+        reference: q.reference,
+        name: customerName(user, client) || q.nom || '',
+        phone: customerPhone(user, client) || q.telephone || '',
+        ht: totals.ht,
+        tva: totals.tva,
+        tdt: totals.tdt,
+        carburant: totals.carburant,
+        peage: totals.peage,
+        ttc: totals.ttc,
+        itemCount: items.length || (ht > 0 ? 1 : 0),
+        summaryTitle: q.titre || 'Devis SOUTARAH',
+      };
+      try {
+        window.localStorage.setItem('soutarah_last_order', JSON.stringify(orderData));
+      } catch (storageError) {
+        console.error('Enregistrement commande', storageError);
+      }
+      if (navigateTo) navigateTo('commande');
+    } catch (err) {
+      setDevError(err?.message || 'Aucun devis trouvé avec cette référence.');
+    } finally {
+      setDevBusy(false);
+    }
   };
 
   const footerNavigation = (target) => navigateTo(target, target === 'home' ? { section: 'home' } : {});
@@ -358,7 +563,56 @@ export default function CartPage({ navigateTo }) {
           {notice && <div className="mt-6 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800"><CheckCircle2 size={19} />{notice}</div>}
           {error && <div className="mt-6 rounded-2xl bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</div>}
 
-          {totalItemCount === 0 ? (
+          {/* Onglet de recherche : retrouver un devis par référence (PDF téléchargeable) */}
+          <div className="mt-6 rounded-[28px] border border-primary/15 bg-white p-5 shadow-sm sm:p-6">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"><Search size={20} /></span>
+              <div className="min-w-0">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Rechercher un devis</p>
+                <p className="text-xs leading-5 text-gray-500">
+                  Entrez la référence de votre devis PDF (ex. 09-26/LOC/164 ou DMD-2026-1234) pour reprendre votre commande.
+                </p>
+              </div>
+            </div>
+            <form onSubmit={searchDevis} className="mt-4 flex flex-col gap-3 sm:flex-row">
+              <input
+                value={devRef}
+                onChange={(e) => setDevRef(e.target.value)}
+                placeholder="09-26/LOC/164 ou DMD-2026-1234"
+                className="flex-1 rounded-xl border border-gray-200 bg-[#f8faf7] px-4 py-2.5 text-sm font-medium uppercase tracking-wide text-gray-800 outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+              />
+              <button
+                type="submit"
+                disabled={devBusy || !devRef.trim()}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-primary/20 transition hover:bg-[#1b4c00] disabled:bg-gray-300"
+              >
+                <Search size={16} /> {devBusy ? 'Recherche…' : 'Rechercher'}
+              </button>
+            </form>
+            {devError && (
+              <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700">{devError}</p>
+            )}
+          </div>
+
+          {negoceSent ? (
+            /* ── CONFIRMATION ENVOI NÉGOCE (sans prix) ── */
+            <div className="mt-8 rounded-[28px] border border-emerald-200 bg-white px-6 py-14 text-center shadow-sm">
+              <CheckCircle2 className="mx-auto text-primary" size={48} />
+              <h2 className="mt-5 font-display text-2xl font-extrabold text-[#173d23]">Votre demande a bien été transmise !</h2>
+              <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-gray-600">
+                Merci ! Votre demande est bien partie : nos équipes vous recontacteront très vite avec une offre sur mesure.
+                Un accusé de réception vient de vous être envoyé par e-mail.
+              </p>
+              <p className="mt-4 inline-block rounded-full bg-primary/10 px-4 py-2 text-xs font-black uppercase tracking-wider text-primary">
+                Référence {negoceSent}
+              </p>
+              <div className="mt-7 flex flex-wrap justify-center gap-3">
+                <button onClick={() => navigateTo('service', { slug: 'negoce' })} className="rounded-full bg-primary px-6 py-3 text-sm font-bold text-white transition hover:bg-[#1b4c00]">
+                  Retour au catalogue
+                </button>
+              </div>
+            </div>
+          ) : totalItemCount === 0 ? (
             <div className="mt-8 rounded-[28px] border border-dashed border-primary/20 bg-white px-6 py-16 text-center shadow-sm">
               <ShoppingCart className="mx-auto text-primary" size={42} />
               <h2 className="mt-5 font-display text-2xl font-extrabold">Votre panier est vide</h2>
@@ -383,8 +637,18 @@ export default function CartPage({ navigateTo }) {
                     </div>
 
                     <div className="divide-y divide-gray-100">
-                      {vehicleCartItems.map((item) => (
-                        <article key={item.id} className="p-5 sm:p-6 transition-colors hover:bg-gray-50/50">
+                      {vehicleCartItems.map((item) => {
+                        const indisponible = Boolean(item.vehicleId) && unavailableVehicleIds.includes(item.vehicleId);
+                        return (
+                        <article
+                          key={item.id}
+                          className={`p-5 sm:p-6 transition-colors ${indisponible ? 'bg-red-50/60' : 'hover:bg-gray-50/50'}`}
+                        >
+                          {indisponible && (
+                            <p className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700">
+                              ⚠️ Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez tout choisir un autre véhicule ou nous contacter.
+                            </p>
+                          )}
                           <div className="grid gap-4 sm:grid-cols-[100px_1fr_auto] sm:items-center">
                             <div className="relative h-20 w-full overflow-hidden rounded-2xl bg-[#edf1ec] sm:h-20 sm:w-24 shrink-0">
                               <img
@@ -430,7 +694,8 @@ export default function CartPage({ navigateTo }) {
                             </div>
                           </div>
                         </article>
-                      ))}
+                        );
+                      })}
                     </div>
                   </section>
                 )}
@@ -459,7 +724,7 @@ export default function CartPage({ navigateTo }) {
                               <div className="min-w-0">
                                 <p className="text-xs font-bold uppercase tracking-wider text-primary">{item.category || 'Négoce'}</p>
                                 <h3 className="mt-1 truncate font-display text-lg font-extrabold">{item.name}</h3>
-                                <p className="mt-1 text-sm text-gray-500">{item.ref ? `Réf. ${item.ref} · ` : ''}{numOrZero(item.unitPrice ?? item.price) > 0 ? currency(numOrZero(item.unitPrice ?? item.price)) + ' / unité' : 'Prix sur devis'}</p>
+                                <p className="mt-1 text-sm text-gray-500">{item.ref ? `Réf. ${item.ref}` : ''}{numOrZero(item.unitPrice ?? item.price) > 0 ? `${item.ref ? ' · ' : ''}${currency(numOrZero(item.unitPrice ?? item.price))} / unité` : ''}</p>
                               </div>
                             </div>
 
@@ -467,7 +732,11 @@ export default function CartPage({ navigateTo }) {
                               <span className="text-xs font-bold uppercase tracking-wider text-gray-400 md:hidden">Quantité</span>
                               <div className="flex items-center gap-2">
                                 <button onClick={() => updateNegoceQuantity(item.id, Math.max(1, Number(item.quantity || 1) - 1))} className="grid h-8 w-8 place-items-center rounded-full border border-gray-200 bg-white text-gray-600 transition hover:border-primary hover:text-primary"><Minus size={14} /></button>
-                                <span className="min-w-[2rem] text-center text-sm font-extrabold">{Number(item.quantity || 1)}</span>
+                                <QuantityInput
+                                  value={item.quantity || 1}
+                                  onCommit={(q) => updateNegoceQuantity(item.id, q)}
+                                  ariaLabel={`Quantité de ${item.name || 'article'}`}
+                                />
                                 <button onClick={() => updateNegoceQuantity(item.id, Number(item.quantity || 1) + 1)} className="grid h-8 w-8 place-items-center rounded-full border border-gray-200 bg-white text-gray-600 transition hover:border-primary hover:text-primary"><Plus size={14} /></button>
                               </div>
                             </div>
@@ -506,7 +775,11 @@ export default function CartPage({ navigateTo }) {
                                 <button disabled={busyItem === item.id || Number(quantity) <= 1} onClick={() => changeQuantity(item, Number(quantity) - 1)} className="grid h-9 w-9 place-items-center text-primary disabled:opacity-30" aria-label="Diminuer">
                                   <Minus size={15} />
                                 </button>
-                                <span className="w-8 text-center text-sm font-extrabold">{Number(quantity)}</span>
+                                <QuantityInput
+                                  value={quantity}
+                                  onCommit={(q) => changeQuantity(item, q)}
+                                  ariaLabel={`Quantité de ${productName}`}
+                                />
                                 <button disabled={busyItem === item.id} onClick={() => changeQuantity(item, Number(quantity) + 1)} className="grid h-9 w-9 place-items-center text-primary disabled:opacity-30" aria-label="Augmenter">
                                   <Plus size={15} />
                                 </button>
@@ -528,8 +801,31 @@ export default function CartPage({ navigateTo }) {
 
               </div>
 
-              {/* RECAPITULATIF COTE DROIT */}
+              {/* ASIDE : négoce seul → envoi sans prix ; sinon récap (locations) */}
               <aside className="h-fit rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-primary/10">
+                {!hasVehicles && allNegoceItems.length > 0 ? (
+                  <>
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Votre demande</p>
+                    <p className="mt-4 text-sm leading-6 text-gray-600">
+                      Composez votre sélection puis envoyez votre demande : notre équipe vous recontactera rapidement avec une offre sur mesure.
+                    </p>
+                    <div className="mt-4 flex justify-between text-sm text-gray-600">
+                      <span>Articles à chiffrer</span>
+                      <span className="font-bold text-[#173d23]">{allNegoceItems.length}</span>
+                    </div>
+                    <button
+                      onClick={() => validateCart('send')}
+                      disabled={sendingNegoce}
+                      className="mt-6 w-full rounded-full bg-primary px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-primary/20 transition hover:bg-[#1b4c00] disabled:cursor-wait disabled:opacity-60"
+                    >
+                      {sendingNegoce ? 'Envoi en cours…' : 'Envoyer la demande'}
+                    </button>
+                    <p className="mt-3 text-center text-[11px] leading-4 text-gray-400">
+                      Sans engagement — devis confirmé par nos soins avant toute facturation.
+                    </p>
+                  </>
+                ) : (
+                  <>
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Récapitulatif de votre commande</p>
                 <div className="mt-6 space-y-4 text-sm text-gray-600">
                   <div className="flex justify-between">
@@ -547,7 +843,7 @@ export default function CartPage({ navigateTo }) {
                   {allNegoceItems.length > 0 && (
                     <div className="flex justify-between text-xs text-gray-500">
                       <span>Produits négoce ({allNegoceItems.length})</span>
-                      <span className="font-bold text-gray-800">{currency(productTotal)}</span>
+                      <span className="font-bold text-gray-800">{productTotal > 0 ? currency(productTotal) : 'Sur devis'}</span>
                     </div>
                   )}
 
@@ -572,9 +868,11 @@ export default function CartPage({ navigateTo }) {
                   <span className="text-base font-extrabold text-[#173d23]">Montant TTC</span>
                   <span className="text-xl font-extrabold text-primary">{currency(totalAvecFrais)}</span>
                 </div>
-                <button onClick={validateCart} className="mt-6 w-full rounded-full bg-primary px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-primary/20 transition hover:bg-[#1b4c00]">
+                <button onClick={() => validateCart('checkout')} className="mt-6 w-full rounded-full bg-primary px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-primary/20 transition hover:bg-[#1b4c00]">
                   Valider
                 </button>
+                  </>
+                )}
               </aside>
             </div>
           )}

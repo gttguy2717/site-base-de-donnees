@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const { Client, Company, Category, Product, Vehicle, Reservation } = require('../models/index.cjs');
 const { getProductPrice, getVehicleDailyPrice } = require('../services/pricing.service.cjs');
+const { estDansLaFlotte, MESSAGE_INDISPONIBLE } = require('../services/flotte-officielle.service.cjs');
 
 async function resolveCustomerType(utilisateur_id) {
   if (!utilisateur_id) return null;
@@ -50,10 +51,14 @@ async function listVehicles(request, response, next) {
       resolveCustomerType(userId),
       resolveCompanyId(userId),
     ]);
-    const vehicles = await Vehicle.findAll({ where: { statut: 'ACTIVE', disponibilite: true }, order: [['marque', 'ASC'], ['modele', 'ASC']] });
+    // Flotte officielle : on ne propose QUE les véhicules du catalogue validé
+    // par le client (les autocars 25 / 32 places sont inclus par la règle).
+    const vehicles = (await Vehicle.findAll({ where: { statut: 'ACTIVE', disponibilite: true }, order: [['marque', 'ASC'], ['modele', 'ASC']] }))
+      .filter((vehicle) => estDansLaFlotte(vehicle));
     const payload = await Promise.all(vehicles.map(async (vehicle) => ({
       ...vehicle.toJSON(),
-      dailyPrice: await getVehicleDailyPrice(vehicle, type_client, entreprise_id),
+      // Visiteur non connecté : prix public du marché (PARTICULIER), comme pour les produits
+      dailyPrice: await getVehicleDailyPrice(vehicle, type_client || 'PARTICULIER', entreprise_id),
     })));
     response.json({
       customerType: type_client,
@@ -71,7 +76,10 @@ async function getVehicleAvailability(request, response, next) {
       throw error;
     }
     const vehicle = await Vehicle.findByPk(request.params.vehicleId);
-    if (!vehicle || vehicle.statut !== 'ACTIVE' || !vehicle.disponibilite) return response.status(404).json({ available: false, message: 'Véhicule indisponible.' });
+    // Hors flotte officielle = indisponible, même si la fiche existe en base.
+    if (!vehicle || !estDansLaFlotte(vehicle) || vehicle.statut !== 'ACTIVE' || !vehicle.disponibilite) {
+      return response.status(404).json({ available: false, reason: 'HORS_CATALOGUE', message: MESSAGE_INDISPONIBLE });
+    }
     const overlappingReservation = await Reservation.findOne({ where: { vehicule_id: vehicle.id, statut: { [Op.in]: ['PENDING', 'CONFIRMED'] }, commence_le: { [Op.lt]: new Date(endAt) }, termine_le: { [Op.gt]: new Date(startAt) } } });
     response.json({ available: !overlappingReservation });
   } catch (error) { next(error); }

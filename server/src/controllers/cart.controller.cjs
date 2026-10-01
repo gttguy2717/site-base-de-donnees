@@ -2,6 +2,7 @@ const { getCartForUser, addProductToCart, updateCartItem, removeCartItem, clearC
 const { Cart, CartItem, Client, Company, Product, Vehicle, User, QuoteRequest, Notification } = require('../models/index.cjs');
 const { Op } = require('sequelize');
 const { sendQuoteRequestEmail, sendCartNotificationEmail } = require('../services/mail.service.cjs');
+const { vehiculeDisponible, MESSAGE_INDISPONIBLE } = require('../services/flotte-officielle.service.cjs');
 
 function makeRef() {
   return `DMD-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -73,44 +74,58 @@ async function clearCartHandler(request, response, next) {
 async function notifyVehicleAdded(request, response, next) {
   try {
     const userId = request.auth.user.id;
-    const { vehicleName, startDate, endDate, days, withDriver } = request.body || {};
+    const { vehicleId, vehicleName, startDate, endDate, days, withDriver } = request.body || {};
 
-    // Vérifier si le véhicule est déjà réservé sur la période demandée
-    if (vehicleName && startDate && endDate) {
-      const { Vehicle, Reservation } = require('../models/index.cjs');
-      const vehicle = await Vehicle.findOne({
+    // Résolution du véhicule réellement demandé. Priorité à l'ID envoyé par
+    // le frontend, sinon recherche par nom (les deux sont possibles : la modale
+    // du site envoie l'ID, la réservation mobile envoie le nom).
+    const vehicle = vehicleId
+      ? await Vehicle.findByPk(vehicleId)
+      : await Vehicle.findOne({
         where: {
           [Op.or]: [
             { marque: vehicleName },
             { modele: vehicleName },
-            { [Op.and]: [{ marque: { [Op.like]: `%${vehicleName.split(' ')[0] || ''}%` } }, { modele: { [Op.like]: `%${vehicleName.split(' ')[1] || ''}%` } }] },
+            { [Op.and]: [{ marque: { [Op.like]: `%${(vehicleName || '').split(' ')[0] || ''}%` } }, { modele: { [Op.like]: `%${(vehicleName || '').split(' ')[1] || ''}%` } }] },
           ],
         },
       });
 
-      if (vehicle) {
-        const requestedStart = new Date(startDate);
-        const requestedEnd = new Date(endDate);
-        requestedEnd.setDate(requestedEnd.getDate() + 1); // Inclure la fin de journée
+    // Véhicule inconnu OU hors de la flotte officielle : on refuse l'ajout au
+    // panier avec un message explicite (le client voit alors la même phrase que
+    // sur le site et dans l'app).
+    if (!vehicle || !vehiculeDisponible(vehicle)) {
+      return response.status(404).json({
+        error: {
+          message: MESSAGE_INDISPONIBLE,
+          code: 'VEHICULE_INDISPONIBLE',
+        },
+      });
+    }
 
-        const conflict = await Reservation.findOne({
-          where: {
-            vehicule_id: vehicle.id,
-            statut: { [Op.in]: ['PENDING', 'CONFIRMED'] },
-            [Op.and]: [
-              { commence_le: { [Op.lt]: requestedEnd } },
-              { termine_le: { [Op.gt]: requestedStart } },
-            ],
+    // Vérifier si le véhicule est déjà réservé sur la période demandée
+    if (startDate && endDate) {
+      const requestedStart = new Date(startDate);
+      const requestedEnd = new Date(endDate);
+      requestedEnd.setDate(requestedEnd.getDate() + 1); // Inclure la fin de journée
+
+      const conflict = await Reservation.findOne({
+        where: {
+          vehicule_id: vehicle.id,
+          statut: { [Op.in]: ['PENDING', 'CONFIRMED'] },
+          [Op.and]: [
+            { commence_le: { [Op.lt]: requestedEnd } },
+            { termine_le: { [Op.gt]: requestedStart } },
+          ],
+        },
+      });
+
+      if (conflict) {
+        return response.status(409).json({
+          error: {
+            message: `Ce véhicule est déjà réservé sur cette période. Choisissez une autre période ou un autre véhicule.`,
           },
         });
-
-        if (conflict) {
-          return response.status(409).json({
-            error: {
-              message: `Ce véhicule est déjà réservé sur cette période. Choisissez une autre période ou un autre véhicule.`,
-            },
-          });
-        }
       }
     }
 
@@ -145,7 +160,6 @@ async function notifyVehicleAdded(request, response, next) {
     try {
       const { getVehicleDailyPrice } = require('../services/pricing.service.cjs');
       const company = client ? await Company.findOne({ where: { client_id: client.id } }) : null;
-      const vehicle = vehicleName ? await Vehicle.findOne({ where: { [Op.or]: [{ marque: vehicleName }, { modele: vehicleName }, { marque: { [Op.like]: `%${vehicleName.split(' ')[0] || ''}%` } }] } }) : null;
       const unitPrice = vehicle && client ? await getVehicleDailyPrice(vehicle, client.type_client, company?.id || null) : null;
       const duration = Number(days || 1);
       const lineTotal = unitPrice != null ? unitPrice * duration : null;
@@ -198,6 +212,24 @@ async function validateCartHandler(request, response, next) {
     const allItemsCount = items.length + vehicleItems.length;
     if (allItemsCount === 0) return response.status(422).json({ error: { message: 'Panier vide. Ajoutez des articles avant de valider.' } });
 
+    //locations du panier local (site/app) : on refuse tout véhicule qui n'est
+    // plus dans la flotte officielle, sinon le devis partirait sur un modèle
+    // que nous n'assurons plus.
+    for (const v of vehicleItems) {
+      if (!v?.vehicleId && !v?.vehicleName) continue;
+      const vRow = v.vehicleId
+        ? await Vehicle.findByPk(v.vehicleId)
+        : await Vehicle.findOne({ where: { [Op.or]: [{ marque: v.vehicleName }, { modele: v.vehicleName }] } });
+      if (!vRow || !vehiculeDisponible(vRow)) {
+        return response.status(422).json({
+          error: {
+            message: `${MESSAGE_INDISPONIBLE} (${v.vehicleName || 'véhicule'})`,
+            code: 'VEHICULE_INDISPONIBLE',
+          },
+        });
+      }
+    }
+
     // Construire la description
     const productLines = items.map(i => `${i.produit?.nom || 'Article'} x${Number(i.quantite)}`);
     const vehicleLines = vehicleItems.map(v => `Location ${v.vehicleName || 'Vehicule'} (${v.duration || v.days || 1}j)`);
@@ -213,7 +245,7 @@ async function validateCartHandler(request, response, next) {
       }
       if (item.vehicule) {
         const price = await getVehicleDailyPrice(item.vehicule, clientRec.type_client, companyRec?.id || null);
-        const duration = Math.max(1, Math.ceil((new Date(item.termine_le) - new Date(item.commence_le)) / 86400000));
+        const duration = Math.max(1, Math.round((new Date(item.termine_le) - new Date(item.commence_le)) / 86400000) + 1);
         if (price != null) estimatedBudget += Number(price) * duration;
       }
     }

@@ -1,5 +1,51 @@
+import FLOTTE_OFFICIELLE from '../../shared/flotte-officielle.json';
+
 const VEHICLE_IMAGE_BASE_URL = '/img/vehicles';
 const IMAGE_BASE_URL = '/img';
+
+/**
+ * Flotte officielle : liste blanche validée par le client.
+ * Les fiches statiques ci-dessous ne servent que de secours quand l'API ne
+ * répond pas — elles doivent donc respecter EXACTEMENT la même liste, sinon le
+ * site advertise des véhicules retirés de la location.
+ *
+ * Règles identiques au service serveur (server/src/services/flotte-officielle.service.cjs) :
+ *  - correspondance exacte « marque modèle » sur la liste blanche ;
+ *  - variantes de finition autorisées (préfixe) ;
+ *  - « Mazda CX-30 » reste exclu même si « Mazda CX-3 » est demandé ;
+ *  - les autocars de 25 et 32 places sont toujours conservés.
+ */
+const normaliserNom = (valeur) =>
+  String(valeur == null ? '' : valeur)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+
+const AUTORISES = new Set(FLOTTE_OFFICIELLE.vehicules.map(normaliserNom));
+const PREFIXES_AUTORISES = FLOTTE_OFFICIELLE.variantesPrefixe
+  .map(normaliserNom)
+  .sort((a, b) => b.length - a.length);
+const NOMS_EXCLUS = new Set(FLOTTE_OFFICIELLE.variantesExclues.map(normaliserNom));
+const PLACES_GARDEES = new Set(FLOTTE_OFFICIELLE.placesToujoursGardes);
+// Même modèle écrit différemment selon la source (« Range Rover » en fiche
+// statique, « Land Rover Range Rover » en base).
+const EQUIVALENTS = new Map(
+  Object.entries(FLOTTE_OFFICIELLE.equivalents || {}).map(([alias, ref]) => [normaliserNom(alias), normaliserNom(ref)]),
+);
+
+/** @returns {boolean} true si la fiche statique fait partie de la flotte officielle. */
+export function estDansLaFlotteOfficielle(nom, places) {
+  if (PLACES_GARDEES.has(Number(places))) return true;
+  const normalise = normaliserNom(nom);
+  if (!normalise) return false;
+  if (NOMS_EXCLUS.has(normalise)) return false;
+  if (AUTORISES.has(normalise)) return true;
+  const reference = EQUIVALENTS.get(normalise);
+  if (reference && AUTORISES.has(reference)) return true;
+  return PREFIXES_AUTORISES.some((prefixe) => normalise === prefixe || normalise.startsWith(`${prefixe} `));
+}
 
 const officialImage = (fileName) => `${IMAGE_BASE_URL}/${fileName}`;
 const vehicleImage = (fileName) => `${VEHICLE_IMAGE_BASE_URL}/${fileName}`;
@@ -24,7 +70,7 @@ function buildTariffs(withDriver, withoutDriver) {
   };
 }
 
-export const RENTAL_VEHICLES = [
+const RENTAL_VEHICLES_RAW = [
   { category: 'Économiques', name: 'Renault Duster', plate: 'AA-001-CI', pricePerDay: 30000, tariffs: buildTariffs(30000, 30000), image: '/img/vehicles/dusterAvant.jpg', specs: ['5 personnes', 'Automatique', 'Assurée'] },
   { category: 'Économiques', name: 'Suzuki Dzire', plate: 'AA-002-CI', pricePerDay: 25000, tariffs: buildTariffs(25000, 25000), image: '/img/vehicles/dzer.jpg', specs: ['5 personnes', 'Automatique', 'Assurée'] },
   { category: 'Économiques', name: 'Suzuki Fronx', plate: 'AA-003-CI', pricePerDay: 30000, tariffs: buildTariffs(30000, 30000), image: '/img/vehicles/fronxav.jpeg', specs: ['5 personnes', 'Automatique', 'Assurée'] },
@@ -69,6 +115,9 @@ export const RENTAL_VEHICLES = [
   { category: 'Luxe', name: 'Range Rover', plate: 'AA-117-CI', pricePerDay: 220000, tariffs: buildTariffs(220000, 220000), image: '/img/vehicles/range_rover.jpg', specs: ['5 personnes', 'Automatique', 'Assurée'] },
   { category: 'Luxe', name: 'Toyota Land Cruiser', plate: 'AA-118-CI', pricePerDay: 190000, tariffs: buildTariffs(190000, 190000), image: '/img/vehicles/l300.jpeg', specs: ['5 personnes', 'Automatique', 'Assurée'] },
 ];
+
+// Seules les fiches de la flotte officielle sont publiées (repli hors API).
+export const RENTAL_VEHICLES = RENTAL_VEHICLES_RAW.filter((v) => estDansLaFlotteOfficielle(v.name));
 
 export const SERVICES_DATA = [
   {

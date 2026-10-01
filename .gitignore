@@ -49,6 +49,42 @@ dist-ssr
 .env
 .env.*
 !.env.example
+# ─────────────────────────────────────────────────────────────────────────────
+#  SECRETS — NE JAMAIS POUSSER SUR GITHUB
+#  Le dépôt est PUBLIC : ces scripts contiennent le mot de passe SSH et/ou le
+#  mot de passe MySQL de la production. Ils restent sur le poste local.
+#  Pour les régénérer, réutiliser le compte-rendu de déploiement ou un gestionnaire
+#  de secrets (variables d'environnement), jamais un mot de passe en dur.
+# ─────────────────────────────────────────────────────────────────────────────
+/env2
+/env
+.envrc
+
+# Scripts d'exploitation / déploiement Hostinger (accès SSH en dur)
+/deploy_*.py
+/verify_*.py
+/fix_503_final.py
+/fix_config_env.py
+/fix_encodings_db.py
+/fix_server.py
+/fix_orphaned_clients.cjs
+/force_restart.py
+/inspect_env.py
+/restart_passenger.py
+/run_seed_complete.py
+/count_products_db.py
+/db_delete_a8.py
+/delete_david.py
+/delete_legacy_clients.py
+/find_david.py
+/test_https.py
+/check_deploy_state.py
+/server/tmp/deploy-*.py
+/server/tmp/remote-restart.cjs.py
+/rsvp-soutarah/config.php
+/SETUP_DATABASE.md
+/DIAGNOSTIC-ACCES-SITE.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

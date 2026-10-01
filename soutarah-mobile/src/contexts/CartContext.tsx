@@ -51,6 +51,9 @@ interface CartContextType {
     days: number;
     withDriver: boolean;
   }) => Promise<boolean>;
+  /** Message « véhicule indisponible » de la dernière tentative d'ajout. */
+  lastError: string | null;
+  clearLastError: () => void;
   updateItemQuantity: (itemId: string, quantity: number) => Promise<void>;
   removeItem: (itemId: string) => Promise<void>;
   clearCart: () => Promise<void>;
@@ -59,6 +62,10 @@ interface CartContextType {
   getLastOrder: () => Promise<LastOrder | null>;
   clearLastOrder: () => Promise<void>;
 }
+
+// ─── Message affiché au client quand le véhicule n'est pas disponible ────
+const VEHICULE_INDISPONIBLE =
+  "Ce véhicule n'est pas disponible à la location pour le moment. Vous pouvez tout choisir un autre véhicule ou nous contacter";
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -170,6 +177,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // ─── Message d'erreur de la dernière tentative d'ajout ──────────────────
+  const [lastError, setLastError] = useState<string | null>(null);
+
   // ─── Ajouter un véhicule au panier ───────────────────────────────────────
   const addVehicleToCart = async (vehicle: {
     id: string;
@@ -182,7 +192,32 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     days: number;
     withDriver: boolean;
   }): Promise<boolean> => {
+    setLastError(null);
     try {
+      // Contrôle serveur AVANT l'ajout : le véhicule doit exister, être dans
+      // la flotte officielle et être libre sur la période. Un 404 signifie
+      // « ce n'est pas disponible » — on refuse l'ajout au panier.
+      try {
+        const availability = await api.get<{ available?: boolean; message?: string }>(
+          `/vehicles/${vehicle.id}/availability?startAt=${encodeURIComponent(vehicle.startDate)}&endAt=${encodeURIComponent(vehicle.endDate)}`,
+          false,
+        );
+        if (!availability?.available) {
+          setLastError(availability?.message || VEHICULE_INDISPONIBLE);
+          return false;
+        }
+      } catch (e: any) {
+        const isNotFound = e?.status === 404 || /indisponible/i.test(e?.message || '');
+        // 404 = hors catalogue / indisponible : refus définitif.
+        if (isNotFound) {
+          setLastError(VEHICULE_INDISPONIBLE);
+          return false;
+        }
+        // Panne réseau : on ne bloque pas l'utilisateur, la validation serveur
+        // du devis prendra le relais.
+        console.warn('Vérification de disponibilité impossible:', e?.message);
+      }
+
       const driverFeePerDay = vehicle.withDriver ? 10000 : 0;
       const totalDaily = vehicle.dailyPrice + driverFeePerDay;
       const totalLigne = totalDaily * vehicle.days;
@@ -208,7 +243,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       await AsyncStorage.setItem(vehicleCartKey, JSON.stringify(updated));
 
       // Notifier le backend comme le fait le site (notification admin + email
-      // « Location ajoutée au panier » via /cart/notify-vehicle).
+      // « Location ajoutée au panier » via /cart/notify-vehicle). Le serveur
+      // refuse (404) si le véhicule a été retiré du catalogue entre-temps.
       if (token) {
         api.post('/cart/notify-vehicle', {
           vehicleId: vehicle.id,
@@ -217,13 +253,29 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           endDate: vehicle.endDate,
           days: vehicle.days,
           withDriver: vehicle.withDriver,
-        }).catch(err => console.error('Erreur notification ajout véhicule:', err?.response?.data || err));
+        }).catch(async (err: any) => {
+          if (err?.status === 404) {
+            // Le serveur refuse : on retire la ligne du panier local pour ne
+            // pas laisser un véhicule indisponible dans la commande.
+            const raw = await AsyncStorage.getItem(vehicleCartKey);
+            const current: CartItem[] = raw ? JSON.parse(raw) : [];
+            await AsyncStorage.setItem(
+              vehicleCartKey,
+              JSON.stringify(current.filter((i) => i.id !== newVehicleItem.id)),
+            );
+            setLastError(VEHICULE_INDISPONIBLE);
+            await refreshCart();
+            return;
+          }
+          console.error('Erreur notification ajout véhicule:', err?.response?.data || err);
+        });
       }
 
       await refreshCart();
       return true;
-    } catch (e) {
+    } catch (e: any) {
       console.error('Erreur ajout véhicule panier:', e);
+      setLastError(e?.message || "Une erreur est survenue lors de l'ajout au panier.");
       return false;
     }
   };
@@ -376,6 +428,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         refreshCart,
         addProductToCart,
         addVehicleToCart,
+        lastError,
+        clearLastError: () => setLastError(null),
         updateItemQuantity,
         removeItem,
         clearCart,
