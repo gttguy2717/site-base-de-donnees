@@ -15,7 +15,7 @@
       "prix_journalier_entreprise": 240000,
       "prix_journalier_entreprise_client": 240000,
       "source": "bus-bild.de",
-      "id": "c286302f-bbb0-13f3-ad00"
+      "id": "44de7586-de93-441c-9bbe-7218a24ee9ac"
     },
     {
       "marque": "MAN",
@@ -30,7 +30,7 @@
       "prix_journalier_entreprise": 190000,
       "prix_journalier_entreprise_client": 190000,
       "source": "bus-bild.de",
-      "id": "098a22e3-e466-2fcb-7678"
+      "id": "c532b6ac-028a-4fbd-821a-55a8d5523154"
     },
     {
       "marque": "Iveco",
@@ -45,7 +45,7 @@
       "prix_journalier_entreprise": 220000,
       "prix_journalier_entreprise_client": 220000,
       "source": "bus-bild.de",
-      "id": "36bf610f-572d-3106-9091"
+      "id": "384008b1-b483-4f36-b555-a7272e24e93a"
     },
     {
       "marque": "MAN",
@@ -60,7 +60,7 @@
       "prix_journalier_entreprise": 280000,
       "prix_journalier_entreprise_client": 280000,
       "source": "bus-bild.de",
-      "id": "4485e256-411b-d0c9-6406"
+      "id": "8bbdc870-9beb-4577-b8e7-231f6cd3c63b"
     },
     {
       "marque": "Yutong",
@@ -75,7 +75,7 @@
       "prix_journalier_entreprise": 210000,
       "prix_journalier_entreprise_client": 210000,
       "source": "bus-bild.de",
-      "id": "e990ce0b-c204-3404-5006"
+      "id": "64cfc6de-b93f-4e72-9cee-cf01537bcfa3"
     },
     {
       "marque": "Setra",
@@ -90,7 +90,7 @@
       "prix_journalier_entreprise": 250000,
       "prix_journalier_entreprise_client": 250000,
       "source": "bus-bild.de",
-      "id": "dc4b0697-3b22-ce85-8c9e"
+      "id": "25ef6ebb-4d20-42a2-9298-e3b046b875cd"
     },
     {
       "marque": "Mercedes-Benz",
@@ -105,7 +105,7 @@
       "prix_journalier_entreprise": 200000,
       "prix_journalier_entreprise_client": 200000,
       "source": "bus-bild.de",
-      "id": "bf9b3f98-4356-7ad9-73df"
+      "id": "16779337-2b70-4c74-b736-abd396d08e5a"
     }
   ]
 }
