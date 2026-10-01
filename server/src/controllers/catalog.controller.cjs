@@ -18,6 +18,23 @@ async function resolveCompanyId(utilisateur_id) {
   return company?.id || null;
 }
 
+/**
+ * Mélange de Fisher-Yates : ordre d'affichage ALÉATOIRE.
+ *
+ * Consigne client : la grille des véhicules ne doit PLUS être classée par nom
+ * (marque / modèle). On mélange donc la liste à chaque appel. Le mélange est
+ * fait APRÈS le filtre « flotte officielle » pour que le résultat soit
+ * réellement aléatoire, et non un ensemble figé réordonné.
+ */
+function melangerAleatoirement(vehicules) {
+  const melanges = [...vehicules];
+  for (let i = melanges.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [melanges[i], melanges[j]] = [melanges[j], melanges[i]];
+  }
+  return melanges;
+}
+
 async function listCategories(_request, response, next) {
   try {
     const categories = await Category.findAll({ where: { est_actif: true }, order: [['nom', 'ASC']] });
@@ -54,8 +71,12 @@ async function listVehicles(request, response, next) {
     ]);
     // Flotte officielle : on ne propose QUE les véhicules du catalogue validé
     // par le client (les autocars 25 / 32 places sont inclus par la règle).
-    const vehicles = (await Vehicle.findAll({ where: { statut: 'ACTIVE', disponibilite: true }, order: [['marque', 'ASC'], ['modele', 'ASC']] }))
-      .filter((vehicle) => estDansLaFlotte(vehicle));
+    // Ordre ALÉATOIRE demandé par le client : plus de tri par marque / modèle,
+    // la grille est mélangée à chaque chargement (cf. melangerAleatoirement).
+    const vehicles = melangerAleatoirement(
+      (await Vehicle.findAll({ where: { statut: 'ACTIVE', disponibilite: true } }))
+        .filter((vehicle) => estDansLaFlotte(vehicle)),
+    );
     const payload = await Promise.all(vehicles.map(async (vehicle) => ({
       ...vehicle.toJSON(),
       // Visiteur non connecté : prix public du marché (PARTICULIER), comme pour les produits

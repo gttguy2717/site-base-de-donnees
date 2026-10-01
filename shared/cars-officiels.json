@@ -1,22 +1,7 @@
 {
-  "_commentaire": "Cars (autocars) SOUTARAH issus de la galerie publique bus-bild.de — conserves TOUJOURS, meme absents de la liste blanche. clean-vehicle-catalog.cjs les recree automatiquement s'ils disparaissent. L'ordre est volontairement aleatoire (consigne client).",
+  "_commentaire": "Cars (autocars) SOUTARAH issus de la galerie publique bus-bild.de — conserves TOUJOURS, meme absents de la liste blanche. clean-vehicle-catalog.cjs les recree automatiquement s'ils disparaissent. Volvo 8700 et Yutong E-Bus ont ete retires sur demande du client. L'ordre du fichier est volontairement aleatoire (consigne client) : l'API melange de toute facon la grille a chaque chargement.",
   "_tarifs": "Tarifs journaliers indicatifs, A CONFIRMER par l'exploitation.",
   "vehicules": [
-    {
-      "marque": "Volvo",
-      "modele": "8700",
-      "categorie": "Autocar",
-      "description": "45 places assises • Climatise • Avec chauffeur",
-      "image_url": "/img/vehicles/cars/volvo-8700.jpg",
-      "places": 45,
-      "carburant": "Gazole",
-      "transmission": "Automatique",
-      "prix": 240000,
-      "prix_journalier_entreprise": 240000,
-      "prix_journalier_entreprise_client": 240000,
-      "source": "bus-bild.de",
-      "id": "44de7586-de93-441c-9bbe-7218a24ee9ac"
-    },
     {
       "marque": "MAN",
       "modele": "Lion's City",
@@ -61,21 +46,6 @@
       "prix_journalier_entreprise_client": 280000,
       "source": "bus-bild.de",
       "id": "8bbdc870-9beb-4577-b8e7-231f6cd3c63b"
-    },
-    {
-      "marque": "Yutong",
-      "modele": "E-Bus",
-      "categorie": "Autocar",
-      "description": "75 places assises • 100 % electrique • Avec chauffeur",
-      "image_url": "/img/vehicles/cars/yutong-e-bus.jpg",
-      "places": 75,
-      "carburant": "Electrique",
-      "transmission": "Automatique",
-      "prix": 210000,
-      "prix_journalier_entreprise": 210000,
-      "prix_journalier_entreprise_client": 210000,
-      "source": "bus-bild.de",
-      "id": "64cfc6de-b93f-4e72-9cee-cf01537bcfa3"
     },
     {
       "marque": "Setra",

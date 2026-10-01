@@ -33,7 +33,8 @@ const DRY_RUN = !process.argv.includes('--restore');
  * Les véhicules « toujours gardés » ne figurent pas dans la liste blanche mais
  * doivent TOUJOURS exister au catalogue :
  *   - les autocars de groupe (20 / 22 / 25 / 30 / 32 places) ;
- *   - les cars issus de la galerie bus-bild.de (7 modèles).
+ *   - les cars issus de la galerie bus-bild.de (5 modèles après retrait du
+ *     Volvo 8700 et du Yutong E-Bus).
  * Si l'un d'eux a disparu, on le recrée ici : impossible de le perdre.
  */
 async function assurerToujoursGardes(liste, libelle) {
